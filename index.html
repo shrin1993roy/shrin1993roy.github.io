@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shrin Roymoulik, Product Builder</title>
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --ink: #000000;
+    --muted: #8c8c8c;
+    --tile-a: #ededeb;
+    --tile-b: #e4e6e9;
+    --tile-c: #efe8e2;
+    --tile-d: #e6ebe4;
+    --veil: rgba(255,255,255,0.97);
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #000000; --ink: #ffffff; --muted: #8e8e8e;
+      --tile-a: #1b1b1b; --tile-b: #1d2024; --tile-c: #221e1b; --tile-d: #1c211b;
+      --veil: rgba(0,0,0,0.97);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #000000; --ink: #ffffff; --muted: #8e8e8e;
+    --tile-a: #1b1b1b; --tile-b: #1d2024; --tile-c: #221e1b; --tile-d: #1c211b;
+    --veil: rgba(0,0,0,0.97);
+    color-scheme: dark;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  *, *::before, *::after { box-sizing: inherit; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+  a, button { color: inherit; font: inherit; }
+  a { text-decoration: none; }
+  button { background: none; border: 0; padding: 0; cursor: pointer; }
+  .nav a, .nav button, .small a, figcaption a, .goup {
+    transition: background-color 0.15s ease;
+  }
+  .nav a:hover, .nav button:hover, .small a:hover, figcaption a:hover, .goup:hover,
+  .nav a:focus-visible, .nav button:focus-visible, .small a:focus-visible, figcaption a:focus-visible, .goup:focus-visible {
+    background: #E5FF00;
+    color: #000000;
+  }
+  .tile > a:hover .frame { opacity: 0.9; }
+  a:focus-visible, button:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+  img { max-width: 100%; display: block; }
+
+  .page {
+    --u: max(0.75px, calc(100vw / 1400));
+    display: grid;
+    grid-template-columns: 17.5% 1fr;
+    column-gap: 0;
+    padding: 0 0 0 0.9vw;
+  }
+
+  /* Left column, fixed while the work scrolls */
+  .side {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    display: flex;
+    flex-direction: column;
+    padding: 1.5vw 1.4vw 1.6vw 0;
+  }
+  .nav { display: flex; gap: calc(12 * var(--u)); font-size: calc(13 * var(--u)); font-weight: 480; line-height: calc(14 * var(--u)); letter-spacing: calc(-0.6 * var(--u)); text-transform: uppercase; }
+  #infoBtn { color: var(--muted); }
+  .nav button { text-transform: uppercase; letter-spacing: inherit; line-height: inherit; }
+  .bio {
+    font-size: calc(18 * var(--u));
+    font-weight: 450;
+    line-height: calc(18 * var(--u));
+    letter-spacing: calc(-0.6 * var(--u));
+    margin: calc(16 * var(--u)) 0 calc(8 * var(--u));
+    max-width: 10.85em;
+  }
+  .small { font-size: calc(13 * var(--u)); font-weight: 480; line-height: calc(14 * var(--u)); letter-spacing: calc(-0.6 * var(--u)); text-transform: uppercase; margin: 0 0 1.1vw; }
+  .small a, .small span { display: block; width: fit-content; }
+  .contact { margin-top: auto; margin-bottom: 0; }
+  .links { display: flex; flex-direction: column; flex: 1 1 auto; }
+  .hscroll { display: contents; }
+  .contact .label { color: var(--muted); }
+
+  /* Work grid, two staggered columns */
+  .grid {
+    display: grid;
+    grid-template-columns: 40fr 60fr;
+    column-gap: 0.7vw;
+    padding: 2.75vw 0 1.6vw;
+  }
+  .col { display: flex; flex-direction: column; gap: 1.4vw; }
+  .tile { margin: 0; order: var(--o); }
+  .frame {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--r, 4 / 3);
+    background: var(--tile, var(--tile-a));
+  }
+  .ph {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: var(--muted); text-align: center; padding: 20px;
+  }
+  figcaption {
+    margin-top: 0.75vw;
+    font-size: calc(12 * var(--u));
+    font-weight: 480;
+    line-height: calc(16 * var(--u));
+    letter-spacing: calc(-0.3 * var(--u));
+  }
+  figcaption .t {
+    font-size: calc(13 * var(--u));
+    line-height: calc(16 * var(--u));
+    letter-spacing: calc(-0.6 * var(--u));
+  }
+  .t { text-transform: uppercase; }
+  /* Long rule between the work type and the year, like the template */
+  .ld { display: inline-block; width: 1.9em; border-top: 1px solid currentColor; vertical-align: 0.32em; margin: 0 -0.08em; }
+  .g { color: var(--muted); }
+  .ext { font-size: 0.85em; }
+
+  /* Simple carousel */
+  .slides .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.4s ease; }
+  .slides .slide.on { opacity: 1; }
+  .slides { cursor: pointer; }
+  .dots {
+    position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%);
+    display: flex; gap: 2px;
+  }
+  .dot {
+    width: 19px; height: 19px; padding: 6px; border-radius: 50%;
+    background: var(--ink); background-clip: content-box; opacity: 0.25;
+    transition: opacity 0.2s ease;
+  }
+  .dot.on { opacity: 1; }
+  .dot:hover { opacity: 0.6; }
+  .dot.on:hover { opacity: 1; }
+
+  /* Scroll prompt, phones only */
+  .scroll-hint { display: none; }
+  @keyframes hintPulse { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+
+  .goup { order: 99; grid-column: 1 / -1; justify-self: center; align-self: center; font-size: calc(13 * var(--u)); font-weight: 480; line-height: calc(14 * var(--u)); letter-spacing: calc(-0.6 * var(--u)); text-transform: uppercase; margin-top: 0.6vw; }
+
+  /* Childhood photo, revealed when hovering the name */
+  .side { z-index: 5; }
+  .bio { position: relative; }
+  .name, .fashion { cursor: pointer; }
+  /* One time highlight hint on the two hover words */
+  @keyframes hintHi {
+    0% { background-color: transparent; }
+    20%, 70% { background-color: #E5FF00; color: #000000; }
+    100% { background-color: transparent; }
+  }
+  .bio.hinting .name { animation: hintHi 1.2s ease-in-out 0s 1; }
+  .bio.hinting .fashion { animation: hintHi 1.2s ease-in-out 1s 1; }
+  /* Same neon highlight as the links, on hover or while open */
+  .name:focus-visible, .fashion:focus-visible,
+  .bio.show-photo .name, .bio.show-video .fashion { background: #E5FF00; color: #000000; }
+  @media (hover: hover) and (pointer: fine) {
+    .name:hover, .fashion:hover { background: #E5FF00; color: #000000; }
+  }
+  /* Phones: highlight sweeps along with the pulse while scrolling */
+  @media (hover: none) and (prefers-reduced-motion: no-preference), (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+    .bio.hinting .name { animation: hintHi 1.2s ease-in-out 0s 1; }
+    .bio.hinting .fashion { animation: hintHi 1.2s ease-in-out 1s 1; }
+  }
+  /* A stronger pulse on the two words while the highlight plays */
+  .name, .fashion { position: relative; display: inline-block; transform-origin: 50% 60%; }
+  @keyframes wordPulse {
+    0%, 100% { transform: scale(1); }
+    40% { transform: scale(1.1); }
+    70% { transform: scale(0.99); }
+  }
+  @media (prefers-reduced-motion: reduce) { .bio.hinting .name, .bio.hinting .fashion { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .bio.hinting .name, .bio.hinting .fashion { animation: none; } }
+  .bio .me-video { top: calc(32 * var(--u)); left: calc(100% + 6 * var(--u)); width: 36vw; }
+  .me {
+    position: absolute;
+    top: 0;
+    left: calc(100% + 24 * var(--u));
+    width: 15vw;
+    max-width: none;
+    height: auto;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, visibility 0s linear 0.15s;
+    pointer-events: none;
+  }
+  .bio:has(.name:focus-visible) .me-photo,
+  .bio.show-photo .me-photo,
+  .bio:has(.fashion:focus-visible) .me-video,
+  .bio.show-video .me-video { opacity: 1; visibility: visible; transition: opacity 0.15s ease; }
+  /* Hover only on devices with a real mouse, so taps on phones can toggle cleanly */
+  @media (hover: hover) and (pointer: fine) {
+    .bio:has(.name:hover) .me-photo,
+    .bio:has(.fashion:hover) .me-video { opacity: 1; visibility: visible; transition: opacity 0.15s ease; }
+  }
+  @media (prefers-reduced-motion: reduce) { .me, .bio:has(.name:hover) .me { transition: none; } }
+  /* Bio appears line by line on first load */
+  .bio .w { display: inline-block; }
+  @keyframes lineIn { from { opacity: 0; transform: translateY(0.45em); } to { opacity: 1; transform: none; } }
+  /* Bio intro: each line slides up in sequence on first load */
+  .bio .w { display: inline-block; }
+  .bio.intro .w { animation: lineIn 1s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  @keyframes lineIn { from { opacity: 0; transform: translateY(0.4em); } to { opacity: 1; transform: none; } }
+
+  /* Fingerprint logo above Go up, with breathing room after the work */
+  .sign { grid-column: 1 / -1; justify-self: center; margin-top: 9vw; order: 98; }
+  .sign img { width: calc(64 * var(--u)); height: auto; transition: opacity 0.2s ease; }
+  .sign { position: relative; display: block; margin-bottom: 0; align-self: end; }
+  .sign::after {
+    content: "Go up"; position: absolute; inset: 0;
+    display: flex; align-items: flex-end; justify-content: center; white-space: nowrap;
+    font-size: calc(13 * var(--u)); font-weight: 480; line-height: calc(14 * var(--u)); letter-spacing: calc(-0.6 * var(--u));
+    text-transform: uppercase; opacity: 0; transition: opacity 0.2s ease;
+  }
+  .sign:hover img, .sign:focus-visible img { opacity: 0; }
+  .sign:hover::after, .sign:focus-visible::after { opacity: 1; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sign img { filter: invert(1); } }
+  :root[data-theme="dark"] .sign img { filter: invert(1); }
+
+  /* Info page */
+  .info {
+    --u: max(0.75px, calc(100vw / 1400));
+    position: fixed; inset: 0; z-index: 20; display: none;
+    background: var(--bg); overflow-y: auto; overscroll-behavior: contain;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .info.open { display: block; }
+  .info-top {
+    position: relative;
+    display: grid; grid-template-columns: 35.3% 31.3% 1fr; grid-template-rows: 1fr auto;
+    min-height: calc(100vh - 62 * var(--u)); min-height: calc(100dvh - 62 * var(--u));
+  }
+  .info-left { grid-column: 1; grid-row: 1; padding: 1.5vw 1.4vw 0 0.9vw; }
+  .info .here { color: var(--muted); }
+  .info-bio { font-size: calc(18 * var(--u)); font-weight: 450; line-height: calc(18 * var(--u)); letter-spacing: calc(-0.6 * var(--u)); max-width: 11.8em; margin-top: calc(26 * var(--u)); }
+  .info-bio p { margin: 0 0 0.55em; }
+  .info-bio .soft { color: inherit; }
+  .info-links { display: grid; grid-template-columns: calc(124 * var(--u)) auto; margin-top: calc(14 * var(--u)); }
+  .info-links .small { margin: 0; }
+  .info-links .label { color: var(--muted); }
+  .info-mid {
+    grid-column: 2; grid-row: 1; padding-top: calc(44 * var(--u));
+    font-size: calc(12 * var(--u)); font-weight: 500; line-height: calc(14 * var(--u)); letter-spacing: calc(-0.3 * var(--u));
+  }
+  .info-mid p { margin: 0 0 calc(4 * var(--u)); }
+  .info-mid h3 { font-size: calc(13 * var(--u)); font-weight: 560; line-height: calc(14 * var(--u)); letter-spacing: calc(-0.6 * var(--u)); text-transform: uppercase; margin: calc(16 * var(--u)) 0 calc(2 * var(--u)); }
+  .info-mid .two { display: grid; grid-template-columns: 1fr 1fr; }
+  /* Expandable Skills and Tools on the INFO page */
+  .xp { margin-top: calc(16 * var(--u)); }
+  .xp summary { list-style: none; cursor: pointer; width: fit-content; }
+  .xp summary::-webkit-details-marker { display: none; }
+  .xp summary h3 { display: inline; }
+  .xp summary::after { content: "+"; display: inline-block; margin-left: 0.35em; font-weight: 500; transition: transform 0.2s ease; }
+  .xp[open] summary::after { transform: rotate(45deg); }
+  .xp summary:hover h3, .xp summary:focus-visible h3 { background: #E5FF00; color: #000000; }
+  .xp p { margin-top: calc(2 * var(--u)); }
+  .info-mid .soft { color: var(--muted); }
+  .info-skills { margin-top: calc(34 * var(--u)); max-width: calc(330 * var(--u)); font-size: calc(12 * var(--u)); font-weight: 500; line-height: calc(14 * var(--u)); letter-spacing: calc(-0.3 * var(--u)); }
+  .info-skills p { margin: 0; }
+  .info-skills h3 { font-size: calc(13 * var(--u)); font-weight: 600; line-height: calc(14 * var(--u)); letter-spacing: calc(-0.6 * var(--u)); text-transform: uppercase; margin: 0 0 calc(2 * var(--u)); }
+  .info-skills .two { display: grid; grid-template-columns: 1fr 1fr; column-gap: calc(12 * var(--u)); }
+  .info-mid a { transition: background-color 0.15s ease; }
+  .info-mid a:hover, .info-mid a:focus-visible { background: #E5FF00; color: #000000; }
+  .info-mid p + p { margin-top: calc(10 * var(--u)); }
+  .info-photo {
+    position: absolute; top: calc(10 * var(--u)); right: 0; z-index: 3;
+    width: 33.4%; height: calc(100vh - 82 * var(--u)); height: calc(100dvh - 82 * var(--u));
+    background: var(--tile-c); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  }
+  .info-photo.dragging { cursor: grabbing; }
+  .pslide { position: absolute; inset: 0; opacity: 0; }
+  .pslide.on { opacity: 1; }
+  .pslide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+  .info-slot {
+    position: absolute; top: calc(10 * var(--u)); right: 0; z-index: 1;
+    width: 33.4%; height: calc(100vh - 82 * var(--u)); height: calc(100dvh - 82 * var(--u));
+    border: 1px solid #c8c8c8; display: flex; align-items: center; justify-content: center;
+    font-size: calc(14 * var(--u)); font-weight: 500; letter-spacing: calc(-0.3 * var(--u)); color: var(--muted);
+    pointer-events: none;
+  }
+  .info-photo:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  .info-note {
+    grid-column: 1 / 3; grid-row: 2; margin: calc(28 * var(--u)) 0 0; padding: 0 1.4vw 1.6vw 0.9vw;
+    font-size: calc(12 * var(--u)); font-weight: 500; line-height: calc(14 * var(--u)); letter-spacing: calc(-0.3 * var(--u));
+    max-width: 66em;
+  }
+  /* INFO hover words: an image appears beside the bio */
+  .info-bio { position: relative; }
+  .rw { cursor: pointer; transition: background-color 0.15s ease; }
+  .rimg {
+    position: absolute; top: 0; left: calc(100% + 24 * var(--u)); z-index: 4;
+    width: 30vw; max-width: none; height: auto;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity 0.15s ease, visibility 0s linear 0.15s;
+  }
+  .rw.on, .rw:focus-visible { background: #E5FF00; color: #000000; }
+  .rw.on + .rimg, .rw:focus-visible + .rimg { opacity: 1; visibility: visible; transition: opacity 0.15s ease; }
+  @media (hover: hover) and (pointer: fine) {
+    .rw:hover { background: #E5FF00; color: #000000; }
+    .rw:hover + .rimg { opacity: 1; visibility: visible; transition: opacity 0.15s ease; }
+  }
+
+  /* Hover image on an exhibition name */
+  .hv { position: relative; }
+  .hv-img {
+    position: absolute; left: 13.8vw; top: calc(100% + 4 * var(--u)); z-index: 5;
+    width: 35vw; max-width: none; height: auto;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity 0.15s ease, visibility 0s linear 0.15s;
+  }
+  .hv-t { cursor: pointer; transition: background-color 0.15s ease; }
+  .hv a:focus-visible + .hv-img, .hv-t:focus-visible + .hv-img { opacity: 1; visibility: visible; transition: opacity 0.15s ease; }
+  .hv-t:focus-visible { background: #E5FF00; color: #000000; }
+  @media (hover: hover) and (pointer: fine) {
+    .hv a:hover + .hv-img, .hv-t:hover + .hv-img { opacity: 1; visibility: visible; transition: opacity 0.15s ease; }
+    .hv-t:hover { background: #E5FF00; color: #000000; }
+  }
+
+  .marquee { overflow: hidden; white-space: nowrap; padding: calc(18 * var(--u)) 0 calc(12 * var(--u)); }
+  .marquee-track { display: inline-block; animation: marquee 40s linear infinite; }
+  .marquee-track span { font-size: calc(28 * var(--u)); font-weight: 450; line-height: calc(29 * var(--u)); letter-spacing: calc(-0.8 * var(--u)); text-transform: uppercase; padding-right: 0.3em; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+  .marquee.extra { display: none; }
+  /* INFO: highlight sweep on the hover words while scrolling */
+  @media (prefers-reduced-motion: no-preference) {
+    .info.hinting .rw { animation: hintHi 1.2s ease-in-out 0s 1; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .info.hinting .hv-t { animation: hintHi 1.2s ease-in-out 1s 1; }
+  }
+  @keyframes marqueeRev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+  .loves { display: grid; grid-template-columns: repeat(5, 1fr); }
+  .love-item { margin: 0; }
+  .love-cap { display: none; }
+  .love { position: relative; aspect-ratio: 3 / 4; background: var(--tile, var(--tile-a)); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slides .slide { transition: none; }
+    .scroll-hint { animation: none !important; opacity: 1; }
+  }
+
+  /* Phones and small tablets */
+  @media (max-width: 820px) {
+    /* Phone layout drawn on a 375 wide canvas, scaled to the screen like Readymag */
+    html, body { overflow-x: clip; }
+    .page { --u: 1px; --mu: calc(100vw / 360); display: block; padding: 0; }
+    .side {
+      position: fixed; inset: 0; z-index: 10; height: auto;
+      padding: calc(10 * var(--mu) + env(safe-area-inset-top, 0px)) calc(12 * var(--mu)) calc(12 * var(--mu) + env(safe-area-inset-bottom, 0px));
+      display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto 1fr auto;
+      pointer-events: none;
+    }
+    .side > * { pointer-events: auto; }
+    .bio, figcaption, figcaption .t, .nav, .small, .scroll-hint {
+      font-size: calc(13 * var(--mu)); font-weight: 550; line-height: calc(14 * var(--mu)); letter-spacing: 0;
+    }
+    .bio { grid-column: 1 / -1; grid-row: 1; max-width: none; margin: 0; }
+    .nav { grid-column: 1; grid-row: 3; flex-direction: column; align-items: flex-start; gap: 0; align-self: end; }
+    .links { grid-column: 2; grid-row: 3; align-self: end; flex: none; }
+    .links .small { margin: 0; text-align: right; }
+    .links .small a, .links .small span { margin-left: auto; }
+    .contact { margin-top: 0; }
+    .contact .label { display: none; }
+    .name, .fashion { font-weight: 700; }
+    .me, .bio .me-video { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70vw; z-index: 30; }
+    .bio .me-video { width: calc(100vw - 24 * var(--mu)); }
+    .scroll-hint {
+      display: block; position: fixed; z-index: 11; left: 50%; transform: translateX(-50%);
+      bottom: calc(12 * var(--mu) + env(safe-area-inset-bottom, 0px));
+      color: var(--muted);
+      animation: hintPulse 2.2s ease-in-out infinite; pointer-events: none;
+    }
+    .scroll-hint.gone { animation: none; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0s linear 0.4s; }
+    .hscroll { display: block; position: relative; }
+    .grid {
+      position: sticky; top: 0; height: 100vh; height: 100dvh;
+      display: flex; flex-direction: row; align-items: flex-start; gap: calc(12 * var(--mu));
+      padding: var(--track-top, calc(88 * var(--mu))) calc(12 * var(--mu)) 0; width: max-content; will-change: transform;
+    }
+    .col { display: contents; }
+    .tile { flex: 0 0 auto; }
+    .frame { height: calc(357 * var(--mu)); width: auto; }
+    .tile[style*="--o:1"] .frame { width: calc(336 * var(--mu)); height: calc(346 * var(--mu)); aspect-ratio: auto; }
+    .tile[style*="--o:2"] .frame { width: calc(336 * var(--mu)); height: calc(253 * var(--mu)); aspect-ratio: auto; }
+    .tile[style*="--o:3"] .frame { width: calc(336 * var(--mu)); height: calc(343 * var(--mu)); aspect-ratio: auto; }
+    .tile[style*="--o:4"] .frame { width: calc(336 * var(--mu)); height: calc(175 * var(--mu)); aspect-ratio: auto; }
+    figcaption { width: 0; min-width: 100%; margin-top: calc(12 * var(--mu)); }
+    /* Homepage phone type, matching the template (Mobile_Inter: 550, 13 / 14) */
+    /* The template's phone canvas is 360 wide, so its 13 / 14 type is 375/360 larger on ours, with -0.3 tracking */
+    .bio, figcaption, figcaption .t { font-size: calc(13.54 * var(--mu)); font-weight: 550; line-height: calc(14.58 * var(--mu)); letter-spacing: calc(-0.31 * var(--mu)); }
+    .dots { bottom: calc(8 * var(--mu)); }
+    .goup, .sign { display: none; }
+    /* INFO on phones, drawn on the same 375 canvas as the homepage */
+    .info { --u: 1px; --mu: calc(100vw / 360); }
+    .info-top { display: flex; flex-direction: column; padding: calc(10 * var(--mu)) calc(12 * var(--mu)) 0; min-height: 0; }
+    .info-left { display: contents; }
+    .info .nav {
+      position: fixed; z-index: 25; left: 0; right: 0; bottom: 0; background: var(--bg);
+      padding: calc(10 * var(--mu)) calc(12 * var(--mu)) calc(12 * var(--mu) + env(safe-area-inset-bottom, 0px));
+      display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; grid-auto-flow: column; gap: 0;
+    }
+    .info .nav > * { justify-self: start; text-align: left; }
+    .info .nav > :nth-child(n+3) { justify-self: end; text-align: right; }
+    .info-note { display: none !important; }
+    /* Phone INFO type, from the template's phone specs (375 canvas) */
+    .info-bio { font-size: calc(13 * var(--mu)); font-weight: 400; line-height: calc(14 * var(--mu)); letter-spacing: calc(-0.4 * var(--mu)); }
+    .info-mid, .info-note, .love-cap { font-size: calc(12 * var(--mu)); font-weight: 500; line-height: calc(14 * var(--mu)); letter-spacing: calc(-0.3 * var(--mu)); }
+    .info-mid > p:first-child, .info-links .small, .info .nav {
+      font-size: calc(13 * var(--mu)); font-weight: 480; line-height: calc(14 * var(--mu)); letter-spacing: calc(-0.6 * var(--mu));
+    }
+    .info-mid > p:first-child { text-transform: uppercase; }
+    .info-mid h3 { font-size: calc(13 * var(--mu)); font-weight: 580; line-height: calc(13 * var(--mu)); letter-spacing: calc(-0.6 * var(--mu)); }
+    /* Bottom bar links, from the template's phone Small Titles spec */
+    .info .nav, .side .nav, .side .small { font-size: calc(13 * var(--mu)); font-weight: 500; line-height: calc(13 * var(--mu)); letter-spacing: calc(-0.6 * var(--mu)); }
+    .info-bio { order: 1; max-width: none; margin: 0; }
+    .info-bio p { margin: 0 0 calc(10 * var(--mu)); }
+    .info-photo { order: 2; }
+    .info-mid { order: 3; padding-top: calc(22 * var(--mu)); }
+    .info-mid h3 { margin: calc(16 * var(--mu)) 0 0; }
+    .info-mid p + p { margin-top: calc(8 * var(--mu)); }
+    .info-mid .two { column-gap: calc(12 * var(--mu)); }
+    .info-skills { order: 4; margin-top: calc(16 * var(--mu)); max-width: none; font-size: calc(12 * var(--mu)); line-height: calc(14 * var(--mu)); letter-spacing: calc(-0.3 * var(--mu)); }
+    .info-skills h3 { font-size: calc(13 * var(--mu)); font-weight: 480; line-height: calc(14 * var(--mu)); letter-spacing: calc(-0.6 * var(--mu)); }
+    .info-links { order: 5; grid-template-columns: 50% auto; margin-top: calc(22 * var(--mu)); }
+    .marquee { padding: 0; }
+    .info-top + .marquee { margin-top: calc(70 * var(--mu)); }
+    .marquee.extra { display: block; }
+    .marquee.rev .marquee-track { animation-name: marqueeRev; }
+    .info-slot { display: none; }
+    .hv-img { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90vw; z-index: 30; }
+    .hv-t { font-weight: 700; }
+    .hv-t.on { background: #E5FF00; color: #000000; }
+    .hv-t.on + .hv-img { opacity: 1; visibility: visible; transition: opacity 0.15s ease; }
+    .rw { font-weight: 700; }
+    .rimg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70vw; z-index: 30; }
+    .info-photo { position: relative; top: auto !important; right: auto; left: auto !important; height: auto; width: auto; margin: calc(14 * var(--mu)) 0 0; aspect-ratio: 5 / 6; cursor: auto; touch-action: auto; }
+    .info-note { order: 5; margin-top: calc(22 * var(--mu)); padding: 0; max-width: none; }
+    .marquee-track span { font-size: calc(16 * var(--mu)); font-weight: 480; line-height: calc(17 * var(--mu)); letter-spacing: calc(-0.6 * var(--mu)); }
+    /* Things she loves: one per screen, swipe sideways */
+    .loves {
+      display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+      gap: calc(12 * var(--mu)); padding: 0 calc(12 * var(--mu)) calc(80 * var(--mu));
+      margin-top: calc(14 * var(--mu)); scrollbar-width: none;
+    }
+    .loves::-webkit-scrollbar { display: none; }
+    .love-item { flex: 0 0 calc(100vw - 24 * var(--mu)); scroll-snap-align: center; }
+    .love { aspect-ratio: 4 / 5; }
+    .love-cap { display: block; margin-top: calc(12 * var(--mu)); }
+    .love-cap .t2 { color: var(--muted); }
+  }
+
+</style>
+</head>
+<body>
+<div class="page" id="top">
+
+  <aside class="side">
+    <nav class="nav" aria-label="Main">
+      <button type="button" id="infoBtn" aria-expanded="false" aria-controls="info">Info</button>
+      <a href="https://shrin-roym.com/" target="_blank" rel="noopener">Apparel</a>
+      <a href="https://drive.google.com/file/d/1_RReoEcfpWw8kHrpOY6_ot2mFG-YOgYb/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+    </nav>
+
+    <p class="bio"><span class="name" tabindex="0">Shrin</span><img class="me me-photo" src="images/home/shrin-photo.png" alt="Shrin reading a printed publication at an exhibition"> Roymoulik<br>is a product builder blurring the line between material and digital. Six plus years in <span class="fashion" tabindex="0">fashion</span><video class="me me-video" src="images/home/fashion.mp4" muted loop playsinline preload="auto" aria-label="Fashion work in motion"></video>, now on screen.</p>
+
+    <div class="links">
+    <p class="small">
+      <a href="https://www.linkedin.com/in/shrinroymoulik/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://www.instagram.com/shrinroym/" target="_blank" rel="noopener">Instagram</a>
+    </p>
+
+    <p class="small contact">
+      <span class="label">Contact</span>
+      <a href="mailto:shrinroym@outlook.com" id="emailLink" aria-live="polite">Email</a>
+    </p>
+    </div>
+  </aside>
+
+  <div class="hscroll">
+  <main class="grid" id="work" aria-label="Selected work">
+    <div class="col">
+
+      <figure class="tile" style="--o:2">
+        <a href="aera.html">
+          <div class="frame" style="--r:3/2; --tile:var(--tile-c)"><div class="ph">Aera Activewear hero image</div></div>
+        </a>
+        <figcaption>
+          <a href="aera.html"><span class="t">Aera Activewear</span></a><br>
+          Brand and Product <span class="ld" aria-hidden="true"></span> 2026
+        </figcaption>
+      </figure>
+
+      <figure class="tile" style="--o:3">
+        <div class="frame" style="--r:6/7; --tile:var(--tile-a)"><div class="ph">Facebook Marketplace image</div></div>
+        <figcaption>
+          <span class="t">Facebook Marketplace</span><br>
+          UX Research and Design <span class="ld" aria-hidden="true"></span> 12 weeks
+        </figcaption>
+      </figure>
+
+    </div>
+    <div class="col">
+
+      <figure class="tile" style="--o:1">
+        <div class="frame" style="--r:10/7; --tile:var(--tile-b)"><div class="ph">Circuvo hero image</div></div>
+        <figcaption>
+          <span class="t">Circuvo</span><br>
+          Circular Economy Marketplace <span class="ld" aria-hidden="true"></span> 2026<br>
+          <span class="g"><a href="https://conference.productbc.ca/agenda#build-different" target="_blank" rel="noopener">Product BC Buildathon 2026</a></span>
+        </figcaption>
+      </figure>
+
+      <figure class="tile" style="--o:4">
+        <a href="https://shrin-roym.com/flowing-rhythm-textures" target="_blank" rel="noopener">
+          <div class="frame" style="--r:3/2; --tile:var(--tile-d)"><div class="ph">Flowing Rhythm image</div></div>
+        </a>
+        <figcaption>
+          <a href="https://shrin-roym.com/flowing-rhythm-textures" target="_blank" rel="noopener"><span class="t">Flowing Rhythm</span></a><br>
+          Textile Research and Editorial <span class="ld" aria-hidden="true"></span> 2024<br>
+          <span class="g">WGSN Featured Designer</span>
+        </figcaption>
+      </figure>
+
+    </div>
+    <a class="sign" href="#top" aria-label="Back to top"><img src="images/fingerprint.png" alt=""></a>
+  </main>
+  </div>
+  <div class="scroll-hint" aria-hidden="true">*scroll*</div>
+</div>
+
+<section class="info" id="info" aria-label="About Shrin" aria-hidden="true">
+  <div class="info-top">
+    <div class="info-left">
+      <nav class="nav" aria-label="Info page">
+        <button type="button" id="closeInfo">Home</button>
+        <span class="here">Info</span>
+        <a href="https://shrin-roym.com/" target="_blank" rel="noopener">Apparel</a>
+        <a href="https://drive.google.com/file/d/1_RReoEcfpWw8kHrpOY6_ot2mFG-YOgYb/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+      </nav>
+      <div class="info-bio">
+        <p>I <span class="soft">design</span> and <span class="soft">build</span> for humans, whether they’re <span class="rw" tabindex="0">wearing</span><img class="rimg" src="images/info/wearing.jpg" alt="A model wearing a fringed jacket designed by Shrin"> my work or tapping through it.</p>
+        <p>6+ years as an apparel designer taught me to own a product end to end, from first sketch to factory floor, with deep <span class="soft">empathy</span> for bodies, behaviours, and needs. Now I bring that same ownership to digital products: I research, design and build, taking ideas all the way to a live website.</p>
+      </div>
+      <div class="info-links">
+        <p class="small"><span class="label">Contact</span><a href="mailto:shrinroym@outlook.com">Email</a></p>
+        <p class="small"><span class="label">Follow</span><a href="https://www.instagram.com/shrinroym/" target="_blank" rel="noopener">Instagram</a><a href="https://www.linkedin.com/in/shrinroymoulik/" target="_blank" rel="noopener">LinkedIn</a></p>
+      </div>
+    </div>
+
+    <div class="info-mid">
+      <p>Currently based in Vancouver, Canada</p>
+      <h3>Education</h3>
+      <p>Emily Carr University of Art and Design (2025)<br>Certificate in UX/UI Design</p>
+      <p>RMIT University (2018 to 2020)<br>MA Fashion Design</p>
+      <p>National Institute of Fashion Technology, Mumbai (2011 to 2015)<br>BA Fashion Design</p>
+      <h3><a href="https://shrin-roym.com/awards" target="_blank" rel="noopener">Awards</a></h3>
+      <p>2nd Place, Product BC Buildathon 2026<br>
+      <span class="soft"><a href="https://conference.productbc.ca/agenda#build-different" target="_blank" rel="noopener">Circuvo at UBC Conference</a></span></p>
+      <p><span class="hv"><span class="hv-t" tabindex="0">2nd Place, ID International Emerging Designer Awards 2020</span><img class="hv-img" src="images/info/id-awards-2020.webp" alt="Shrin’s collection at the iD International Emerging Designer Awards"></span><br>
+      <span class="soft"><a href="https://www.youtube.com/watch?v=VDdZ-RaYl2w&amp;t=2653s" target="_blank" rel="noopener">Video by iD Dunedin Fashion</a><br>
+      <a href="https://thelastfashionbible.com/2020/08/10/winners-2020-id-international-emerging-designer-awards/" target="_blank" rel="noopener">Article in The Last Fashion Bible</a><br>
+      <a href="https://www.fashionz.co.nz/2020-id-international-emerging-design-awards-winners-announced/" target="_blank" rel="noopener">Article in FNZ</a></span></p>
+      <p>Finalist, VAMFF National Graduate Showcase 2020<br>
+      <span class="soft"><a href="https://fashionjournal.com.au/fashion/here-are-the-finalists-for-the-2020-vamff-national-graduate-showcase/" target="_blank" rel="noopener">Finalists announced in Fashion Journal</a><br>
+      <a href="https://fashionjournal.com.au/fashion/shrinvanti-roys-graduate-collection-explores-rhythm-and-repetition-through-textiles/" target="_blank" rel="noopener">Collection feature in Fashion Journal</a></span></p>
+      <div class="two">
+        <div><h3><a href="https://shrin-roym.com/press" target="_blank" rel="noopener">Press</a></h3><p><a href="https://shrin-roym.com/wgsn-features" target="_blank" rel="noopener">WGSN Feature</a><br>
+        <a href="https://614mag.com/ISSUE-1" target="_blank" rel="noopener">614 Magazine, BLESSED</a><br>
+        <a href="https://www.theage.com.au/culture/art-and-design/will-the-pandemic-reshape-fashion-graduates-embrace-a-new-look-normal-20200727-p55fw0.html" target="_blank" rel="noopener">The Age Australia</a><br>
+        <a href="https://www.odt.co.nz/lifestyle/fashion/id-fashion/fashion-absentia-id-award-winners-announced" target="_blank" rel="noopener">Otago Daily Times</a><br>
+        <a href="https://afs.rmit.fashion/2019/masters/srinvanti-roy" target="_blank" rel="noopener">MA Fashion, RMIT</a></p></div>
+        <div><h3><a href="https://shrin-roym.com/exhibitions-1" target="_blank" rel="noopener">Exhibitions</a></h3><p><a href="https://shrin-roym.com/split-personality" target="_blank" rel="noopener">Split Personality</a><br>
+        <a href="https://shrin-roym.com/foot-square" target="_blank" rel="noopener">Foot Square</a><br>
+        <a href="https://shrin-roym.com/arbitrary-reference" target="_blank" rel="noopener">Arbitrary Reference</a><br>
+        <a href="https://shrin-roym.com/home" target="_blank" rel="noopener">Home</a><br>
+        <a href="https://shrin-roym.com/made-by-many" target="_blank" rel="noopener">Made by Many</a></p></div>
+      </div>
+      <div class="two">
+        <details class="xp"><summary><h3>Skills</h3></summary><p>User research<br>UX/UI design<br>Information architecture<br>Prototyping and testing<br>Front end build with AI</p></details>
+        <details class="xp"><summary><h3>Tools</h3></summary><p>Figma<br>Claude and Claude Code<br>Miro<br>Tally Forms<br>Adobe Creative Suite</p></details>
+      </div>
+    </div>
+
+    <div class="info-slot" aria-hidden="true">[move image here]</div>
+    <div class="info-photo" tabindex="0" role="img" aria-label="Portrait. Drag to move it, or use the arrow keys.">
+      <!-- Portrait slideshow: replace each placeholder with an <img> using the file name shown -->
+      <div class="pslide on" data-file="images/info/portrait-1.jpg" style="background:var(--tile-c)"><div class="ph">portrait-1.jpg</div></div>
+      <div class="pslide" data-file="images/info/portrait-2.jpg" style="background:var(--tile-b)"><div class="ph">portrait-2.jpg</div></div>
+      <div class="pslide" data-file="images/info/portrait-3.jpg" style="background:var(--tile-d)"><div class="ph">portrait-3.jpg</div></div>
+      <div class="pslide" data-file="images/info/portrait-4.jpg" style="background:var(--tile-a)"><div class="ph">portrait-4.jpg</div></div>
+    </div>
+
+    <p class="info-note">I bridge physical and digital, bringing a tactile understanding of form and fit into intuitive interfaces. My belief? Design should be functional, beautiful, and so considerate of its users that it just works. Making things by hand taught me that. Cutting a pattern, draping fabric or fitting a sample puts me in a kind of flow where the next step reveals itself, and I feel the same thing when I build an interface: the best screens, like the best garments, feel simple until you look closely at how they are made. This site is my proof. I designed it, wrote it and built it myself, from the first sketch to the live page you are reading now.</p>
+  </div>
+
+  <div class="marquee" aria-hidden="true"><div class="marquee-track"><span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span></div></div>
+  <div class="marquee extra rev" aria-hidden="true"><div class="marquee-track" style="animation-delay:-7s"><span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span></div></div>
+  <div class="marquee extra" aria-hidden="true"><div class="marquee-track" style="animation-delay:-14s"><span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span></div></div>
+  <div class="marquee extra rev" aria-hidden="true"><div class="marquee-track" style="animation-delay:-21s"><span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span></div></div>
+  <div class="marquee extra" aria-hidden="true"><div class="marquee-track" style="animation-delay:-28s"><span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span></div></div>
+
+  <div class="loves">
+    <figure class="love-item">
+      <div class="love" style="--tile:var(--tile-a)"><div class="ph">Something she loves</div></div>
+      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    </figure>
+    <figure class="love-item">
+      <div class="love" style="--tile:var(--tile-b)"><div class="ph">Something she loves</div></div>
+      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    </figure>
+    <figure class="love-item">
+      <div class="love" style="--tile:var(--tile-c)"><div class="ph">Something she loves</div></div>
+      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    </figure>
+    <figure class="love-item">
+      <div class="love" style="--tile:var(--tile-d)"><div class="ph">Something she loves</div></div>
+      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    </figure>
+    <figure class="love-item">
+      <div class="love" style="--tile:var(--tile-a)"><div class="ph">Something she loves</div></div>
+      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    </figure>
+    <figure class="love-item">
+      <div class="love" style="--tile:var(--tile-b)"><div class="ph">Something she loves</div></div>
+      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    </figure>
+    <figure class="love-item">
+      <div class="love" style="--tile:var(--tile-c)"><div class="ph">Something she loves</div></div>
+      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    </figure>
+    <figure class="love-item">
+      <div class="love" style="--tile:var(--tile-d)"><div class="ph">Something she loves</div></div>
+      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    </figure>
+    <figure class="love-item">
+      <div class="love" style="--tile:var(--tile-a)"><div class="ph">Something she loves</div></div>
+      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    </figure>
+    <figure class="love-item">
+      <div class="love" style="--tile:var(--tile-b)"><div class="ph">Something she loves</div></div>
+      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<script>
+  // Carousel: dots pick an image, tapping the image moves to the next one
+  document.querySelectorAll('[data-carousel]').forEach(function (c) {
+    var slides = c.querySelectorAll('.slide');
+    var dots = c.querySelectorAll('.dot');
+    var i = 0;
+    function go(n) {
+      slides[i].classList.remove('on'); dots[i].classList.remove('on'); dots[i].removeAttribute('aria-current');
+      i = (n + slides.length) % slides.length;
+      slides[i].classList.add('on'); dots[i].classList.add('on'); dots[i].setAttribute('aria-current', 'true');
+    }
+    dots.forEach(function (d, n) { d.addEventListener('click', function (e) { e.stopPropagation(); go(n); }); });
+    c.addEventListener('click', function () { go(i + 1); });
+  });
+
+  // Scroll prompt fades away once someone starts scrolling
+  var hint = document.querySelector('.scroll-hint');
+  function hintCheck() { if (window.scrollY > 40) { hint.classList.add('gone'); window.removeEventListener('scroll', hintCheck); } }
+  window.addEventListener('scroll', hintCheck, { passive: true });
+
+  // Hover words in the bio: photo on the name, video on fashion
+  var bioEl = document.querySelector('.bio');
+  var nameEl = document.querySelector('.name');
+  var fashionEl = document.querySelector('.fashion');
+  var vid = document.querySelector('.me-video');
+  function playVid() { try { vid.currentTime = 0; var pr = vid.play(); if (pr) pr.catch(function () {}); } catch (e) {} }
+  function stopVid() { vid.pause(); }
+  nameEl.addEventListener('click', function () { bioEl.classList.remove('show-video'); stopVid(); bioEl.classList.toggle('show-photo'); });
+  nameEl.addEventListener('blur', function () { bioEl.classList.remove('show-photo'); });
+  fashionEl.addEventListener('mouseenter', playVid);
+  fashionEl.addEventListener('mouseleave', stopVid);
+  fashionEl.addEventListener('focus', playVid);
+  fashionEl.addEventListener('click', function () {
+    bioEl.classList.remove('show-photo');
+    var on = bioEl.classList.toggle('show-video');
+    on ? playVid() : stopVid();
+  });
+  fashionEl.addEventListener('blur', function () { bioEl.classList.remove('show-video'); stopVid(); });
+
+  // Email: copy the address and confirm, fall back to the email app
+  var emailLink = document.getElementById('emailLink');
+  emailLink.addEventListener('click', function (e) {
+    if (!navigator.clipboard || !navigator.clipboard.writeText) return;
+    e.preventDefault();
+    navigator.clipboard.writeText('shrinroym@outlook.com').then(function () {
+      emailLink.textContent = 'Copied';
+      setTimeout(function () { emailLink.textContent = 'Email'; }, 1600);
+    }).catch(function () { window.location.href = emailLink.href; });
+  });
+
+  // Phones: scrolling down moves the projects sideways
+  var mq = window.matchMedia('(max-width: 820px)');
+  var hs = document.querySelector('.hscroll');
+  var track = document.getElementById('work');
+  var dist = 0;
+  function hsScroll() {
+    if (!mq.matches) return;
+    var y = Math.min(Math.max(window.scrollY - hs.offsetTop, 0), dist);
+    track.style.transform = 'translateX(' + (-y) + 'px)';
+  }
+  function hsMeasure() {
+    if (!mq.matches) { hs.style.height = ''; track.style.transform = ''; track.style.removeProperty('--track-top'); return; }
+    var bioBox = document.querySelector('.bio').getBoundingClientRect();
+    track.style.setProperty('--track-top', Math.round(bioBox.bottom + 35 * window.innerWidth / 360) + 'px');
+    dist = Math.max(0, track.scrollWidth - window.innerWidth);
+    hs.style.height = (window.innerHeight + dist) + 'px';
+    hsScroll();
+  }
+  window.addEventListener('scroll', hsScroll, { passive: true });
+  window.addEventListener('resize', hsMeasure);
+  window.addEventListener('load', hsMeasure);
+  if (mq.addEventListener) mq.addEventListener('change', hsMeasure); else mq.addListener(hsMeasure);
+  hsMeasure();
+
+  // Highlight hint: sweep the two hover words whenever someone scrolls, up or down
+  (function () {
+    var b = document.querySelector('.bio');
+    var busy = false, lastY = window.scrollY;
+    function play() {
+      busy = true;
+      b.classList.add('hinting');
+      setTimeout(function () { b.classList.remove('hinting'); busy = false; lastY = window.scrollY; }, 2300);
+    }
+    function hintOnScroll() {
+      if (Math.abs(window.scrollY - lastY) < 20 || busy) return;
+      lastY = window.scrollY;
+      play();
+    }
+    // Highlight plays while scrolling, on every device
+    window.addEventListener('scroll', hintOnScroll, { passive: true });
+  })();
+
+  // Bio intro: split into words, group them by line, and stagger each line
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var bio = document.querySelector('.bio');
+    bio.style.visibility = 'hidden';
+    var done = false;
+    function run() {
+      if (done) return; done = true;
+      var words = [];
+      Array.prototype.slice.call(bio.childNodes).forEach(function (n) {
+        if (n.nodeType === 3) {
+          var frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(function (part) {
+            if (!part) return;
+            if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+            var s = document.createElement('span'); s.className = 'w'; s.textContent = part;
+            frag.appendChild(s); words.push(s);
+          });
+          bio.replaceChild(frag, n);
+        } else if (n.classList && (n.classList.contains('name') || n.classList.contains('fashion'))) {
+          var w = document.createElement('span'); w.className = 'w';
+          bio.replaceChild(w, n); w.appendChild(n); words.push(w);
+        }
+      });
+      var rows = [];
+      words.forEach(function (w) { var r = Math.round(w.offsetTop / 6); if (rows.indexOf(r) < 0) rows.push(r); });
+      rows.sort(function (a, b) { return a - b; });
+      words.forEach(function (w) { w.style.animationDelay = (0.2 + rows.indexOf(Math.round(w.offsetTop / 6)) * 0.17) + 's'; });
+      bio.classList.add('intro');
+      bio.style.visibility = '';
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
+    setTimeout(run, 1200);
+  })();
+
+  // Bio appears line by line when the page opens
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var bio = document.querySelector('.bio');
+    var words = [];
+    Array.prototype.slice.call(bio.childNodes).forEach(function (n) {
+      if (n.nodeType === 3) {
+        var frag = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach(function (part) {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+          var s = document.createElement('span'); s.className = 'w'; s.textContent = part;
+          frag.appendChild(s); words.push(s);
+        });
+        bio.replaceChild(frag, n);
+      } else if (n.classList && (n.classList.contains('name') || n.classList.contains('fashion'))) {
+        words.push(n);
+      }
+    });
+    var lines = [];
+    words.forEach(function (w) {
+      var t = w.getBoundingClientRect().top;
+      var i = -1;
+      for (var k = 0; k < lines.length; k++) { if (Math.abs(lines[k] - t) < 6) { i = k; break; } }
+      if (i === -1) { lines.push(t); i = lines.length - 1; }
+      w.style.animation = 'lineIn 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) ' + (0.15 + i * 0.09) + 's both';
+      w.addEventListener('animationend', function clear(e) {
+        if (e.animationName !== 'lineIn') return;
+        w.style.animation = ''; w.removeEventListener('animationend', clear);
+      });
+    });
+  })();
+
+  // INFO: the portrait can be dragged around the page on laptops and desktops
+  (function () {
+    var ph = document.querySelector('.info-photo');
+    var box = document.querySelector('.info-top');
+    var small = window.matchMedia('(max-width: 820px)');
+    var drag = null;
+    function place(x, y) { ph.style.left = x + 'px'; ph.style.top = y + 'px'; ph.style.right = 'auto'; }
+    ph.addEventListener('pointerdown', function (e) {
+      if (small.matches) return;
+      var r = ph.getBoundingClientRect();
+      drag = { dx: e.clientX - r.left, dy: e.clientY - r.top };
+      ph.setPointerCapture(e.pointerId);
+      ph.classList.add('dragging');
+      e.preventDefault();
+    });
+    ph.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      var b = box.getBoundingClientRect();
+      place(e.clientX - b.left - drag.dx, e.clientY - b.top - drag.dy);
+    });
+    function end() { drag = null; ph.classList.remove('dragging'); }
+    ph.addEventListener('pointerup', end);
+    ph.addEventListener('pointercancel', end);
+    ph.addEventListener('keydown', function (e) {
+      if (small.matches) return;
+      var step = e.shiftKey ? 40 : 10, dx = 0, dy = 0;
+      if (e.key === 'ArrowLeft') dx = -step; else if (e.key === 'ArrowRight') dx = step;
+      else if (e.key === 'ArrowUp') dy = -step; else if (e.key === 'ArrowDown') dy = step; else return;
+      e.preventDefault();
+      var r = ph.getBoundingClientRect(), b = box.getBoundingClientRect();
+      place(r.left - b.left + dx, r.top - b.top + dy);
+    });
+  })();
+
+  // INFO hover words: tap to show or hide on phones
+  document.querySelectorAll('.rw').forEach(function (w) {
+    var media = w.nextElementSibling;
+    var isVid = media && media.tagName === 'VIDEO';
+    function play() { if (!isVid) return; try { media.currentTime = 0; var pr = media.play(); if (pr) pr.catch(function () {}); } catch (e) {} }
+    function stop() { if (isVid) media.pause(); }
+    w.addEventListener('mouseenter', play);
+    w.addEventListener('mouseleave', function () { if (!w.classList.contains('on')) stop(); });
+    w.addEventListener('focus', play);
+    w.addEventListener('click', function () { var on = w.classList.toggle('on'); on ? play() : stop(); });
+    w.addEventListener('blur', function () { w.classList.remove('on'); stop(); });
+  });
+
+  // INFO: tap the award line on phones to show or hide its clip
+  document.querySelectorAll('.hv-t').forEach(function (t) {
+    t.addEventListener('click', function () { t.classList.toggle('on'); });
+    t.addEventListener('blur', function () { t.classList.remove('on'); });
+  });
+
+  // INFO: sweep the highlight over its hover words while the page scrolls
+  (function () {
+    var info = document.getElementById('info');
+    var busy = false, lastY = 0;
+    info.addEventListener('scroll', function () {
+      if (busy || Math.abs(info.scrollTop - lastY) < 20) return;
+      lastY = info.scrollTop; busy = true;
+      info.classList.add('hinting');
+      setTimeout(function () { info.classList.remove('hinting'); busy = false; lastY = info.scrollTop; }, 2300);
+    }, { passive: true });
+  })();
+
+  // INFO: the portrait cycles through four images in the same block, like frames of a film
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var slides = document.querySelectorAll('.pslide');
+    var photo = document.querySelector('.info-photo');
+    var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+    var over = false;
+    photo.addEventListener('mouseenter', function () { over = true; });
+    photo.addEventListener('mouseleave', function () { over = false; });
+    var i = 0;
+    function show(n) { slides[i].classList.remove('on'); i = n; slides[i].classList.add('on'); }
+    setInterval(function () {
+      if (!document.getElementById('info').classList.contains('open')) return;
+      // Desktop: only while the cursor is over the portrait. Phones: always.
+      if (fine.matches && !over) return;
+      show((i + 1) % slides.length);
+    }, 1200);
+  })();
+
+  // Info panel
+  var info = document.getElementById('info');
+  var infoBtn = document.getElementById('infoBtn');
+  var closeBtn = document.getElementById('closeInfo');
+  function setInfo(open) {
+    info.classList.toggle('open', open);
+    info.setAttribute('aria-hidden', String(!open));
+    infoBtn.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+    (open ? closeBtn : infoBtn).focus();
+  }
+  infoBtn.addEventListener('click', function () { setInfo(true); });
+  closeBtn.addEventListener('click', function () {
+    setInfo(false);
+    if (location.hash === '#info') history.replaceState(null, '', location.pathname + location.search);
+  });
+  // Other pages link here with #info to land on INFO directly
+  function infoFromHash() { if (location.hash === '#info') setInfo(true); }
+  window.addEventListener('hashchange', infoFromHash);
+  infoFromHash();
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && info.classList.contains('open')) setInfo(false);
+  });
+</script>
+</body>
+</html>

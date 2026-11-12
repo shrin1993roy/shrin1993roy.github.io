@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aera Activewear, Shrin Roymoulik</title>
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+
+/* ── RESET ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+/* ── SCALE ──
+   Desktop: 1 unit = 100vw / 1400
+   Phone:   1 unit = 100vw / 360
+   We use CSS custom property + clamp to avoid the tiny-text issue:
+   actual px = canvas-px × (100vw / 1400), floored at a minimum so
+   it never gets microscopic on small desktop windows.
+*/
+:root {
+  --s: calc(100vw / 1400);       /* scale factor */
+  --ink:  #000000;
+  --grey: #8c8c8c;
+  --rule: #e8e8e8;
+  --bg:   #ffffff;
+  --neon: #E5FF00;
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── TYPE SCALE (canvas px → fluid) ── */
+.t-nav   { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; }
+.t-title { font-size: max(20px, calc(28 * var(--s))); line-height: max(22px, calc(29 * var(--s))); font-weight: 450; letter-spacing: -0.8px; text-transform: uppercase; }
+.t-body  { font-size: max(12px, calc(14 * var(--s))); line-height: max(15px, calc(16 * var(--s))); font-weight: 500; letter-spacing: -0.3px; }
+.t-small { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; }
+.t-head  { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 560; letter-spacing: -0.6px; text-transform: uppercase; }
+
+/* ── TOP BAR ── */
+.top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: max(16px, calc(22 * var(--s))) max(20px, calc(32 * var(--s)));
+  background: var(--bg);
+}
+
+.top-bar-left {
+  display: flex;
+  gap: max(16px, calc(24 * var(--s)));
+  align-items: baseline;
+}
+
+.top-bar-left a,
+.top-bar-right a {
+  font-size: max(11px, calc(13 * var(--s)));
+  line-height: max(13px, calc(14 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.6px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink);
+  transition: color 0.15s;
+}
+
+.top-bar-left a.dim { color: var(--grey); }
+.top-bar-left a:hover,
+.top-bar-right a:hover { color: var(--grey); }
+
+.top-bar-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+/* ── PAGE WRAPPER ── */
+.page {
+  padding-top: max(48px, calc(64 * var(--s))); /* clear fixed top bar */
+}
+
+/* ── HERO ── */
+.hero {
+  display: grid;
+  grid-template-columns: 42% 1fr;
+  padding: max(48px, calc(96 * var(--s))) max(20px, calc(32 * var(--s))) max(32px, calc(48 * var(--s)));
+  gap: max(24px, calc(40 * var(--s)));
+  align-items: start;
+}
+
+.hero-left {}
+
+.hero-title {
+  font-size: max(20px, calc(28 * var(--s)));
+  line-height: max(22px, calc(29 * var(--s)));
+  font-weight: 450;
+  letter-spacing: -0.8px;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: max(10px, calc(14 * var(--s)));
+}
+
+.hero-sub {
+  font-size: max(11px, calc(13 * var(--s)));
+  line-height: max(13px, calc(14 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.6px;
+  color: var(--grey);
+  display: flex;
+  align-items: center;
+  gap: max(8px, calc(12 * var(--s)));
+}
+
+.ld {
+  display: inline-block;
+  width: max(20px, calc(28 * var(--s)));
+  height: 1px;
+  background: var(--grey);
+  flex-shrink: 0;
+}
+
+.hero-right {}
+
+.hero-summary {
+  /* Same style as the homepage bio */
+  font-size: max(14px, calc(18 * var(--s)));
+  line-height: max(14px, calc(18 * var(--s)));
+  font-weight: 450;
+  letter-spacing: calc(-0.6 * var(--s));
+  color: var(--ink);
+  max-width: calc(692 * var(--s));
+}
+
+/* ── FACTS ROW ── */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 0 max(20px, calc(32 * var(--s)));
+}
+
+.fact {
+  padding: max(14px, calc(20 * var(--s))) max(12px, calc(16 * var(--s)));
+}
+
+.fact-label {
+  font-size: max(10px, calc(11 * var(--s)));
+  font-weight: 560;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-bottom: max(5px, calc(7 * var(--s)));
+}
+
+.fact-value {
+  font-size: max(11px, calc(13 * var(--s)));
+  line-height: max(14px, calc(16 * var(--s)));
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  color: var(--ink);
+}
+
+.hi {
+  background: var(--neon);
+  padding: 1px 3px;
+}
+
+/* ── SECTION NAV BAR ── */
+.section-nav {
+  display: flex;
+  /* stays in place under the top bar once you scroll past it */
+  position: sticky;
+  top: var(--bar-h, 0px);
+  z-index: 150;
+  background: var(--bg);
+  /* same left edge as the page, so CHALLENGE lines up with the content below */
+  gap: max(32px, calc(44 * var(--s)));
+  padding: max(12px, calc(16 * var(--s))) max(20px, calc(32 * var(--s)));
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.section-nav::-webkit-scrollbar { display: none; }
+
+.section-nav a {
+  font-size: max(11px, calc(13 * var(--s)));
+  line-height: max(13px, calc(14 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.6px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--grey);
+  padding: 0;
+  white-space: nowrap;
+  transition: color 0.15s, background-color 0.15s;
+  flex-shrink: 0;
+}
+
+/* Open section: black on neon. Others: grey, neon on hover */
+.section-nav a:hover,
+.section-nav a:focus-visible,
+.section-nav a.active { color: #000000; background: var(--neon); }
+
+/* ── SECTION WRAPPER ── */
+.section {
+  padding: max(40px, calc(64 * var(--s))) max(20px, calc(32 * var(--s)));
+}
+
+/* ── TEXT + IMAGE PAIRS ── */
+.block {
+  margin-bottom: max(32px, calc(48 * var(--s)));
+}
+
+.block-label {
+  /* Section headings: one step between the 28px title and the 13px nav */
+  font-size: max(16px, calc(20 * var(--s)));
+  line-height: max(18px, calc(21 * var(--s)));
+  font-weight: 450;
+  letter-spacing: -0.6px;
+  text-transform: uppercase;
+  color: var(--ink);
+  /* same as the space from the section nav down to this label */
+  margin-bottom: calc(max(40px, calc(64 * var(--s))) + max(12px, calc(16 * var(--s))));
+}
+
+.block-text {
+  font-size: max(12px, calc(14 * var(--s)));
+  line-height: max(18px, calc(20 * var(--s)));
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  color: var(--grey);
+  max-width: max(320px, calc(560 * var(--s)));
+  margin-bottom: max(24px, calc(36 * var(--s)));
+}
+
+.block-text strong { color: var(--ink); font-weight: 600; }
+
+/* ── IMAGE ROWS ── */
+.img-row {
+  display: grid;
+  gap: max(4px, calc(6 * var(--s)));
+  margin-bottom: max(4px, calc(6 * var(--s)));
+}
+
+.img-row.two   { grid-template-columns: 1fr 1fr; }
+.img-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.img-row.large-small { grid-template-columns: 60% 1fr; }
+.img-row.small-large { grid-template-columns: 1fr 60%; }
+
+.img-box {
+  background: #ece9e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.img-ph {
+  font-size: max(10px, calc(11 * var(--s)));
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--grey);
+  text-align: center;
+  padding: 16px;
+}
+
+.h-portrait { aspect-ratio: 9/16; }
+.h-landscape { aspect-ratio: 16/9; }
+.h-square { aspect-ratio: 1/1; }
+.h-tall   { aspect-ratio: 2/3; }
+.h-phone  { aspect-ratio: 9/19; }
+
+.img-caption {
+  font-size: max(10px, calc(12 * var(--s)));
+  line-height: max(14px, calc(16 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.3px;
+  color: var(--grey);
+  margin-top: max(5px, calc(7 * var(--s)));
+}
+
+/* ── GAPS GRID ── */
+.gaps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin: max(20px, calc(28 * var(--s))) 0;
+}
+
+.gap-card {
+  background: #f7f6f4;
+  padding: max(16px, calc(22 * var(--s))) max(14px, calc(18 * var(--s)));
+}
+
+.gap-card h4 {
+  font-size: max(11px, calc(13 * var(--s)));
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--ink);
+  margin-bottom: max(6px, calc(8 * var(--s)));
+}
+
+.gap-card p {
+  font-size: max(11px, calc(13 * var(--s)));
+  line-height: max(16px, calc(19 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.3px;
+  color: var(--grey);
+}
+
+/* ── DECISIONS ── */
+.decisions { margin: max(16px, calc(20 * var(--s))) 0; }
+
+.decision {
+  display: grid;
+  grid-template-columns: max(130px, calc(180 * var(--s))) 1fr;
+  gap: max(20px, calc(32 * var(--s)));
+  padding: max(14px, calc(18 * var(--s))) 0;
+  align-items: start;
+}
+
+
+.decision-label {
+  font-size: max(11px, calc(13 * var(--s)));
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  color: var(--ink);
+}
+
+.decision-desc {
+  font-size: max(11px, calc(13 * var(--s)));
+  line-height: max(17px, calc(19 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.3px;
+  color: var(--grey);
+}
+
+/* ── FEEDBACK TABLE ── */
+.feedback { margin: max(16px, calc(20 * var(--s))) 0; }
+
+.feedback-row {
+  display: grid;
+  grid-template-columns: max(130px, calc(180 * var(--s))) max(50px, calc(64 * var(--s))) 1fr;
+  gap: max(16px, calc(20 * var(--s)));
+  padding: max(12px, calc(16 * var(--s))) 0;
+  align-items: start;
+}
+
+
+.f-topic { font-size: max(11px, calc(13 * var(--s))); font-weight: 500; letter-spacing: -0.3px; color: var(--ink); }
+.f-tag   { font-size: max(10px, calc(11 * var(--s))); font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; color: var(--grey); padding-top: 2px; }
+.f-tag.hi-p { color: var(--ink); }
+.f-desc  { font-size: max(11px, calc(13 * var(--s))); line-height: max(17px, calc(19 * var(--s))); font-weight: 480; letter-spacing: -0.3px; color: var(--grey); }
+
+/* ── PROTOTYPE LINK ── */
+.proto-link {
+  display: inline-block;
+  font-size: max(11px, calc(13 * var(--s)));
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 1px;
+  margin-bottom: max(24px, calc(32 * var(--s)));
+  transition: opacity 0.15s;
+}
+
+.proto-link:hover { opacity: 0.4; }
+
+/* ── FOOTER ── */
+.footer {
+  padding: max(28px, calc(40 * var(--s))) max(20px, calc(32 * var(--s)));
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.footer-left a {
+  font-size: max(11px, calc(13 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.6px;
+  text-transform: uppercase;
+  color: var(--grey);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer-left a:hover { color: var(--ink); }
+
+.go-up-mark {
+  width: max(40px, calc(64 * var(--s)));
+  cursor: pointer;
+  position: relative;
+  display: block;
+}
+
+.go-up-mark img { width: 100%; height: auto; display: block; transition: opacity 0.2s ease; }
+
+.go-up-mark .go-up-text {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  align-items: flex-end;
+  white-space: nowrap;
+  font-size: max(11px, calc(13 * var(--s)));
+  line-height: max(13px, calc(14 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.6px;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.go-up-mark:hover img { opacity: 0; }
+.go-up-mark:hover .go-up-text { display: flex; }
+
+
+/* ── MEDIA PLACEHOLDERS (filled when real assets arrive) ── */
+.media { background: #ece9e6; width: 100%; }
+.media video, .media img { width: 100%; height: auto; display: block; }
+.media.is-empty.r-video { aspect-ratio: 16/9; }
+.media.is-empty.r-shot  { aspect-ratio: 16/10; }
+
+.cap {
+  font-size: max(11px, calc(13 * var(--s)));
+  line-height: max(13px, calc(14 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.6px;
+  color: var(--grey);
+  margin-top: max(6px, calc(8 * var(--s)));
+}
+.pad-x { padding-left: max(20px, calc(32 * var(--s))); padding-right: max(20px, calc(32 * var(--s))); }
+
+.hero-media { margin-top: max(32px, calc(48 * var(--s))); }
+.hero-media .pair {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: max(4px, calc(6 * var(--s)));
+  margin-top: max(24px, calc(32 * var(--s)));
+  margin-bottom: max(32px, calc(48 * var(--s)));
+}
+
+/* ── CHALLENGE ── */
+.sub-head {
+  font-size: max(11px, calc(13 * var(--s)));
+  line-height: max(13px, calc(14 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.6px;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: max(10px, calc(14 * var(--s)));
+}
+.block-text + .block-text { margin-top: calc(-1 * max(12px, calc(20 * var(--s)))); }
+
+.split {
+  display: grid;
+  grid-template-columns: 65fr 35fr;
+  gap: max(24px, calc(40 * var(--s)));
+  align-items: start;
+  margin: max(16px, calc(24 * var(--s))) 0 max(48px, calc(72 * var(--s)));
+}
+.split-text .block-text { margin-bottom: 0; }
+
+.opps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: max(6px, calc(8 * var(--s)));
+  margin-bottom: max(48px, calc(72 * var(--s)));
+}
+.opp {
+  color: #282120;
+  padding: max(18px, calc(24 * var(--s))) max(16px, calc(20 * var(--s))) max(28px, calc(40 * var(--s)));
+  min-height: max(180px, calc(240 * var(--s)));
+  border: 1px solid transparent;
+}
+.opp-n {
+  font-size: max(11px, calc(13 * var(--s)));
+  line-height: max(13px, calc(14 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.6px;
+  margin-bottom: max(28px, calc(48 * var(--s)));
+}
+.opp h3 {
+  font-size: max(11px, calc(13 * var(--s)));
+  line-height: max(13px, calc(14 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.6px;
+  text-transform: uppercase;
+  margin-bottom: max(8px, calc(10 * var(--s)));
+}
+.opp p {
+  font-size: max(12px, calc(14 * var(--s)));
+  line-height: max(15px, calc(16 * var(--s)));
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+.opp.c1 { background: #AB9D94; }
+.opp.c2 { background: #EAE6E3; }
+.opp.c3 { background: #F1E1DE; }
+.opp.c4 { background: #FFFFFF; border-color: #EAE6E3; }
+
+@media (max-width: 820px) {
+  .hero-media .pair { grid-template-columns: 1fr; }
+  .pad-x { padding-left: max(12px, calc(12 * var(--s))); padding-right: max(12px, calc(12 * var(--s))); }
+  .split { grid-template-columns: 1fr; }
+  .duo { grid-template-columns: 1fr; }
+  .hero-summary { max-width: none; font-size: calc(13.54 * var(--s)); line-height: calc(14.58 * var(--s)); font-weight: 550; letter-spacing: calc(-0.31 * var(--s)); }
+  /* Phone: title 18, section headings 15, nav 13 */
+  .block-label { font-size: max(14px, calc(15 * var(--s))); line-height: max(15px, calc(16 * var(--s))); }
+  .section-nav { padding: max(12px, calc(16 * var(--s))) max(12px, calc(12 * var(--s))); }
+  .block-label { margin-bottom: calc(max(28px, calc(32 * var(--s))) + max(12px, calc(16 * var(--s)))); }
+  .opps { grid-template-columns: 1fr 1fr; }
+  .opp { min-height: 0; }
+  .opp-n { margin-bottom: max(16px, calc(20 * var(--s))); }
+}
+
+
+/* ── RESEARCH ── */
+.split.r60 { grid-template-columns: 60fr 40fr; margin-top: 0; }
+.split.r60 .media.is-empty { aspect-ratio: 4/3; }
+.split-text .block { margin-bottom: max(24px, calc(36 * var(--s))); }
+.split-text .block:last-child { margin-bottom: 0; }
+.split-text .block-text { margin-bottom: max(12px, calc(16 * var(--s))); }
+.split-text .block-text:last-child { margin-bottom: 0; }
+.split-text .block-text + .block-text { margin-top: 0; }
+.opps.three { grid-template-columns: repeat(3, 1fr); }
+
+.bench-intro { margin-bottom: max(28px, calc(40 * var(--s))); }
+.brands {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: max(16px, calc(24 * var(--s)));
+  row-gap: max(32px, calc(48 * var(--s)));
+  margin-bottom: max(64px, calc(112 * var(--s)));
+}
+.brand-name {
+  font-size: max(18px, calc(22 * var(--s)));
+  line-height: max(20px, calc(24 * var(--s)));
+  font-weight: 450;
+  letter-spacing: -0.6px;
+  color: var(--ink);
+  margin-bottom: max(8px, calc(10 * var(--s)));
+}
+.brand-note {
+  font-size: max(11px, calc(13 * var(--s)));
+  line-height: max(13px, calc(14 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.6px;
+  color: var(--grey);
+  max-width: max(180px, calc(240 * var(--s)));
+}
+
+.statement {
+  font-size: max(18px, calc(24 * var(--s)));
+  line-height: max(21px, calc(27 * var(--s)));
+  font-weight: 450;
+  letter-spacing: -0.6px;
+  color: var(--ink);
+  max-width: max(320px, calc(820 * var(--s)));
+  margin-left: 42%;
+  margin-bottom: max(64px, calc(112 * var(--s)));
+}
+
+.pair2 {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: max(6px, calc(8 * var(--s)));
+  margin-bottom: max(20px, calc(28 * var(--s)));
+}
+.pair2 .media.is-empty { aspect-ratio: 4/3; }
+
+@media (max-width: 820px) {
+  .split.r60 { grid-template-columns: 1fr; }
+  .opps.three { grid-template-columns: 1fr; }
+  .brands { grid-template-columns: 1fr 1fr; }
+  .statement { margin-left: 0; }
+  .pair2 { grid-template-columns: 1fr; }
+}
+
+
+/* ── DESIGN + PROTOTYPE ── */
+.block-text strong { color: var(--ink); }
+.decisions { margin: 0 0 max(48px, calc(72 * var(--s))); }
+.decision { padding: max(12px, calc(16 * var(--s))) 0; }
+.decision-desc { max-width: max(320px, calc(560 * var(--s))); }
+.media.is-empty.r-screen { aspect-ratio: 16/10; }
+.shots { margin-top: max(32px, calc(48 * var(--s))); }
+.shots figure { margin-bottom: max(24px, calc(32 * var(--s))); }
+.shots .pair2 { margin-bottom: 0; }
+.shots .sub-head { margin-top: max(16px, calc(24 * var(--s))); }
+
+
+/* ── FEEDBACK / BEYOND / OUTCOME ── */
+.feedback { margin: 0; }
+.feedback-row { padding: max(12px, calc(16 * var(--s))) 0; }
+.f-desc { max-width: max(320px, calc(560 * var(--s))); }
+.status { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; color: var(--grey); margin-bottom: max(32px, calc(48 * var(--s))); }
+.status b { font-weight: 560; color: var(--ink); text-transform: uppercase; margin-right: 0.4em; }
+.final { margin-top: max(48px, calc(72 * var(--s))); }
+
+
+/* ── EXPANDABLE PAIR (The brief / The problem), like Skills and Tools on INFO ── */
+.duo {
+  display: grid;
+  grid-template-columns: 42% 1fr;
+  gap: max(24px, calc(40 * var(--s)));
+  align-items: start;
+  margin-bottom: max(48px, calc(72 * var(--s)));
+}
+.xp summary { list-style: none; cursor: pointer; width: fit-content; }
+.xp summary::-webkit-details-marker { display: none; }
+.xp summary .sub-head { display: inline; margin: 0; transition: background-color 0.15s ease; }
+.xp summary::after {
+  content: "+"; display: inline-block; margin-left: 0.35em;
+  font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s)));
+  font-weight: 480; transition: transform 0.2s ease;
+}
+.xp[open] summary::after { content: "\2212"; }
+.xp summary:hover .sub-head, .xp summary:focus-visible .sub-head { background: var(--neon); color: #000; }
+.xp summary:focus-visible { outline: none; }
+.xp-body { margin-top: max(10px, calc(14 * var(--s))); }
+.xp-body .block-text { margin-bottom: max(12px, calc(16 * var(--s))); }
+.xp-body .block-text + .block-text { margin-top: 0; }
+.xp-body .block-text:last-child { margin-bottom: 0; }
+
+
+/* ── COLLAPSIBLE SECTIONS: × when open, + when closed ── */
+.sec-toggle { font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; transition: background-color 0.15s ease; }
+.sec-toggle::after { content: "\2212"; display: inline-block; margin-left: 0.3em; min-width: 0.6em; }
+.sec-toggle[aria-expanded="false"]::after { content: "+"; }
+.sec-toggle:hover, .sec-toggle:focus-visible { background: var(--neon); color: #000; outline: none; }
+.section.is-closed .block-label { margin-bottom: 0; }
+.section.is-closed .sec-body { display: none; }
+
+
+/* ── OPPORTUNITIES: open type grid, no boxes ── */
+.mirror { display: grid; grid-template-columns: 35fr 65fr; gap: max(24px, calc(40 * var(--s))); align-items: start; }
+.finds { display: grid; grid-template-columns: 1fr 1fr; column-gap: max(24px, calc(40 * var(--s))); row-gap: max(36px, calc(56 * var(--s))); }
+.find-n { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; color: var(--grey); margin-bottom: max(14px, calc(20 * var(--s))); }
+.find-t { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; color: var(--ink); margin-bottom: max(8px, calc(10 * var(--s))); }
+.find-p { font-size: max(12px, calc(14 * var(--s))); line-height: max(15px, calc(16 * var(--s))); font-weight: 500; letter-spacing: -0.3px; color: var(--grey); }
+@media (max-width: 820px) {
+  .mirror { grid-template-columns: 1fr; }
+  .finds { grid-template-columns: 1fr; row-gap: max(24px, calc(28 * var(--s))); }
+}
+
+.research-board { margin-bottom: max(48px, calc(72 * var(--s))); }
+/* Screen names above the five screens: same columns and gap as the image, same style as 01, 02 */
+.screen-names { display: grid; grid-template-columns: repeat(5, 1fr); column-gap: max(4px, calc(8 * var(--s))); margin-bottom: max(10px, calc(14 * var(--s))); }
+.screen-names span { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; color: var(--grey); }
+@media (max-width: 820px) { .screen-names span { font-size: 9px; line-height: 10px; letter-spacing: -0.2px; } }
+.finds.row3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 820px) { .finds.row3 { grid-template-columns: 1fr; } }
+
+
+/* ── COMPETITORS: brand names flow inline; hovering one shows its takeaway ── */
+.brand-flow {
+  font-size: max(14px, calc(18 * var(--s)));
+  line-height: max(16px, calc(20 * var(--s)));
+  font-weight: 450;
+  letter-spacing: calc(-0.6 * var(--s));
+  color: var(--ink);
+  margin-top: max(20px, calc(28 * var(--s)));
+}
+.bname { font: inherit; letter-spacing: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; transition: background-color 0.15s ease; }
+.bname:hover, .bname:focus-visible, .bname.on { background: var(--neon); color: #000; outline: none; }
+.bsep { color: var(--grey); }
+.brand-note {
+  font-size: max(11px, calc(13 * var(--s)));
+  line-height: max(13px, calc(14 * var(--s)));
+  font-weight: 480;
+  letter-spacing: -0.6px;
+  color: var(--grey);
+  margin-top: max(12px, calc(16 * var(--s)));
+  min-height: max(13px, calc(14 * var(--s)));
+}
+.opp-line { max-width: none; color: var(--ink); margin-bottom: max(20px, calc(28 * var(--s))); }
+
+.design-dir { max-width: none; color: var(--ink); margin-top: max(16px, calc(24 * var(--s))); margin-bottom: max(48px, calc(72 * var(--s))); }
+
+
+/* ── SCREEN OVERLAY ── */
+.screen-names .sn { font: inherit; font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; color: var(--grey); background: none; border: 0; padding: 0; text-align: left; justify-self: start; cursor: pointer; transition: background-color .15s, color .15s; }
+.screen-names .sn:hover, .screen-names .sn:focus-visible, .screen-names .sn.lit { background: var(--neon); color: #000; outline: none; }
+.screens { position: relative; }
+.hits { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(5, 1fr); column-gap: max(4px, calc(8 * var(--s))); z-index: 2; }
+.hit { background: transparent; border: 0; padding: 0; cursor: zoom-in; }
+.hit:focus-visible { outline: 2px solid #000; outline-offset: 2px; }
+.screen-hint { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; color: var(--grey); margin-top: max(8px, calc(10 * var(--s))); }
+.lb { position: fixed; inset: 0; z-index: 500; background: var(--bg); display: grid; grid-template-columns: 62fr 38fr; gap: max(24px, calc(40 * var(--s))); padding: max(20px, calc(32 * var(--s))); }
+.lb[hidden] { display: none; }
+.lb-img { overflow-y: auto; overscroll-behavior: contain; height: 100%; scrollbar-width: thin; }
+.lb-img img { width: 100%; height: auto; display: block; }
+.lb-side { overflow-y: auto; }
+#lb-text { white-space: pre-line; }
+.lb-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: max(28px, calc(40 * var(--s))); }
+.lb-count, .lb-pri-h { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; color: var(--grey); }
+.lb-pri-h { text-transform: uppercase; color: var(--ink); margin: max(16px, calc(24 * var(--s))) 0 max(6px, calc(8 * var(--s))); }
+.lb-pri-t { color: var(--ink); }
+.lb-btn { font: inherit; font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer; transition: background-color .15s; }
+.lb-btn:hover, .lb-btn:focus-visible { background: var(--neon); color: #000; outline: none; }
+.lb-btn[disabled] { color: var(--grey); background: none; cursor: default; }
+.lb-nav { display: flex; gap: max(20px, calc(28 * var(--s))); margin-top: max(32px, calc(48 * var(--s))); }
+body.lb-open { overflow: hidden; }
+@media (max-width: 820px) {
+  .lb { display: flex; flex-direction: column; overflow-y: auto; gap: 16px; padding: 52px 12px 24px; }
+  .lb-side { order: 1; overflow: visible; }
+  .lb-img { order: 2; overflow: visible; height: auto; }
+  .lb-top { position: fixed; top: 0; left: 0; right: 0; background: var(--bg); padding: 14px 12px; margin: 0; z-index: 2; }
+  .lb-nav { margin-top: 20px; }
+  .screen-hint::after { content: ""; }
+}
+
+
+/* Product overlay: the tabs inside the product page itself are clickable */
+.lb-page { position: relative; }
+.lb-live { position: absolute; left: 0; width: 100%; top: 39.4625%; height: 11.85%; }
+.lb-live[hidden] { display: none; }
+.lb-live img { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .35s ease; pointer-events: none; }
+.lb-live img.on { opacity: 1; }
+.lb-live .tap { position: absolute; top: 8%; height: 20%; background: transparent; border: 0; padding: 0; cursor: pointer; border-radius: 2px; transition: box-shadow .15s; }
+.lb-live .tap:hover, .lb-live .tap:focus-visible { box-shadow: 0 2px 0 0 var(--neon); outline: none; }
+.lb-live.hinting .tap:not(.cur) { animation: tapHint 1.4s ease-in-out 2; }
+@keyframes tapHint { 50% { box-shadow: 0 2px 0 0 var(--neon); } }
+.lb-trytabs { margin-top: max(20px, calc(28 * var(--s))); }
+@media (prefers-reduced-motion: reduce) { .lb-live img { transition: none; } .lb-live.hinting .tap { animation: none; } }
+
+
+/* Instruction under the five screens: centred, black on neon so it is noticed */
+.screen-cta { position: absolute; z-index: 3; left: 20.2%; right: 0; top: calc(66.9% + max(24px, calc(40 * var(--s)))); text-align: center; margin: 0; pointer-events: none; }
+@media (max-width: 820px) { .screen-cta { position: static; margin: 16px 0 4px; } .screens { display: flex; flex-direction: column; } .screens .screen-cta { order: 2; } }
+.screen-cta span { display: inline-block; background: var(--neon); color: #000; text-transform: uppercase; padding: 2px 4px; font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; }
+/* Prototype intro: full width, black */
+#prototype-body .block { max-width: none; }
+#prototype-body .block-text { max-width: none; color: var(--ink); }
+
+.build-reflection { margin-top: max(48px, calc(72 * var(--s))); margin-bottom: 0; }
+
+
+/* ── FEEDBACK: praise and refine ── */
+.praise { font-size: max(14px, calc(18 * var(--s))); line-height: max(16px, calc(20 * var(--s))); font-weight: 450; letter-spacing: calc(-0.6 * var(--s)); color: var(--ink); margin-bottom: max(6px, calc(8 * var(--s))); }
+.pri { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; margin-bottom: max(16px, calc(20 * var(--s))); }
+.pri.h { color: #A11D21; } .pri.m { color: var(--grey); }
+#feedback .mirror { margin-top: max(32px, calc(48 * var(--s))); }
+.fb-group + .fb-group { margin-top: max(36px, calc(48 * var(--s))); }
+.fb-items { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: max(24px, calc(40 * var(--s))); row-gap: 28px; }
+@media (max-width: 820px) { .fb-items { grid-template-columns: 1fr; } }
+
+/* ── PHONE ── */
+@media (max-width: 820px) {
+  :root { --s: calc(100vw / 360); }
+
+  .top-bar { display: none; }
+
+  .hero {
+    grid-template-columns: 1fr;
+    padding: max(24px, calc(28 * var(--s))) max(12px, calc(12 * var(--s))) max(16px, calc(20 * var(--s)));
+    gap: max(16px, calc(20 * var(--s)));
+  }
+
+  .hero-title {
+    font-size: max(16px, calc(18 * var(--s)));
+    line-height: max(18px, calc(19 * var(--s)));
+  }
+
+  .facts { grid-template-columns: 1fr 1fr; margin: 0 max(12px, calc(12 * var(--s))); }
+  .fact  { padding: max(12px, calc(14 * var(--s))) max(10px, calc(10 * var(--s))); }
+
+  .section { padding: max(28px, calc(32 * var(--s))) max(12px, calc(12 * var(--s))); }
+
+  .gaps { grid-template-columns: 1fr; }
+
+  .img-row.two,
+  .img-row.three,
+  .img-row.large-small,
+  .img-row.small-large { grid-template-columns: 1fr; }
+
+  .decision,
+  .feedback-row { grid-template-columns: 1fr; gap: max(6px, calc(6 * var(--s))); }
+
+  .footer { flex-direction: column; gap: max(16px, calc(20 * var(--s))); align-items: flex-start; }
+  body { padding-bottom: max(48px, calc(52 * var(--s))); }
+
+  /* phone bottom nav */
+  .phone-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--bg);
+      padding: max(12px, calc(14 * var(--s))) max(12px, calc(12 * var(--s)));
+    justify-content: space-between;
+    z-index: 300;
+  }
+
+  .phone-nav a {
+    font-size: max(11px, calc(13 * var(--s)));
+    font-weight: 480;
+    letter-spacing: -0.6px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  .phone-nav .dim { color: var(--grey); }
+}
+
+@media (min-width: 821px) {
+  .phone-nav { display: none; }
+}
+
+</style>
+</head>
+<body id="top">
+
+<!-- TOP BAR -->
+<header class="top-bar">
+  <nav class="top-bar-left">
+    <a href="index.html">Home</a>
+    <a href="index.html#info" class="dim">Info</a>
+    <a href="https://shrin-roym.com/" target="_blank" rel="noopener">Apparel</a>
+    <a href="https://drive.google.com/file/d/1_RReoEcfpWw8kHrpOY6_ot2mFG-YOgYb/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+  </nav>
+  <div class="top-bar-right">
+    <a href="mailto:shrinroym@outlook.com">Email</a>
+    <a href="https://www.linkedin.com/in/shrinroymoulik/" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left">
+      <h1 class="hero-title">Aera<br>Activewear</h1>
+      <div class="hero-sub">
+        UX/UI Design, eCommerce <span class="ld"></span> 2026
+      </div>
+    </div>
+    <div class="hero-right">
+      <p class="hero-summary">
+        At FLUI Design Jam ’26, I led a two night redesign of Aera Activewear’s website. A client interview and a review of seven brands shaped a high fidelity eCommerce prototype where brand storytelling, product discovery and fit guidance work together.
+      </p>
+    </div>
+  </div>
+
+  <!-- FACTS ROW -->
+  <div class="facts">
+    <div class="fact">
+      <div class="fact-label">Role</div>
+      <div class="fact-value">UX/UI Design Lead</div>
+    </div>
+    <div class="fact">
+      <div class="fact-label">Timeline</div>
+      <div class="fact-value">2 night hackathon / independent concept build in progress</div>
+    </div>
+    <div class="fact">
+      <div class="fact-label">Tools</div>
+      <div class="fact-value">Figma, Claude and Claude Code, Miro, Tally Forms, Adobe Creative Suite</div>
+    </div>
+    <div class="fact">
+      <div class="fact-label">Outcome</div>
+      <div class="fact-value"><span class="hi">Recognised by judges</span> for brand storytelling, conversational voice and size guide depth.</div>
+    </div>
+  </div>
+
+  <!-- HERO MEDIA: prototype walkthrough video, then two screenshots.
+       To fill: replace a .media.is-empty div's contents with
+       <video controls playsinline preload="metadata" src="images/case-studies/aera/aera-hero-video.mp4"></video>
+       or <img src="images/case-studies/aera/aera-hero-01.jpg" alt="..."> and remove "is-empty". -->
+  <div class="hero-media">
+    <figure>
+      <div class="media is-empty r-video" data-file="aera-hero-video.mp4" role="img" aria-label="Aera Activewear prototype walkthrough"></div>
+      <figcaption class="cap pad-x">Aera Activewear, exploring the redesigned digital experience.</figcaption>
+    </figure>
+    <div class="pair">
+      <figure>
+        <div class="media is-empty r-shot" data-file="aera-hero-01.jpg" role="img" aria-label="Homepage"></div>
+        <figcaption class="cap pad-x">Homepage: bringing Aera's brand identity to life.</figcaption>
+      </figure>
+      <figure>
+        <div class="media is-empty r-shot" data-file="aera-hero-02.jpg" role="img" aria-label="Product experience"></div>
+        <figcaption class="cap pad-x">Product experience: connecting product discovery with fit information.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <!-- SECTION NAV — flush below images -->
+  <nav class="section-nav">
+    <a href="#challenge">Challenge</a>
+    <a href="#research">Research</a>
+    <a href="#design">Design</a>
+    <a href="#prototype">Prototype</a>
+    <a href="#feedback">Feedback</a>
+    <a href="#build">Build</a>
+  </nav>
+
+  <!-- CHALLENGE -->
+  <div class="section" id="challenge">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="challenge-body">Challenge</button></div>
+    <div class="sec-body" id="challenge-body">
+
+    <div class="duo">
+      <details class="xp">
+        <summary><h2 class="sub-head">The brief</h2></summary>
+        <div class="xp-body">
+          <p class="block-text">Aera Activewear wanted to create a more cohesive online presence through a redesigned landing page, improved website navigation and a consistent visual system across its digital experience.</p>
+          <p class="block-text">At this stage, the priority was to strengthen brand awareness, encourage email sign ups and improve website engagement rather than focus solely on immediate sales.</p>
+        </div>
+      </details>
+      <details class="xp">
+        <summary><h2 class="sub-head">The problem</h2></summary>
+        <div class="xp-body">
+          <p class="block-text">The original three page website provided a starting point, but there was an opportunity to make the experience work harder for customers arriving primarily through Instagram and TikTok.</p>
+          <p class="block-text">Product discovery was limited, brand storytelling lacked depth, and essential product information, particularly around AeraForm™ fabric and sizing, needed greater visibility.</p>
+          <p class="block-text">For customers unfamiliar with the brand, this left important questions unanswered before making a purchase decision.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="split">
+      <figure>
+        <div class="media is-empty r-video" data-file="aera-original-site.mp4" role="img" aria-label="Original Aera Activewear website recording"></div>
+        <figcaption class="cap">Original Aera Activewear website, captured during the project.</figcaption>
+      </figure>
+      <div class="split-text">
+        <p class="block-text" style="color: var(--ink);">How might we transform Aera's existing website into a cohesive, brand led shopping experience that makes product discovery easier, communicates the value of AeraForm™ and helps customers feel more confident about fit?</p>
+      </div>
+    </div>
+
+    <!-- Opportunities: text left, findings right at the same width as the video above -->
+    <div class="mirror">
+      <div class="mirror-text">
+        <h2 class="sub-head">Opportunities identified</h2>
+        <p class="block-text" style="margin-bottom:0;">The objective was to strengthen brand storytelling, simplify product discovery, make product and sizing information more accessible and establish a consistent visual system across the website.</p>
+      </div>
+      <div class="finds">
+        <div class="find">
+          <div class="find-n">01</div>
+          <h3 class="find-t">No brand story</h3>
+          <p class="find-p">Customers needed a clearer understanding of who Aera was, what the brand stood for and what made it distinctive.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">02</div>
+          <h3 class="find-t">Limited product education</h3>
+          <p class="find-p">AeraForm™ fabric, a core product differentiator, needed a more prominent role in product communication.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">03</div>
+          <h3 class="find-t">Limited sizing guidance</h3>
+          <p class="find-p">Aera’s products ran smaller than standard sizing. Customers needed clearer fit information to make more informed decisions.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">04</div>
+          <h3 class="find-t">Limited product discovery</h3>
+          <p class="find-p">The existing three page website offered opportunities to improve navigation, collection organisation and product exploration.</p>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- RESEARCH -->
+  <div class="section" id="research">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="research-body">Research</button></div>
+    <div class="sec-body" id="research-body">
+
+    <div class="duo">
+      <details class="xp">
+        <summary><h2 class="sub-head">Introduction</h2></summary>
+        <div class="xp-body">
+          <p class="block-text">I began by understanding the brand, its intended audience and the existing digital experience. A nine question client interview helped clarify the business priorities, customer profile and areas where the website needed to evolve.</p>
+          <p class="block-text">I then reviewed seven activewear brands to identify useful approaches to product discovery, product education, brand storytelling and eCommerce presentation.</p>
+        </div>
+      </details>
+      <details class="xp">
+        <summary><h2 class="sub-head">The customer</h2></summary>
+        <div class="xp-body">
+          <p class="block-text">The intended audience was women aged 25 to 35 looking for elevated activewear that could move between everyday life, yoga, Pilates, walking and other low impact activities.</p>
+          <p class="block-text">The client wanted Aera to feel feminine, approachable and conversational, elevated without being overly luxurious or pretentious.</p>
+          <p class="block-text">Sizing emerged as a key customer concern. Aera’s products ran smaller than standard sizing, making accessible and prominent fit guidance an important design priority.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- FigJam overview screenshot: replace the empty .media with <img src="images/case-studies/aera/aera-research-01.jpg" alt="..."> -->
+    <figure class="research-board">
+      <div class="media is-empty r-video" data-file="aera-research-01.jpg" role="img" aria-label="Aera Activewear FigJam research board"></div>
+    </figure>
+
+    <!-- Research findings: same layout as Opportunities identified -->
+    <div class="mirror" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head">Research findings</h2>
+      </div>
+      <div class="finds row3">
+        <div class="find">
+          <div class="find-n">01</div>
+          <h3 class="find-t">No brand story</h3>
+          <p class="find-p">The website needed to communicate Aera’s identity, brand values and point of difference more clearly.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">02</div>
+          <h3 class="find-t">Limited product education</h3>
+          <p class="find-p">AeraForm™ fabric, a core product differentiator, needed to be explained more effectively throughout the shopping experience.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">03</div>
+          <h3 class="find-t">Limited sizing guidance</h3>
+          <p class="find-p">Customers needed accessible information to understand how Aera’s sizing compared with standard sizing.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Competitor benchmarking: FigJam image left, write up and brands right -->
+    <div class="split">
+      <figure>
+        <div class="media is-empty r-video" data-file="aera-research-competitors.jpg" role="img" aria-label="FigJam competitor benchmarking of seven activewear brands"></div>
+      </figure>
+      <div class="split-text">
+        <h2 class="sub-head">Competitor benchmarking</h2>
+        <p class="block-text">The competitor review explored how seven established activewear brands approached their digital shopping experiences. I looked at their navigation, collection structures, product presentation, visual identity, storytelling and product education.</p>
+        <p class="brand-flow"><button type="button" class="bname" data-note="Cohesive collections and lifestyle led imagery.">Set Active</button><span class="bsep"> / </span><button type="button" class="bname" data-note="Product education and activity based navigation.">lululemon</button><span class="bsep"> / </span><button type="button" class="bname" data-note="Founder storytelling and brand credibility.">Dr. Mer’s Club</button><span class="bsep"> / </span><button type="button" class="bname" data-note="Sizing guidance and membership communication.">Fabletics</button><span class="bsep"> / </span><button type="button" class="bname" data-note="Collection organisation and shop by colour.">Alphalete</button><span class="bsep"> / </span><button type="button" class="bname" data-note="Inclusive sizing and fit guidance.">SKIMS</button><span class="bsep"> / </span><button type="button" class="bname" data-note="Editorial presentation and material storytelling.">Aritzia TNA</button></p>
+        <p class="brand-note" aria-live="polite" data-hint="Hover a brand to see what I took from it.">Hover a brand to see what I took from it.</p>
+      </div>
+    </div>
+
+    <p class="block-text opp-line">The research pointed to an opportunity beyond a visual refresh: create an experience where brand storytelling, product education and fit guidance worked together to make shopping feel more intuitive and informed.</p>
+    <a href="https://www.figma.com/board/oI2orilzMT7AcC4Ww6ISpZ/Aera-Activewear-Figjam-Board?node-id=0-1&amp;t=88H0syeAzO8bewAA-1" target="_blank" rel="noopener" class="proto-link">Explore the full research board ↗</a>
+    </div>
+  </div>
+
+  <!-- DESIGN -->
+  <div class="section" id="design">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="design-body">Design</button></div>
+    <div class="sec-body" id="design-body">
+    <!-- Screens first, full width. Local file: images/case-studies/aera/aera-design-screens.png -->
+    <div class="screen-names"><button type="button" class="sn" data-i="0">Home</button><button type="button" class="sn" data-i="1">About</button><button type="button" class="sn" data-i="2">Shop</button><button type="button" class="sn" data-i="3">Product</button><button type="button" class="sn" data-i="4">Fit</button></div>
+    <figure class="screens">
+      <p class="screen-hint screen-cta"><span>+ Click a screen to view it in detail</span></p>
+      <div class="hits"><button type="button" class="hit" data-i="0" aria-label="View Home screen"></button><button type="button" class="hit" data-i="1" aria-label="View About screen"></button><button type="button" class="hit" data-i="2" aria-label="View Shop screen"></button><button type="button" class="hit" data-i="3" aria-label="View Product screen"></button><button type="button" class="hit" data-i="4" aria-label="View Fit screen"></button></div>
+      <div class="media" style="background:#fff;"><img src="images/case-studies/aera/aera-design-screens.png" alt="Aera Activewear screens: Home, About, Shop, Product and Fit"></div>
+    </figure>
+        <p class="block-text design-dir">The design direction centred on Elevated Minimalism with Function. I wanted Aera to feel feminine, approachable and editorial while making the practical aspects of shopping, discovering products, understanding materials and choosing the right size, easier.</p>
+
+    <!-- Design decisions: same layout as Opportunities identified -->
+    <div class="mirror" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head">Design decisions</h2>
+        <p class="block-text" style="margin-bottom:0;">The result was a design approach that connected brand storytelling with a more structured and informative shopping journey.</p>
+      </div>
+      <div class="finds">
+        <div class="find">
+          <div class="find-n">01</div>
+          <h3 class="find-t">Storytelling first</h3>
+          <p class="find-p">The homepage introduces Aera’s identity and directs customers towards the brand story through a “Discover Our Story” call to action, creating context before product exploration.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">02</div>
+          <h3 class="find-t">Sizing at every step</h3>
+          <p class="find-p">“Find Your Fit” on the homepage makes sizing a visible part of the journey. Product pages include a “View Size Guide” link and a reminder that Aera products run slightly smaller.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">03</div>
+          <h3 class="find-t">Conversational voice</h3>
+          <p class="find-p">The brand voice uses approachable, conversational language such as “Girlies Don’t Gatekeep”, alongside customer reviews and founder storytelling, to create a more personal experience.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">04</div>
+          <h3 class="find-t">AR try on concept</h3>
+          <p class="find-p">An exploratory concept allows customers to upload a photo to visualise how a product might look on their proportions. This remains a prototype concept, not a completed functional feature.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Design system closes the section. Local file: images/case-studies/aera/aera-design-system.png (3816px, lossless) -->
+    <h2 class="sub-head" style="margin-bottom: max(24px, calc(40 * var(--s)));">Design system</h2>
+    <figure>
+      <div class="media"><img src="images/case-studies/aera/aera-design-system.png" alt="Aera Activewear design system: colour story, typography, buttons and icons"></div>
+    </figure>
+    </div>
+  </div>
+
+  <!-- PROTOTYPE -->
+  <div class="section" id="prototype">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="prototype-body">Prototype</button></div>
+    <div class="sec-body" id="prototype-body">
+    <div class="block">
+      <p class="block-text">The high fidelity prototype brings the research and design direction together in a cohesive eCommerce experience.</p>
+      <p class="block-text">The proposed journey combines brand storytelling, structured product discovery and more visible sizing guidance, helping customers understand both the product and the brand before making a purchase decision.</p>
+      <a href="https://www.figma.com/proto/CCypfNDXADZWRdNDS4ooR2/Aera-Activewear-Personal?node-id=3-532&amp;p=f&amp;viewport=186%2C346%2C0.05&amp;t=cQbQDIGWsJH9yBkL-1&amp;scaling=min-zoom&amp;content-scaling=fixed&amp;starting-point-node-id=3%3A532&amp;page-id=0%3A1" target="_blank" rel="noopener" class="proto-link">Explore the interactive prototype ↗</a>
+    </div>
+
+    </div>
+  </div>
+
+  <!-- FEEDBACK -->
+  <div class="section" id="feedback">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="feedback-body">Feedback</button></div>
+    <div class="sec-body" id="feedback-body">
+    <div class="block">
+      <p class="block-text">The judges’ feedback highlighted opportunities to improve the experience further, particularly around accessibility, navigation clarity and the details of the shopping journey.</p>
+    </div>
+    <!-- Feedback: praise left, refinements by priority right -->
+    <div class="mirror">
+      <div class="mirror-text">
+        <h2 class="sub-head">What judges praised</h2>
+        <p class="praise">Brand storytelling</p>
+        <p class="praise">Conversational voice</p>
+        <p class="praise">Sizing guidance</p>
+        <p class="screen-hint">FLUI Design Jam ’26</p>
+      </div>
+      <div>
+        <h2 class="sub-head" style="margin-bottom: max(20px, calc(28 * var(--s)));">What to refine</h2>
+      <div class="fb-group">
+        <div class="pri h">High priority</div>
+        <div class="fb-items">
+          <div class="find"><div class="find-n">01</div><h3 class="find-t">Email pop up timing</h3><p class="find-p">The pop up appeared before customers had an opportunity to explore the experience. A delayed trigger, such as exit intent or a scroll threshold, could make the interaction feel less disruptive.</p></div>
+          <div class="find"><div class="find-n">02</div><h3 class="find-t">Navigation contrast</h3><p class="find-p">White navigation text over lighter hero imagery could reduce readability. A subtle background treatment or improved text contrast would help maintain legibility.</p></div>
+          <div class="find"><div class="find-n">03</div><h3 class="find-t">Body text contrast</h3><p class="find-p">The original body text colour (#AB9D94) did not provide sufficient contrast against white. A darker text colour such as #6B5D54 was identified as a potential improvement.</p></div>
+        </div>
+      </div>
+      <div class="fb-group">
+        <div class="pri m">Medium priority</div>
+        <div class="fb-items">
+          <div class="find"><div class="find-n">04</div><h3 class="find-t">Filter selected states</h3><p class="find-p">Active filters needed clearer visual feedback. A filled selected state, a removal control and a “Clear all” option would make filtering easier to understand.</p></div>
+          <div class="find"><div class="find-n">05</div><h3 class="find-t">Product categories</h3><p class="find-p">A clearer category navigation row (All, Leggings, Shorts, Bras and Accessories) could help customers browse the collection more efficiently.</p></div>
+          <div class="find"><div class="find-n">06</div><h3 class="find-t">Post sizing flow</h3><p class="find-p">The size guide needed a clearer route back into shopping. A “Shop in your size” call to action could connect sizing guidance with relevant product discovery.</p></div>
+        </div>
+      </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- BUILD (section 07, anchor #build). Final section of the case study. -->
+  <div class="section" id="build">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="build-body">Build</button></div>
+    <div class="sec-body" id="build-body">
+    <div class="block" style="margin-bottom:0;">
+      <p class="block-text">I wanted to take the experience beyond the high fidelity prototype and explore how the proposed design could translate into a working digital product.</p>
+      <p class="block-text">I began an independent concept build using Shopify, bringing the information architecture, visual direction and eCommerce experience into an implementation environment.</p>
+    </div>
+    <p class="status" style="margin-bottom: max(8px, calc(10 * var(--s)));"><b>Status</b>Independent concept build on Shopify, viewable by password.</p>
+    <p class="status"><b>Note</b>Non commercial concept for portfolio purposes, not affiliated with Aera Activewear. Brand name, logo and photography belong to Aera Activewear, sourced from @aeraactivewear and the design brief, with some photos sharpened using AI. Headings use Sergio Trendy by Kulokale Studio (personal use licence).</p>
+
+    <!-- Website preview: replace the empty .media with
+         <video controls playsinline preload="metadata" src="images/case-studies/aera/aera-build-walkthrough.mp4"></video>
+         (no autoplay), or one full width screenshot. Add a discreet "Explore the build ↗" link once a URL can be shared. -->
+    <figure>
+      <div class="media is-empty r-video" data-file="aera-build-walkthrough.mp4" role="img" aria-label="Aera Activewear independent Shopify website walkthrough, in progress"></div>
+      <figcaption class="cap">Aera Activewear: from prototype to independent website build.</figcaption>
+    </figure>
+
+    <div class="block build-reflection">
+      <h2 class="sub-head">Reflection</h2>
+      <p class="block-text">This project brought together my experience in apparel and my growing practice in UX/UI design. Understanding garments, materials and fit helped me approach the experience from a product perspective, while UX methods helped translate those considerations into clearer digital interactions.</p>
+      <p class="block-text">It reinforced that good eCommerce design is not just about presenting products beautifully, but helping people understand what they are buying and feel more confident throughout the journey.</p>
+    </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">
+      <a href="mailto:shrinroym@outlook.com">Email</a>
+      <a href="https://www.linkedin.com/in/shrinroymoulik/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+    <a class="go-up-mark" href="#top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">
+      <img src="images/fingerprint.png" alt="">
+      <div class="go-up-text">Go up</div>
+    </a>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+
+<!-- Screen overlay: opens from the five screens in Design -->
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-labelledby="lb-title" hidden>
+  <div class="lb-img" id="lb-scroll">
+    <div class="lb-page" id="lb-page">
+      <img id="lb-pic" alt="">
+      <div class="lb-live" id="lb-live" hidden></div>
+    </div>
+  </div>
+  <div class="lb-side">
+    <div class="lb-top"><span class="lb-count" id="lb-count">01 / 05</span><button type="button" class="lb-btn" id="lb-close">Close ×</button></div>
+    <h2 class="sub-head" id="lb-title">Homepage</h2>
+    <p class="block-text" id="lb-text"></p>
+    <div id="lb-pri"><div class="lb-pri-h">UX priority</div><p class="block-text lb-pri-t" id="lb-pri-t"></p></div>
+    <div class="lb-nav"><button type="button" class="lb-btn" id="lb-prev">← Previous</button><button type="button" class="lb-btn" id="lb-next">Next →</button></div>
+  </div>
+</div>
+
+<!-- PHONE BOTTOM NAV -->
+<nav class="phone-nav">
+  <div style="display:flex;gap:max(16px,calc(20 * var(--s)));">
+    <a href="index.html">Home</a>
+    <a href="index.html#info" class="dim">Info</a>
+  </div>
+  <div style="display:flex;gap:max(16px,calc(20 * var(--s)));">
+    <a href="https://shrin-roym.com/" target="_blank" rel="noopener">Apparel</a>
+    <a href="https://drive.google.com/file/d/1_RReoEcfpWw8kHrpOY6_ot2mFG-YOgYb/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+  </div>
+</nav>
+
+<script>
+const navLinks = document.querySelectorAll('.section-nav a');
+const sections = document.querySelectorAll('.section[id]');
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => {
+        l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id);
+      });
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => obs.observe(s));
+
+// Keep the sticky section nav tucked under the top bar, and stop anchor jumps from hiding headings behind it
+const topBar = document.querySelector('.top-bar');
+const secNav = document.querySelector('.section-nav');
+function setStickyOffsets() {
+  const bar = getComputedStyle(topBar).display === 'none' ? 0 : topBar.offsetHeight;
+  document.documentElement.style.setProperty('--bar-h', bar + 'px');
+  document.documentElement.style.scrollPaddingTop = (bar + secNav.offsetHeight) + 'px';
+}
+window.addEventListener('resize', setStickyOffsets);
+window.addEventListener('load', setStickyOffsets);
+setStickyOffsets();
+
+// Each section can be closed with its own toggle; jumping to a section from the nav reopens it
+document.querySelectorAll('.sec-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!open));
+    btn.closest('.section').classList.toggle('is-closed', open);
+  });
+});
+navLinks.forEach(l => l.addEventListener('click', () => {
+  const sec = document.querySelector(l.getAttribute('href'));
+  if (sec && sec.classList.contains('is-closed')) {
+    sec.classList.remove('is-closed');
+    sec.querySelector('.sec-toggle').setAttribute('aria-expanded', 'true');
+  }
+}));
+// Competitor names: hover or tap to show the takeaway
+(function () {
+  const note = document.querySelector('.brand-note');
+  if (!note) return;
+  const hint = note.dataset.hint;
+  if (window.matchMedia('(hover: none)').matches) { note.textContent = 'Tap a brand to see what I took from it.'; }
+  const reset = () => { note.textContent = window.matchMedia('(hover: none)').matches ? 'Tap a brand to see what I took from it.' : hint; };
+  document.querySelectorAll('.bname').forEach(b => {
+    const show = () => { document.querySelectorAll('.bname').forEach(x => x.classList.toggle('on', x === b)); note.textContent = b.dataset.note; };
+    b.addEventListener('mouseenter', show);
+    b.addEventListener('focus', show);
+    b.addEventListener('click', show);
+    b.addEventListener('mouseleave', () => { b.classList.remove('on'); reset(); });
+  });
+})();
+
+// Screen overlay: click or tap a screen in Design to open it large with its write up
+(function () {
+  const SCREENS = [{"name": "Homepage", "img": "images/case-studies/aera/aera-screen-home.webp", "text": "A lifestyle led homepage introduces Aera\u2019s identity through curated products, brand storytelling and AeraForm\u2122 technology. Dedicated sections highlight product versatility, while fit focused CTAs and user generated content encourage exploration and engagement.\n\nI also experimented with motion through typography, using a gradual disappearing effect as users scroll to introduce movement and create a more dynamic browsing experience.", "pri": "Strengthen brand awareness, communicate product value and simplify product discovery."}, {"name": "About", "img": "images/case-studies/aera/aera-screen-about.webp", "text": "Brand storytelling and founder led content create a more personal connection with customers. Three pillars (Women Owned, Sustainably Made and Canadian Designed) communicate Aera\u2019s values through clear, scannable sections supported by editorial imagery.", "pri": "Build brand trust, communicate values and establish brand differentiation."}, {"name": "Shop", "img": "images/case-studies/aera/aera-screen-shop.webp", "text": "A structured product grid presents imagery, pricing and colour swatches for easy comparison. Dedicated Colour, Size and Fabric filters, alongside sorting options, make browsing more flexible. Colour sorting allows customers to explore available styles through their preferred colourways.", "pri": "Improve product discoverability and simplify collection navigation."}, {"name": "Product", "img": "images/case-studies/aera/aera-screen-product.webp", "text": "Research revealed sizing uncertainty as a key shopping barrier, with 50% of respondents requesting measurement based filtering. The product page addresses this through size selection, fit recommendations, customer reviews and a dedicated size guide.\n\nThree interactive tabs (Features, Materials & Care, and Fit & Sizing) organise essential product information into accessible sections. Click each tab to explore the details.", "pri": "Reduce sizing uncertainty and build purchase confidence."}, {"name": "Fit", "img": "images/case-studies/aera/aera-screen-fit.webp", "text": "Designed to address sizing uncertainty identified during research, this page brings fit guidance into one dedicated destination. A detailed size chart, model measurements and real life fit references help customers make more informed sizing decisions. Step by step measurement guides simplify the process, while customer reviews and community photos provide relatable fit references across different body types.\n\nA dedicated support section offers further assistance when customers need it.", "pri": "Reduce sizing anxiety, improve fit confidence and minimise uncertainty when shopping online."}];
+  const lb = document.getElementById('lb'), pic = document.getElementById('lb-pic'), scroller = document.getElementById('lb-scroll');
+  const title = document.getElementById('lb-title'), text = document.getElementById('lb-text'), pri = document.getElementById('lb-pri'), priT = document.getElementById('lb-pri-t');
+  const count = document.getElementById('lb-count'), prev = document.getElementById('lb-prev'), next = document.getElementById('lb-next'), close = document.getElementById('lb-close');
+  const names = document.querySelectorAll('.screen-names .sn');
+  let cur = 0, opener = null;
+  if (window.matchMedia('(hover: none)').matches) { const h = document.querySelector('.screen-cta span'); if (h) h.textContent = '+ Tap a screen to view it in detail'; }
+  function show(i) {
+    cur = i; const d = SCREENS[i];
+    pic.src = d.img; pic.alt = 'Aera Activewear ' + d.name + ' screen';
+    title.textContent = d.name;
+    text.textContent = d.text || 'Write up to come.';
+    text.style.color = d.text ? '' : 'var(--grey)';
+    pri.hidden = !d.pri; priT.textContent = d.pri;
+    count.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(SCREENS.length).padStart(2, '0');
+    prev.disabled = i === 0; next.disabled = i === SCREENS.length - 1;
+    prev.textContent = i === 0 ? '← Previous' : '← ' + SCREENS[i - 1].name;
+    next.textContent = i === SCREENS.length - 1 ? 'Next →' : SCREENS[i + 1].name + ' →';
+    scroller.scrollTop = 0; lb.scrollTop = 0;
+  }
+  function open(i, from) { opener = from || null; show(i); lb.hidden = false; document.body.classList.add('lb-open'); close.focus(); }
+  function shut() { lb.hidden = true; document.body.classList.remove('lb-open'); if (opener) opener.focus(); }
+  document.querySelectorAll('.hit, .screen-names .sn').forEach(b => b.addEventListener('click', () => open(+b.dataset.i, b)));
+  document.querySelectorAll('.hit').forEach(b => {
+    b.addEventListener('mouseenter', () => names[+b.dataset.i].classList.add('lit'));
+    b.addEventListener('mouseleave', () => names[+b.dataset.i].classList.remove('lit'));
+  });
+  close.addEventListener('click', shut);
+  prev.addEventListener('click', () => { if (cur > 0) show(cur - 1); });
+  next.addEventListener('click', () => { if (cur < SCREENS.length - 1) show(cur + 1); });
+  document.addEventListener('keydown', e => {
+    if (lb.hidden) return;
+    if (e.key === 'Escape') shut();
+    else if (e.key === 'ArrowRight' && cur < SCREENS.length - 1) show(cur + 1);
+    else if (e.key === 'ArrowLeft' && cur > 0) show(cur - 1);
+    else if (e.key === 'Tab') {
+      const f = [...lb.querySelectorAll('button:not([disabled])')]; const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+})();
+
+// Product overlay: click the tabs inside the product page to switch them, like the live site
+(function () {
+  const TABS = ["images/case-studies/aera/aera-product-tab-features.webp", "images/case-studies/aera/aera-product-tab-materials-care.webp", "images/case-studies/aera/aera-product-tab-fit-sizing.webp"];
+  const names = ['Features', 'Materials and care', 'Fit and sizing'];
+  const live = document.getElementById('lb-live'), pic = document.getElementById('lb-pic');
+  TABS.forEach((u, i) => { const im = document.createElement('img'); im.src = u; im.alt = ''; if (i === 0) im.className = 'on'; live.appendChild(im); });
+  [[0.058, 0.066], [0.182, 0.116], [0.356, 0.078]].forEach((p, i) => { const t = document.createElement('button'); t.type = 'button'; t.className = 'tap' + (i === 0 ? ' cur' : ''); t.style.left = (p[0] * 100) + '%'; t.style.width = (p[1] * 100) + '%'; t.setAttribute('aria-label', 'Show the ' + names[i] + ' tab'); t.addEventListener('click', () => pick(i)); live.appendChild(t); });
+  function pick(i) {
+    live.querySelectorAll('img').forEach((im, k) => im.classList.toggle('on', k === i));
+    live.querySelectorAll('.tap').forEach((t, k) => { t.classList.toggle('cur', k === i); t.setAttribute('aria-pressed', String(k === i)); });
+  }
+  // a hint in the write up column, and a short pulse on the tabs when the Product screen opens
+  const side = document.querySelector('.lb-nav'); const hint = document.createElement('p'); hint.className = 'screen-hint lb-trytabs'; hint.hidden = true;
+  hint.textContent = (window.matchMedia('(hover: none)').matches ? 'Tap' : 'Click') + ' the Features, Materials & Care and Fit & Sizing tabs on the page to switch between them.';
+  
+  new MutationObserver(() => {
+    const isProduct = / Product /.test(pic.alt); live.hidden = !isProduct; hint.hidden = !isProduct;
+    if (isProduct) { pick(0); live.classList.remove('hinting'); void live.offsetWidth; live.classList.add('hinting'); }
+  }).observe(pic, { attributes: true, attributeFilter: ['alt'] });
+})();
+</script>
+
+</body>
+</html>
