@@ -689,8 +689,10 @@ body {
 @media (max-width: 820px) { .finds.row3 { grid-template-columns: 1fr; } }
 
 
-/* ── COMPETITORS: brand names flow inline; hovering one shows its takeaway ── */
+/* ── COMPETITORS: brand logos in a row, used exactly as supplied (never recoloured); hovering one shows its takeaway ── */
 .brand-flow {
+  display: flex; flex-wrap: wrap; align-items: flex-end;
+  gap: max(16px, calc(20 * var(--s))) max(14px, calc(20 * var(--s)));
   font-size: max(14px, calc(18 * var(--s)));
   line-height: max(16px, calc(20 * var(--s)));
   font-weight: 450;
@@ -698,9 +700,15 @@ body {
   color: var(--ink);
   margin-top: max(20px, calc(28 * var(--s)));
 }
-.bname { font: inherit; letter-spacing: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; transition: background-color 0.15s ease; }
-.bname:hover, .bname:focus-visible, .bname.on { background: var(--neon); color: #000; outline: none; }
-.bsep { color: var(--grey); }
+.bname { background: none; border: 0; padding: 0 0 max(4px, calc(6 * var(--s))); cursor: pointer; display: inline-flex; align-items: flex-end; box-shadow: inset 0 -3px 0 transparent; transition: box-shadow 0.15s ease; }
+.bname img { display: block; height: max(calc(var(--lh) * 0.8px), calc(var(--lh) * var(--s))); width: auto; }
+.bname:hover, .bname:focus-visible, .bname.on { box-shadow: inset 0 -3px 0 var(--neon); outline: none; }
+.bbreak { display: none; }
+/* Desktop: logos a little bigger, Alphalete starts the second line. Tablet and phone keep the plain wrap. */
+@media (min-width: 821px) {
+  .bname img { height: calc(var(--lh) * var(--s) * 1.2); }
+  .bbreak { display: block; flex-basis: 100%; height: 0; margin-top: calc(-1 * max(16px, calc(20 * var(--s)))); }
+}
 .brand-note {
   font-size: max(11px, calc(13 * var(--s)));
   line-height: max(13px, calc(14 * var(--s)));
@@ -1056,7 +1064,7 @@ body.lb-open { overflow: hidden; }
       <div class="split-text">
         <h2 class="sub-head">Competitor benchmarking</h2>
         <p class="block-text">The competitor review explored how seven established activewear brands approached their digital shopping experiences. I looked at their navigation, collection structures, product presentation, visual identity, storytelling and product education.</p>
-        <p class="brand-flow"><button type="button" class="bname" data-note="Cohesive collections and lifestyle led imagery.">Set Active</button><span class="bsep"> / </span><button type="button" class="bname" data-note="Product education and activity based navigation.">lululemon</button><span class="bsep"> / </span><button type="button" class="bname" data-note="Founder storytelling and brand credibility.">Dr. Mer’s Club</button><span class="bsep"> / </span><button type="button" class="bname" data-note="Sizing guidance and membership communication.">Fabletics</button><span class="bsep"> / </span><button type="button" class="bname" data-note="Collection organisation and shop by colour.">Alphalete</button><span class="bsep"> / </span><button type="button" class="bname" data-note="Inclusive sizing and fit guidance.">SKIMS</button><span class="bsep"> / </span><button type="button" class="bname" data-note="Editorial presentation and material storytelling.">Aritzia TNA</button></p>
+        <p class="brand-flow"><button type="button" class="bname" data-note="Cohesive collections and lifestyle led imagery."><img src="images/case-studies/aera/logos/logo-set-active.png" alt="Set Active" style="--lh:14"></button><button type="button" class="bname" data-note="Product education and activity based navigation."><img src="images/case-studies/aera/logos/logo-lululemon.png" alt="lululemon" style="--lh:16"></button><button type="button" class="bname" data-note="Founder storytelling and brand credibility."><img src="images/case-studies/aera/logos/logo-dr-mers-club.png" alt="Dr. Mer’s Club" style="--lh:26"></button><button type="button" class="bname" data-note="Sizing guidance and membership communication."><img src="images/case-studies/aera/logos/logo-fabletics.png" alt="Fabletics" style="--lh:28"></button><span class="bbreak" aria-hidden="true"></span><button type="button" class="bname" data-note="Collection organisation and shop by colour."><img src="images/case-studies/aera/logos/logo-alphalete.png" alt="Alphalete" style="--lh:10"></button><button type="button" class="bname" data-note="Inclusive sizing and fit guidance."><img src="images/case-studies/aera/logos/logo-skims.png" alt="SKIMS" style="--lh:15"></button><button type="button" class="bname" data-note="Editorial presentation and material storytelling."><img src="images/case-studies/aera/logos/logo-aritzia-tna.png" alt="Aritzia TNA" style="--lh:14"></button></p>
         <p class="brand-note" aria-live="polite" data-hint="Hover a brand to see what I took from it.">Hover a brand to see what I took from it.</p>
       </div>
     </div>
