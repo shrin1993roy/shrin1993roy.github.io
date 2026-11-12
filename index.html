@@ -269,8 +269,8 @@
   .xp summary { list-style: none; cursor: pointer; width: fit-content; }
   .xp summary::-webkit-details-marker { display: none; }
   .xp summary h3 { display: inline; }
-  .xp summary::after { content: "+"; display: inline-block; margin-left: 0.35em; font-weight: 500; transition: transform 0.2s ease; }
-  .xp[open] summary::after { transform: rotate(45deg); }
+  .xp summary::after { content: "+"; display: inline-block; margin-left: 0.35em; min-width: 0.6em; font-weight: 500; }
+  .xp[open] summary::after { content: "\2212"; } /* same + and − as the Aera section toggles */
   .xp summary:hover h3, .xp summary:focus-visible h3 { background: #E5FF00; color: #000000; }
   .xp p { margin-top: calc(2 * var(--u)); }
   .info-mid .soft { color: var(--muted); }
