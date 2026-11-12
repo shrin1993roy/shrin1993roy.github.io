@@ -123,6 +123,7 @@
     aspect-ratio: var(--r, 4 / 3);
     background: var(--tile, var(--tile-a));
   }
+  .frame > img, .frame > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .ph {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
@@ -514,7 +515,7 @@
 
       <figure class="tile" style="--o:2">
         <a href="aera.html">
-          <div class="frame" style="--r:3/2; --tile:var(--tile-c)"><div class="ph">Aera Activewear hero image</div></div>
+          <div class="frame" style="--r:3/2; --tile:var(--tile-c)"><img src="images/home/tile-aera.jpg" alt="Aera Activewear redesign: back view of a model in a lilac sports bra and black leggings"></div>
         </a>
         <figcaption>
           <a href="aera.html"><span class="t">Aera Activewear</span></a><br>
@@ -523,7 +524,7 @@
       </figure>
 
       <figure class="tile" style="--o:3">
-        <div class="frame" style="--r:6/7; --tile:var(--tile-a)"><div class="ph">Facebook Marketplace image</div></div>
+        <div class="frame" style="--r:6/7; --tile:var(--tile-a)"><img src="images/home/tile-facebook-marketplace.jpg" alt="Facebook Marketplace UX research"></div>
         <figcaption>
           <span class="t">Facebook Marketplace</span><br>
           UX Research and Design <span class="ld" aria-hidden="true"></span> 12 weeks
@@ -534,7 +535,7 @@
     <div class="col">
 
       <figure class="tile" style="--o:1">
-        <div class="frame" style="--r:10/7; --tile:var(--tile-b)"><div class="ph">Circuvo hero image</div></div>
+        <div class="frame" style="--r:10/7; --tile:var(--tile-b)"><video src="images/home/tile-circuvo.mp4" muted loop autoplay playsinline preload="metadata" aria-label="Circuvo, circular economy marketplace"></video></div>
         <figcaption>
           <span class="t">Circuvo</span><br>
           Circular Economy Marketplace <span class="ld" aria-hidden="true"></span> 2026<br>
@@ -544,7 +545,7 @@
 
       <figure class="tile" style="--o:4">
         <a href="https://shrin-roym.com/flowing-rhythm-textures" target="_blank" rel="noopener">
-          <div class="frame" style="--r:3/2; --tile:var(--tile-d)"><div class="ph">Flowing Rhythm image</div></div>
+          <div class="frame" style="--r:3/2; --tile:var(--tile-d)"><img src="images/home/tile-flowing-rhythm.jpg" alt="Flowing Rhythm: two models in printed and textured denim jackets"></div>
         </a>
         <figcaption>
           <a href="https://shrin-roym.com/flowing-rhythm-textures" target="_blank" rel="noopener"><span class="t">Flowing Rhythm</span></a><br>
