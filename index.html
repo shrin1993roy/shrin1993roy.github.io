@@ -80,7 +80,6 @@
     padding: 1.5vw 1.4vw 1.6vw 0;
   }
   .nav { display: flex; gap: calc(12 * var(--u)); font-size: calc(13 * var(--u)); font-weight: 480; line-height: calc(14 * var(--u)); letter-spacing: calc(-0.6 * var(--u)); text-transform: uppercase; }
-  #infoBtn { color: var(--muted); }
   .nav button { text-transform: uppercase; letter-spacing: inherit; line-height: inherit; }
   .bio {
     font-size: calc(18 * var(--u));
@@ -919,17 +918,27 @@
     document.body.style.overflow = open ? 'hidden' : '';
     (open ? closeBtn : infoBtn).focus();
   }
-  infoBtn.addEventListener('click', function () { setInfo(true); });
-  closeBtn.addEventListener('click', function () {
+  // Opening INFO adds #info to the address, so Back returns to HOME and the link can be shared
+  infoBtn.addEventListener('click', function () {
+    history.pushState({ info: true }, '', '#info');
+    setInfo(true);
+  });
+  function closeInfo() {
+    if (history.state && history.state.info) { history.back(); return; } // hashchange closes it
     setInfo(false);
     if (location.hash === '#info') history.replaceState(null, '', location.pathname + location.search);
-  });
-  // Other pages link here with #info to land on INFO directly
-  function infoFromHash() { if (location.hash === '#info') setInfo(true); }
+  }
+  closeBtn.addEventListener('click', closeInfo);
+  // Other pages link here with #info to land on INFO directly; Back and Forward also come through here
+  function infoFromHash() {
+    var want = location.hash === '#info';
+    if (want !== info.classList.contains('open')) setInfo(want);
+  }
   window.addEventListener('hashchange', infoFromHash);
+  window.addEventListener('popstate', infoFromHash);
   infoFromHash();
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && info.classList.contains('open')) setInfo(false);
+    if (e.key === 'Escape' && info.classList.contains('open')) closeInfo();
   });
 </script>
 </body>
