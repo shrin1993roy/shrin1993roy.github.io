@@ -402,7 +402,7 @@ body {
 .footer {
   padding: max(28px, calc(40 * var(--s))) max(20px, calc(32 * var(--s)));
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-end;
 }
 
@@ -425,6 +425,8 @@ body {
 .footer-left a:hover { color: var(--ink); }
 
 .go-up-mark {
+  margin: 0 auto;
+  text-decoration: none;
   width: max(40px, calc(64 * var(--s)));
   cursor: pointer;
   position: relative;
@@ -432,6 +434,7 @@ body {
 }
 
 .go-up-mark img { width: 100%; height: auto; display: block; transition: opacity 0.2s ease; }
+.go-up-arrow { display: none; }
 
 .go-up-mark .go-up-text {
   display: none;
@@ -635,6 +638,16 @@ body {
 .f-desc { max-width: max(320px, calc(560 * var(--s))); }
 .status { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; color: var(--grey); margin-bottom: max(32px, calc(48 * var(--s))); }
 .status b { font-weight: 560; color: var(--ink); text-transform: uppercase; margin-right: 0.4em; }
+.store-pass .pw { color: var(--ink); font-weight: 560; user-select: all; }
+.copy-pw { font: inherit; font-weight: 560; text-transform: uppercase; color: var(--ink); background: none; border: 1px solid var(--ink); border-radius: 999px; padding: 1px 8px; margin-left: 0.4em; cursor: pointer; transition: background-color 0.15s ease; }
+.copy-pw:hover, .copy-pw:focus-visible, .copy-pw.done { background: var(--neon); border-color: var(--neon); outline: none; }
+.pw-group { white-space: nowrap; }
+.next-project { display: flex; justify-content: flex-end; padding: 0 max(12px, calc(32 * var(--s))); margin: max(48px, calc(72 * var(--s))) 0 max(32px, calc(48 * var(--s))); }
+.next-link { display: flex; flex-direction: column; align-items: flex-end; gap: max(4px, calc(6 * var(--s))); text-decoration: none; color: var(--ink); }
+.next-link .np-label { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; color: var(--grey); }
+.next-link .np-title { font-size: max(15px, calc(20 * var(--s))); line-height: max(16px, calc(21 * var(--s))); font-weight: 450; letter-spacing: calc(-0.6 * var(--s)); text-transform: uppercase; transition: background-color 0.15s ease; }
+.next-link:hover .np-title, .next-link:focus-visible .np-title { background: var(--neon); }
+.next-link:focus-visible { outline: none; }
 .final { margin-top: max(48px, calc(72 * var(--s))); }
 
 
@@ -827,6 +840,7 @@ body.lb-open { overflow: hidden; }
   .feedback-row { grid-template-columns: 1fr; gap: max(6px, calc(6 * var(--s))); }
 
   .footer { flex-direction: column; gap: max(16px, calc(20 * var(--s))); align-items: flex-start; }
+  .go-up-mark { margin: 0 auto; align-self: center; }
   body { padding-bottom: max(48px, calc(52 * var(--s))); }
 
   /* phone bottom nav */
@@ -856,6 +870,34 @@ body.lb-open { overflow: hidden; }
   .phone-nav { display: none; }
 }
 
+
+/* ── SECTION NAV ABOVE PHONE SIZE: never scrolls sideways; on tablets it wraps onto a second line ── */
+@media (min-width: 601px) {
+  .section-nav { flex-wrap: wrap; overflow-x: visible; }
+}
+@media (min-width: 601px) and (max-width: 820px) {
+  /* tablet: nav text at its normal reading size instead of the scaled phone canvas, so it fits */
+  .section-nav { column-gap: calc(10 * var(--s)); row-gap: calc(6 * var(--s)); }
+  .section-nav a { font-size: max(13px, calc(7 * var(--s))); line-height: 1.15; }
+}
+
+/* ── PHONE ONLY (600px and below; tablets keep the layout above) ── */
+@media (max-width: 600px) {
+  /* Section nav scrolls sideways on its own; a soft fade on the right shows there is more */
+  .section-nav { overscroll-behavior-x: contain; scroll-padding-inline: max(12px, calc(12 * var(--s))); }
+  .section-nav.more-right { -webkit-mask-image: linear-gradient(to right, #000 82%, transparent); mask-image: linear-gradient(to right, #000 82%, transparent); }
+  /* Wrapped status lines (Password, Note) need more breathing room; password and Copy stay together */
+  .status { line-height: max(17px, calc(18 * var(--s))); }
+  .store-pass { display: flex; flex-wrap: wrap; align-items: center; column-gap: 0.4em; row-gap: 6px; }
+  .store-pass b { margin-right: 0; }
+  .copy-pw { padding: 2px 10px; }
+  /* The fingerprint gives way to a small up arrow above HOME, no underline */
+  .footer, .next-project { padding-left: max(12px, calc(12 * var(--s))); padding-right: max(12px, calc(12 * var(--s))); }
+  .footer { justify-content: flex-start; padding-top: max(8px, calc(8 * var(--s))); padding-bottom: max(16px, calc(16 * var(--s))); }
+  .go-up-mark { margin-left: 0; width: auto; align-self: flex-start; }
+  .go-up-mark img, .go-up-mark .go-up-text { display: none !important; }
+  .go-up-arrow { display: block; font-size: max(18px, calc(18 * var(--s))); line-height: 1; padding: 6px 10px 6px 0; color: var(--ink); text-decoration: none; }
+}
 </style>
 </head>
 <body id="top">
@@ -868,10 +910,6 @@ body.lb-open { overflow: hidden; }
     <a href="https://shrin-roym.com/" target="_blank" rel="noopener">Apparel</a>
     <a href="https://drive.google.com/file/d/1_RReoEcfpWw8kHrpOY6_ot2mFG-YOgYb/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
   </nav>
-  <div class="top-bar-right">
-    <a href="mailto:shrinroym@outlook.com">Email</a>
-    <a href="https://www.linkedin.com/in/shrinroymoulik/" target="_blank" rel="noopener">LinkedIn</a>
-  </div>
 </header>
 
 <div class="page">
@@ -939,7 +977,8 @@ body.lb-open { overflow: hidden; }
     <a href="#design">Design</a>
     <a href="#prototype">Prototype</a>
     <a href="#feedback">Feedback</a>
-    <a href="#build">Build</a>
+    <a href="#build">Shopify Build</a>
+    <a href="#reflection">Reflection</a>
   </nav>
 
   <!-- CHALLENGE -->
@@ -1181,42 +1220,41 @@ body.lb-open { overflow: hidden; }
     </div>
   </div>
 
-  <!-- BUILD (section 07, anchor #build). Final section of the case study. -->
+  <!-- SHOPIFY BUILD (section 07, anchor #build). -->
   <div class="section" id="build">
-    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="build-body">Build</button></div>
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="build-body">Shopify Build</button></div>
     <div class="sec-body" id="build-body">
-    <div class="block" style="margin-bottom:0;">
-      <p class="block-text">I wanted to take the experience beyond the high fidelity prototype and explore how the proposed design could translate into a working digital product.</p>
-      <p class="block-text">I began an independent concept build using Shopify, bringing the information architecture, visual direction and eCommerce experience into an implementation environment.</p>
+    <p class="block-text opp-line">To take the design beyond the prototype, I built it as an independent, non commercial Shopify store for my portfolio, carrying across the information architecture, visual direction and shopping experience.</p>
+    <a href="https://aera-redesign.myshopify.com" target="_blank" rel="noopener" class="proto-link build-link">Explore the concept store ↗</a>
+    <p class="status store-pass" style="margin-bottom: max(8px, calc(10 * var(--s)));"><b>Password</b>to enter the store: <span class="pw-group"><span class="pw">aera-activewear</span> <button type="button" class="copy-pw" data-copy="aera-activewear">Copy</button></span></p>
+    <p class="status"><b>Note</b>Not affiliated with Aera Activewear. Brand name, logo and photos belong to Aera Activewear, sourced from @aeraactivewear and the design brief (some sharpened with AI). Headings use Sergio Trendy by Kulokale Studio, personal use licence.</p>
+
     </div>
-    <p class="status" style="margin-bottom: max(8px, calc(10 * var(--s)));"><b>Status</b>Independent concept build on Shopify, viewable by password.</p>
-    <p class="status"><b>Note</b>Non commercial concept for portfolio purposes, not affiliated with Aera Activewear. Brand name, logo and photography belong to Aera Activewear, sourced from @aeraactivewear and the design brief, with some photos sharpened using AI. Headings use Sergio Trendy by Kulokale Studio (personal use licence).</p>
+  </div>
 
-    <!-- Website preview: replace the empty .media with
-         <video controls playsinline preload="metadata" src="images/case-studies/aera/aera-build-walkthrough.mp4"></video>
-         (no autoplay), or one full width screenshot. Add a discreet "Explore the build ↗" link once a URL can be shared. -->
-    <figure>
-      <div class="media is-empty r-video" data-file="aera-build-walkthrough.mp4" role="img" aria-label="Aera Activewear independent Shopify website walkthrough, in progress"></div>
-      <figcaption class="cap">Aera Activewear: from prototype to independent website build.</figcaption>
-    </figure>
-
-    <div class="block build-reflection">
-      <h2 class="sub-head">Reflection</h2>
-      <p class="block-text">This project brought together my experience in apparel and my growing practice in UX/UI design. Understanding garments, materials and fit helped me approach the experience from a product perspective, while UX methods helped translate those considerations into clearer digital interactions.</p>
-      <p class="block-text">It reinforced that good eCommerce design is not just about presenting products beautifully, but helping people understand what they are buying and feel more confident throughout the journey.</p>
+  <!-- REFLECTION (section 08, anchor #reflection). Closes the case study. -->
+  <div class="section" id="reflection">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="reflection-body">Reflection</button></div>
+    <div class="sec-body" id="reflection-body">
+    <div class="block">
+      <p class="block-text">This project joined my apparel background with my growing practice in UX/UI design. Knowing garments, materials and fit helped me treat Aera as a product, and UX methods turned that knowledge into clearer interactions.</p>
+      <p class="block-text">Two nights left little room for guesswork, so every decision came from the client interview and brand review. The judges&#8217; notes on contrast and pop up timing showed me that readability and pacing build trust too.</p>
+      <p class="block-text">Building the concept store in Shopify showed me how those decisions hold up on a real platform. Most of all, it reinforced that good eCommerce design helps people understand what they are buying and feel confident throughout the journey.</p>
     </div>
     </div>
   </div>
 
+  <!-- NEXT PROJECT: right aligned, points to the Circuvo tile on the homepage until circuvo.html exists -->
+  <div class="next-project">
+    <a href="index.html#circuvo" class="next-link"><span class="np-label">Next project</span><span class="np-title">Circuvo &#8594;</span></a>
+  </div>
+
   <!-- FOOTER -->
   <div class="footer">
-    <div class="footer-left">
-      <a href="mailto:shrinroym@outlook.com">Email</a>
-      <a href="https://www.linkedin.com/in/shrinroymoulik/" target="_blank" rel="noopener">LinkedIn</a>
-    </div>
     <a class="go-up-mark" href="#top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">
       <img src="images/fingerprint.png" alt="">
       <div class="go-up-text">Go up</div>
+      <span class="go-up-arrow" aria-hidden="true">&#8593;</span>
     </a>
     </div>
   </div>
@@ -1263,6 +1301,13 @@ const obs = new IntersectionObserver(entries => {
       navLinks.forEach(l => {
         l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id);
       });
+      // Phone: slide the nav so the open section's link is always in view
+      const act = document.querySelector('.section-nav a.active');
+      const nav = document.querySelector('.section-nav');
+      if (act && nav.scrollWidth > nav.clientWidth) {
+        const left = act.offsetLeft - nav.offsetLeft - parseFloat(getComputedStyle(nav).paddingLeft);
+        nav.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+      }
     }
   });
 }, { rootMargin: '-20% 0px -70% 0px' });
@@ -1279,6 +1324,12 @@ function setStickyOffsets() {
 }
 window.addEventListener('resize', setStickyOffsets);
 window.addEventListener('load', setStickyOffsets);
+// Fade on the right of the section nav only while there is more to scroll to
+function navFade() { secNav.classList.toggle('more-right', secNav.scrollLeft + secNav.clientWidth < secNav.scrollWidth - 4); }
+secNav.addEventListener('scroll', navFade, { passive: true });
+window.addEventListener('resize', navFade);
+window.addEventListener('load', navFade);
+navFade();
 setStickyOffsets();
 
 // Each section can be closed with its own toggle; jumping to a section from the nav reopens it
@@ -1296,6 +1347,14 @@ navLinks.forEach(l => l.addEventListener('click', () => {
     sec.querySelector('.sec-toggle').setAttribute('aria-expanded', 'true');
   }
 }));
+// Store password: one click copies it
+document.querySelectorAll('.copy-pw').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const done = () => { btn.textContent = 'Copied'; btn.classList.add('done'); setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1800); };
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents(btn.parentElement.querySelector('.pw')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); try { document.execCommand('copy'); } catch (e) {} done(); };
+    if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(btn.dataset.copy).then(done, fallback); } else { fallback(); }
+  });
+});
 // Competitor names: hover or tap to show the takeaway
 (function () {
   const note = document.querySelector('.brand-note');
