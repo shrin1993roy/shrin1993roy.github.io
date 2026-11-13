@@ -458,6 +458,9 @@ body {
 .media video, .media img { width: 100%; height: auto; display: block; }
 .media.is-empty.r-video { aspect-ratio: 16/9; }
 .media.is-empty.r-shot  { aspect-ratio: 16/10; }
+/* Full page screenshots that scroll inside their box; the page itself does not scroll while inside */
+.media.scroll-shot { aspect-ratio: 16/10; overflow-y: auto; overscroll-behavior: contain; background: #fff; scrollbar-width: thin; scrollbar-color: var(--grey) transparent; }
+.media.scroll-shot:focus-visible { outline: 2px solid var(--neon); outline-offset: 2px; }
 
 .cap {
   font-size: max(11px, calc(13 * var(--s)));
@@ -919,11 +922,11 @@ body.lb-open { overflow: hidden; }
     </figure>
     <div class="pair">
       <figure>
-        <div class="media is-empty r-shot" data-file="aera-hero-01.jpg" role="img" aria-label="Homepage"></div>
+        <div class="media r-shot scroll-shot" tabindex="0" aria-label="Aera homepage, full page: scroll inside to see it all"><img src="images/case-studies/aera/aera-hero-01.jpg" alt="Full page of the redesigned Aera Activewear homepage" loading="lazy"></div>
         <figcaption class="cap pad-x">Homepage: bringing Aera's brand identity to life.</figcaption>
       </figure>
       <figure>
-        <div class="media is-empty r-shot" data-file="aera-hero-02.jpg" role="img" aria-label="Product experience"></div>
+        <div class="media r-shot scroll-shot" tabindex="0" aria-label="Aera product page, full page: scroll inside to see it all"><img src="images/case-studies/aera/aera-hero-02.jpg" alt="Full page of the redesigned Aera Activewear product page for the Signature Invisible Scrunch Sculpt Leggings" loading="lazy"></div>
         <figcaption class="cap pad-x">Product experience: connecting product discovery with fit information.</figcaption>
       </figure>
     </div>
@@ -964,7 +967,7 @@ body.lb-open { overflow: hidden; }
 
     <div class="split">
       <figure>
-        <div class="media is-empty r-video" data-file="aera-original-site.mp4" role="img" aria-label="Original Aera Activewear website recording"></div>
+        <div class="media r-video"><video controls playsinline preload="metadata" src="images/case-studies/aera/aera-original-site.mp4#t=0.1" aria-label="Screen recording of the original Aera Activewear website"></video></div>
         <figcaption class="cap">Original Aera Activewear website, captured during the project.</figcaption>
       </figure>
       <div class="split-text">
