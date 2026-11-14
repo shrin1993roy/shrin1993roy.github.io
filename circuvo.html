@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Circuvo, Shrin Roymoulik</title>
+<meta name="description" content="Circuvo, a local marketplace where Makers repair, refurbish and upcycle what people no longer use. 2nd prize at the Product BC Buildathon 2026, now live at circuvo.app.">
+<!-- Link preview when the page is shared: images/share/preview.jpg, 1200 by 630 -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shrin Roymoulik">
+<meta property="og:url" content="https://shrin1993roy.github.io/circuvo.html">
+<meta property="og:title" content="Circuvo, Shrin Roymoulik">
+<meta property="og:description" content="Circuvo, a local marketplace where Makers repair, refurbish and upcycle what people no longer use. 2nd prize at the Product BC Buildathon 2026, now live at circuvo.app.">
+<meta property="og:image" content="https://shrin1993roy.github.io/images/share/preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Shrin Roymoulik's fingerprint logo">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=7">
+<style>
+/* Circuvo only: the large number in The problem, at the title size */
+.big-num { font-size: max(20px, calc(28 * var(--s))); line-height: max(22px, calc(29 * var(--s))); font-weight: 450; letter-spacing: -0.8px; color: var(--ink); margin-bottom: max(8px, calc(10 * var(--s))); }
+.split-text .num-note { margin-bottom: max(20px, calc(28 * var(--s))); }
+.media.is-empty.r-board { aspect-ratio: 4/3; }
+.media.is-empty.r-screens { aspect-ratio: 16/7; }
+/* Design: four full length pages side by side, top aligned, same columns and gap as the names and click areas */
+.screen-names.four, .hits.four { grid-template-columns: repeat(4, 1fr); }
+.screens-grid { display: grid; grid-template-columns: repeat(4, 1fr); column-gap: max(4px, calc(8 * var(--s))); align-items: start; }
+/* Homepage capture in the hero media: the screenshot with the live hero video laid over it */
+.shot-wrap { position: relative; }
+/* Research: the FigJam board slightly bigger than the usual 75%, the line beside it narrower */
+@media (min-width: 821px) { .split.board-split { grid-template-columns: 82fr 18fr; } }
+/* Hero: the Circuvo video only, full width inside the page margin, at its own shape (1920 by 1012) */
+.media.framed { border: 1px solid var(--rule); box-sizing: border-box; }
+.hero-single { padding-left: max(20px, calc(32 * var(--s))); padding-right: max(20px, calc(32 * var(--s))); margin-bottom: max(32px, calc(48 * var(--s))); }
+.hero-single .hero-vid video { aspect-ratio: 1920 / 1012; object-fit: cover; }
+@media (max-width: 820px) { .hero-single { padding-left: max(12px, calc(12 * var(--s))); padding-right: max(12px, calc(12 * var(--s))); } }
+.screens-grid img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); box-sizing: border-box; }
+/* Design decisions: two columns, each key form under its decision (Become a Maker at 87.3% so both forms share one scale; each form has a 24px white inset and a 1px light grey frame, Shrin asked for it) */
+.dec-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: max(24px, calc(40 * var(--s))); row-gap: max(36px, calc(56 * var(--s))); }
+.form-shot { display: block; width: 100%; height: auto; margin-top: max(36px, calc(56 * var(--s))); border: 1px solid var(--rule); box-sizing: border-box; }
+@media (max-width: 820px) { .dec-grid { grid-template-columns: 1fr; } }
+/* Testing: what testers said and what changed in the final build. Dots follow the tester order Tony, Asish, Elissa, Jenny, Murtuza */
+.testers { margin-top: max(24px, calc(36 * var(--s))); }
+.tester { margin-bottom: max(12px, calc(16 * var(--s))); }
+.tester-n { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; color: var(--ink); }
+.tester-d { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; color: var(--grey); margin-top: 3px; }
+.heard-list { display: grid; row-gap: max(40px, calc(64 * var(--s))); }
+.heard-row { display: grid; grid-template-columns: 1fr 1fr; column-gap: max(24px, calc(40 * var(--s))); align-items: start; }
+.tally { display: flex; align-items: center; gap: 5px; margin-bottom: max(10px, calc(14 * var(--s))); }
+.tally i { width: 7px; height: 7px; border-radius: 50%; border: 1px solid var(--ink); display: inline-block; }
+.tally i.on { background: var(--ink); }
+.tally span { margin-left: 8px; font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; color: var(--grey); }
+.heard { font-size: max(14px, calc(18 * var(--s))); line-height: max(16px, calc(20 * var(--s))); font-weight: 450; letter-spacing: calc(-0.6 * var(--s)); color: var(--ink); }
+.changed-l { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; color: var(--ink); margin-bottom: max(8px, calc(10 * var(--s))); }
+.heard-row .changed { padding-top: calc(7px + max(10px, calc(14 * var(--s)))); }
+@media (max-width: 820px) { .heard-row { grid-template-columns: 1fr; row-gap: 14px; } .heard-row .changed { padding-top: 0; } }
+.feature { padding-bottom: max(8px, calc(12 * var(--s))); }
+.feature .heard { max-width: max(320px, calc(620 * var(--s))); }
+.evolve { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; column-gap: max(12px, calc(20 * var(--s))); align-items: start; margin-top: max(24px, calc(36 * var(--s))); }
+.evolve .arrow { font-size: max(14px, calc(18 * var(--s))); line-height: 1; color: var(--grey); padding-top: max(20px, calc(26 * var(--s))); }
+.step-q { font-size: max(12px, calc(14 * var(--s))); line-height: max(15px, calc(16 * var(--s))); font-weight: 500; letter-spacing: -0.3px; color: var(--grey); }
+.evolve .step:last-child .step-q { color: var(--ink); }
+@media (max-width: 820px) { .evolve { grid-template-columns: 1fr; row-gap: 12px; } .evolve .arrow { padding-top: 0; transform: rotate(90deg); width: fit-content; } }
+@media (max-width: 820px) { .big-num { font-size: max(16px, calc(18 * var(--s))); line-height: max(18px, calc(19 * var(--s))); } }
+</style>
+</head>
+<body id="top">
+
+<!-- TOP BAR -->
+<header class="top-bar">
+  <nav class="top-bar-left">
+    <a href="index.html">Home</a>
+    <a href="index.html#info">Info</a>
+    <a href="https://shrin-roym.com/" target="_blank" rel="noopener">Apparel</a>
+    <a href="https://drive.google.com/file/d/1_RReoEcfpWw8kHrpOY6_ot2mFG-YOgYb/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+  </nav>
+</header>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left">
+      <h1 class="hero-title">Circuvo</h1>
+      <div class="hero-sub">
+        Product Design, Research, Build <span class="ld"></span> 2026
+      </div>
+    </div>
+    <div class="hero-right">
+      <p class="hero-summary">
+        Repair and upcycling sit outside Canada&#8217;s waste system, which sent 27.5 million tonnes to disposal in 2024. I came up with Circuvo, a local marketplace where Makers repair, refurbish and upcycle what people no longer use, and led a team of four from research to a live site. It won 2nd prize at the <a class="summary-link" href="https://conference.productbc.ca/agenda#build-different" target="_blank" rel="noopener">Product BC Buildathon 2026</a>.
+      </p>
+    </div>
+  </div>
+
+  <!-- FACTS ROW -->
+  <div class="facts">
+    <div class="fact">
+      <div class="fact-label">Role</div>
+      <div class="fact-value">Product Owner / Team Lead / Sole Designer</div>
+    </div>
+    <div class="fact">
+      <div class="fact-label">Timeline</div>
+      <div class="fact-value">Product BC Buildathon, Demo Day on 17 October 2026, still building since</div>
+    </div>
+    <div class="fact">
+      <div class="fact-label">Tools</div>
+      <div class="fact-value">Claude, Claude Code, Vite, React, shadcn/ui, GitHub, Vercel, Tally, Google Forms, FigJam</div>
+    </div>
+    <div class="fact">
+      <div class="fact-label">Outcome</div>
+      <div class="fact-value"><span class="o-long"><span class="hi">2nd prize</span> at Product BC Buildathon Demo Day, then taken forward as a live, responsive site at circuvo.app.</span><span class="o-short"><span class="hi">2nd prize</span>, now live at circuvo.app.</span></div>
+    </div>
+  </div>
+
+  <!-- HERO MEDIA: the Circuvo hero video only -->
+  <div class="hero-media">
+    <div class="hero-single">
+      <!-- The Circuvo hero video only (Shrin, 2026-11-13): high resolution desktop screens get circuvo-hero-4k.mp4 (the 4K original, Circuvo/Website/7219703-uhd_4096_2160_25fps.mp4, H.264 4096 by 2160, 21 MB); everyone else gets circuvo-hero-hd.mp4 (1080p H.264 made from it with avconvert PresetAppleM4V1080pHD, 12.8 MB). circuvo-hero-poster.jpg is the 4K video's own first frame at 2880 wide, shown sharp the moment the page loads until the video takes over.
+           Shared video script (id heroVid / heroVidBtn): muted loop, plays while on screen, pauses off screen, starts paused with reduced motion. -->
+      <div class="media hero-vid"><video id="heroVid" muted loop playsinline preload="none" poster="images/case-studies/circuvo/circuvo-hero-poster.jpg" aria-label="The Circuvo hero video: hands working on an old glass bottle"><source src="images/case-studies/circuvo/circuvo-hero-4k.mp4" type="video/mp4" media="(min-width: 1000px) and (min-resolution: 2dppx)"><source src="images/case-studies/circuvo/circuvo-hero-hd.mp4" type="video/mp4"></video><button type="button" class="vid-toggle" id="heroVidBtn" aria-label="Pause video">Pause</button></div>
+    </div>
+  </div>
+
+  <!-- SECTION NAV -->
+  <nav class="section-nav">
+    <a href="#problem">Problem</a>
+    <a href="#research">Research</a>
+    <a href="#flows">User Flows</a>
+    <a href="#prototype">Prototype</a>
+    <a href="#testing">Testing</a>
+    <a href="#design">Design</a>
+    <a href="#build">Live Build</a>
+    <a href="#reflection">Reflection</a>
+  </nav>
+
+  <!-- THE PROBLEM -->
+  <div class="section" id="problem">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="problem-body">The problem</button></div>
+    <div class="sec-body" id="problem-body">
+
+    <div class="duo">
+      <details class="xp">
+        <summary><h2 class="sub-head">The brief</h2></summary>
+        <div class="xp-body">
+          <p class="block-text">Product BC&#8217;s Buildathon asked teams to research a real problem, write a design brief from the first week of research, and build something people could experience by Demo Day.</p>
+          <p class="block-text">Judges scored a seven minute pitch on problem and validation, solution and design, execution and prototype (the biggest share), viability and communication. Their one question: does the prototype show the solution works?</p>
+        </div>
+      </details>
+      <details class="xp">
+        <summary><h2 class="sub-head">The gap</h2></summary>
+        <div class="xp-body">
+          <p class="block-text">Most of what Canada throws away could be reused, repaired, refurbished or upcycled instead.</p>
+          <p class="block-text">Most things people let go aren&#8217;t broken. In our survey, 47% let items go because they feel outdated, and no one used a repair or upcycling service. Donating is the default.</p>
+          <p class="block-text">Selling as is already has homes (Facebook Marketplace, Kijiji). Getting something fixed or transformed by someone local and trusted does not.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="split">
+      <figure>
+        <!-- FIND: a wide landscape photo (about 16:9) of discarded furniture, clothing and household goods, at a landfill or piled at the curb, most of it clearly not broken.
+             Fill with <img src="images/case-studies/circuvo/circuvo-problem-waste.jpg" alt="..."> and remove "is-empty". -->
+        <div class="media is-empty r-video" data-file="circuvo-problem-waste.jpg"></div>
+        <figcaption class="cap">Furniture, textiles and household goods sent to disposal, much of it still usable.</figcaption>
+      </figure>
+      <div class="split-text">
+        <p class="big-num">27.5 million tonnes</p>
+        <p class="block-text num-note">of waste sent to disposal in Canada in 2024. Less than a quarter was diverted, and that rate has slipped since 2022.</p>
+        <blockquote class="client-quote"><p class="block-text" style="color: var(--ink);">Repair, reuse and upcycling aren&#8217;t counted at all.</p><p class="quote-src">Statistics Canada, 2024</p></blockquote>
+      </div>
+    </div>
+
+    <p class="block-text opp-line">&#8220;How might we connect people with trusted local Makers, so the things they let go are repaired or transformed before they reach disposal?&#8221;</p>
+
+    <!-- Opportunities: vision left, findings right -->
+    <div class="mirror sub-block" style="margin-top: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Opportunities identified</button></h2>
+        <p class="block-text" style="margin-bottom:0;">Our vision: to help build a more circular and sustainable Canada where products stay in use longer, waste is minimized, and repair, reuse and creative transformation become the default before disposal.</p>
+      </div>
+      <div class="finds">
+        <div class="find">
+          <div class="find-n">01</div>
+          <h3 class="find-t">Outdated, not broken</h3>
+          <p class="find-p">Offer upcycling beside repair, not repair alone.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">02</div>
+          <h3 class="find-t">Sentimental value</h3>
+          <p class="find-p">Give owners a way to get their own item back, improved.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">03</div>
+          <h3 class="find-t">Cost and trust</h3>
+          <p class="find-p">Show prices upfront and name the Maker on every piece.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">04</div>
+          <h3 class="find-t">Everything gets thrown out</h3>
+          <p class="find-p">Welcome every category instead of picking one.</p>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- RESEARCH: FigJam board, then Survey, Interview, Competitor benchmarking and Key insights -->
+  <div class="section" id="research">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="research-body">Research</button></div>
+    <div class="sec-body" id="research-body">
+
+    <div class="split r75 board-split" style="margin-top:0;">
+      <figure>
+        <!-- FigJam research board (Shrin, 2026-11-13; "Circuvo Figjam.png", 9001 by 5315). Page copy 2800 wide (about 560 KB); clicking opens the #bz viewer, which loads the full 9001 wide copy (JPEG quality 65, about 3.9 MB) only on open, as on Aera. -->
+        <button type="button" class="board-open" data-large="images/case-studies/circuvo/circuvo-research-board-large.jpg" aria-label="Enlarge the FigJam board"><div class="media" data-file="circuvo-research-board.jpg" style="background:#fff;"><img src="images/case-studies/circuvo/circuvo-research-board.jpg" width="2800" height="1653" alt="Circuvo FigJam research board: deliverables, personas, the survey, interviews, competitors, problem statement and research" loading="lazy"></div></button>
+      </figure>
+      <div class="split-text">
+        <blockquote class="client-quote"><p class="block-text" style="color: var(--ink);">No one we surveyed uses a repair or upcycling service today.</p><p class="quote-src">Circuvo survey, 17 respondents. Donating is the default (65%).</p></blockquote>
+      </div>
+    </div>
+
+    <!-- Survey -->
+    <div class="mirror sub-block" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Survey</button></h2>
+        <p class="block-text" style="margin-bottom:0;">I built a survey on how people let go of things, what they repair and what would make them use a service. 17 people answered. The sample is small, so we treated it as early direction.</p>
+        <a href="https://forms.gle/ri4xvezJLKT3PGycA" target="_blank" rel="noopener" class="proto-link" style="margin-top: max(16px, calc(20 * var(--s))); margin-bottom: 0;">View survey ↗</a>
+      </div>
+      <div class="finds">
+        <div class="find">
+          <div class="find-n">01</div>
+          <h3 class="find-t">Outdated, not broken</h3>
+          <p class="find-p">Items leave because they feel outdated (47%), are no longer needed (41%) or are easier to replace (41%), not because they fail.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">02</div>
+          <h3 class="find-t">Repair is wanted</h3>
+          <p class="find-p">82% would likely repair an item if it cost less than replacing it. No one said they weren&#8217;t interested in repair.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">03</div>
+          <h3 class="find-t">Upcycling is a real draw</h3>
+          <p class="find-p">82% are interested in having an item creatively transformed, almost exactly matching repair.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">04</div>
+          <h3 class="find-t">Cost comes first</h3>
+          <p class="find-p">Lower cost was the strongest reason to use a service, followed by clear pricing, trusted Makers and convenient pickup.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interview -->
+    <div class="mirror sub-block" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Interview</button></h2>
+        <p class="block-text" style="margin-bottom:0;">Five interviews, using a guide Lucas wrote, with an ethics professor, an army officer, a technical product manager, a student and a business professional.</p>
+      </div>
+      <div class="finds">
+        <div class="find">
+          <div class="find-n">01</div>
+          <h3 class="find-t">Sentiment preserves</h3>
+          <p class="find-p">All five had kept an object because of its emotional significance.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">02</div>
+          <h3 class="find-t">Few look for options</h3>
+          <p class="find-p">Most don&#8217;t explore alternatives before disposal. Two considered none at all, including the ethics professor.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">03</div>
+          <h3 class="find-t">No single way to upcycle</h3>
+          <p class="find-p">Some want the Maker to decide, one prefers to do it themself, and others say it depends on the item or the cost.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">04</div>
+          <h3 class="find-t">It depends on the object</h3>
+          <p class="find-p">The journey should start with the item, not a choice between repair, upcycle or sell.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Competitor benchmarking: from the FigJam Competitor Analysis board. Same layout as Aera: each logo above its takeaway.
+         Logos go in images/case-studies/circuvo/logos/ (used exactly as supplied, only trimmed, never recoloured). Until then the names show as text.
+         To fill one: replace its <h3 class="find-t"> with <div class="brand-logo"><img src="images/case-studies/circuvo/logos/logo-NAME.png" alt="NAME" style="--lh:16" loading="lazy"></div> and add "brand-card" to the .find -->
+    <div class="mirror sub-block" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Competitor benchmarking</button></h2>
+        <p class="block-text" style="margin-bottom:0;">I reviewed municipal recycling, thrift and donation networks, online marketplaces and circular platforms. Here is what each does well, and where it stops.</p>
+      </div>
+      <div class="finds brand-grid">
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/circuvo/logos/logo-city-of-toronto.png" alt="City of Toronto" style="--lh:20" loading="lazy"></div>
+          <p class="find-p">Universal access, but only for cans and paper.</p>
+        </div>
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/circuvo/logos/logo-habitat-for-humanity.png" alt="Habitat for Humanity" style="--lh:32" loading="lazy"></div>
+          <p class="find-p">Social impact, but rejects most items.</p>
+        </div>
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/circuvo/logos/logo-value-village.png" alt="Value Village" style="--lh:24" loading="lazy"></div>
+          <p class="find-p">Second hand at scale, with no repair.</p>
+        </div>
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/circuvo/logos/logo-craigslist.png" alt="craigslist" style="--lh:18" loading="lazy"></div>
+          <p class="find-p">Huge reach, but chaotic and unreliable.</p>
+        </div>
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/circuvo/logos/logo-facebook-marketplace.png" alt="Facebook Marketplace" style="--lh:28" loading="lazy"></div>
+          <p class="find-p">Easy to list, but a high rate of scams.</p>
+        </div>
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/circuvo/logos/logo-karrot.png" alt="Karrot" style="--lh:32" loading="lazy"></div>
+          <p class="find-p">Local selling, with no logistics or repair.</p>
+        </div>
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/circuvo/logos/logo-reloop.png" alt="Reloop" style="--lh:22" loading="lazy"></div>
+          <p class="find-p">Device pickup, but electronic waste only.</p>
+        </div>
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/circuvo/logos/logo-circular-partners.png" alt="Circular Partners" style="--lh:32" loading="lazy"></div>
+          <p class="find-p">Spotlights Makers, but sells materials only.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key insights: what the survey, interviews and competitor review showed together -->
+    <div class="mirror sub-block" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Key insights</button></h2>
+      </div>
+      <div class="finds row3">
+        <div class="find">
+          <div class="find-n">01</div>
+          <h3 class="find-t">Lead with cost and ease</h3>
+          <p class="find-p">Sustainability supports the message but isn&#8217;t the main driver. Even people who care about it discard without looking at alternatives.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">02</div>
+          <h3 class="find-t">Compete with donation</h3>
+          <p class="find-p">Donating is the habit to shift, since no one uses a repair or upcycling service today.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">03</div>
+          <h3 class="find-t">Keep &#8220;give it back to me&#8221; central</h3>
+          <p class="find-p">76% have kept a damaged item for sentimental reasons, and all five interviewees kept something meaningful.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="block-text opp-line">No single platform in Canada connects owners, local Makers and buyers around repair and upcycling.</p>
+    <!-- FigJam board link goes here once it can be shared: <a href="..." target="_blank" rel="noopener" class="proto-link">View FigJam board ↗</a> -->
+    </div>
+  </div>
+
+  <!-- USER FLOWS (anchor #flows): the three MVP flows, one for each person in the loop -->
+  <div class="section" id="flows">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="flows-body">User Flows</button></div>
+    <div class="sec-body" id="flows-body">
+    <!-- Flow viewer: one flow image at a time; Next inside the box, or a flow's name below, switches it.
+         The three diagrams were mapped from the live build's code (~/Circuvo/CIRCUVO, 2026-11-13) and drawn horizontally (3200 x 2000) in the style of the original MVP flow boards, on white. -->
+    <div class="flows">
+      <figure class="flow-stage">
+        <div class="media flow-slide is-on" data-file="circuvo-flow-owner.png" style="background:#fff;"><img src="images/case-studies/circuvo/circuvo-flow-owner.png?v=4" alt="MVP 1 user flow: the owner taps Fix or sell, chooses repair, upcycle or sell as is, adds photos, details and handoff, then reviews and posts. Sell as is goes live on the Marketplace; repair or upcycle goes to Listings, where Makers quote and the owner compares, accepts and pays." loading="lazy"></div>
+        <div class="media flow-slide" data-file="circuvo-flow-buyer.png" style="background:#fff;"><img src="images/case-studies/circuvo/circuvo-flow-buyer.png?v=4" alt="MVP 2 user flow: the buyer opens the Marketplace, taps a piece, can view the Maker profile or chat with the Maker, adds it to the cart, checks out after logging in if needed, and places the order." loading="lazy"></div>
+        <div class="media flow-slide" data-file="circuvo-flow-maker.png" style="background:#fff;"><img src="images/case-studies/circuvo/circuvo-flow-maker.png?v=4" alt="MVP 3 user flow: the Maker opens Listings, taps a listing for its quick view, taps Give a quote, logs in or becomes a Maker if needed, sends a quote from the item page, and once the owner accepts, the work appears in Working on." loading="lazy"></div>
+        <button type="button" class="flow-next">Next: Buyer &#8594;</button>
+      </figure>
+      <div class="mirror sub-block" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+        <div class="mirror-text">
+          <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Three flows, one loop</button></h2>
+          <p class="block-text" style="margin-bottom:0;">Owners, buyers and Makers meet in one loop. I mapped a flow for each, and they became the three MVPs.</p>
+        </div>
+        <div class="finds row3">
+          <div class="find">
+            <div class="find-n">01</div>
+            <h3 class="find-t"><button type="button" class="flow-pick on" aria-pressed="true">Owner</button></h3>
+            <p class="find-p">Taps Fix or sell, chooses repair, upcycle or sell as is, and adds photos and details. For repair or upcycle, compares Makers&#8217; quotes and accepts one.</p>
+          </div>
+          <div class="find">
+            <div class="find-n">02</div>
+            <h3 class="find-t"><button type="button" class="flow-pick" aria-pressed="false">Buyer</button></h3>
+            <p class="find-p">Searches the Marketplace, sees who fixed or transformed each piece, adds it to the cart and checks out.</p>
+          </div>
+          <div class="find">
+            <div class="find-n">03</div>
+            <h3 class="find-t"><button type="button" class="flow-pick" aria-pressed="false">Maker</button></h3>
+            <p class="find-p">Opens a listing, sends a quote from its item page, and starts once the owner accepts. Materials are paid when work begins, the rest on approval.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- PROTOTYPE -->
+  <div class="section" id="prototype">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="prototype-body">Prototype</button></div>
+    <div class="sec-body" id="prototype-body">
+    <div class="block">
+      <p class="block-text">I first built a clickable prototype as a single Claude artifact covering all three MVP flows: an owner routing an item to sell, refurbish or upcycle, a buyer shopping pieces with the Maker named, and a Maker accepting a job.</p>
+      <p class="block-text">It also had onboarding, messaging, cart and checkout, so we could test the whole loop with people before Demo Day. It then became the base for the live site.</p>
+      <a href="prototypes/circuvo-prototype.html" target="_blank" rel="noopener" class="proto-link">Explore the interactive prototype ↗</a>
+    </div>
+    </div>
+  </div>
+
+  <!-- TESTING (in place of Feedback: no judge praise recorded, so refinements run full width) -->
+  <div class="section" id="testing">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="testing-body">Testing</button></div>
+    <div class="sec-body" id="testing-body">
+    <div class="block">
+      <p class="block-text">Five UX testing sessions on the prototype showed what to fix next and where the model still needs proof.</p>
+    </div>
+    <!-- What testing changed: from Shrin's UX Testing Summary board (sessions with Tony, Asish, Elissa, Jenny, Murtuza); every change is checked against the final build's code -->
+  <div class="mirror sub-block">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">What testing changed</button></h2>
+        <p class="block-text" style="margin-bottom:0;">Five people tested the prototype. What they struggled with shaped the design, and most of what they asked for is now in the live build.</p>
+        <div class="testers">
+          <div class="tester"><div class="tester-n">Tony</div><div class="tester-d">Mentor, walked the whole prototype</div></div>
+          <div class="tester"><div class="tester-n">Asish</div><div class="tester-d">All three flows</div></div>
+          <div class="tester"><div class="tester-n">Elissa</div><div class="tester-d">Owner flow, a jacket to mend</div></div>
+          <div class="tester"><div class="tester-n">Jenny</div><div class="tester-d">All three flows</div></div>
+          <div class="tester"><div class="tester-n">Murtuza</div><div class="tester-d">Owner flow, a cracked chair</div></div>
+        </div>
+        <p class="tester-d" style="margin-top: max(8px, calc(12 * var(--s)));">The dots beside each finding follow this order.</p>
+      </div>
+      <div class="heard-list">
+        <div class="feature">
+          <div class="tally"><i></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><span>Asish, Elissa, Jenny, Murtuza</span></div>
+          <p class="heard">Four of five testers stumbled on the same screen. They couldn&#8217;t tell a repair from a giveaway, so the owner flow changed twice.</p>
+          <div class="evolve">
+            <div class="step"><div class="changed-l">Prototype</div><p class="step-q">&#8220;How much do you want to be involved?&#8221;</p></div>
+            <div class="arrow" aria-hidden="true">&#8594;</div>
+            <div class="step"><div class="changed-l">After Elissa&#8217;s test</div><p class="step-q">&#8220;Do you want this item back?&#8221;</p></div>
+            <div class="arrow" aria-hidden="true">&#8594;</div>
+            <div class="step"><div class="changed-l">Final build</div><p class="step-q">Three plain choices: Repair/Refurbish, Upcycle or Sell it as is</p></div>
+          </div>
+        </div>
+        <div class="heard-row">
+          <div><div class="tally"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><span>Tony, Asish</span></div>
+            <p class="heard">Plain sell, Refurbish and Upcycle meant nothing without an explanation.</p></div>
+          <div class="changed"><div class="changed-l">In the final build</div><p class="find-p">A kind icon for each, introduced in onboarding and shown wherever a kind appears.</p></div>
+        </div>
+        <div class="heard-row">
+          <div><div class="tally"><i class="on"></i><i></i><i></i><i class="on"></i><i></i><span>Tony, Jenny</span></div>
+            <p class="heard">One photo and a short description weren&#8217;t enough to trust a piece.</p></div>
+          <div class="changed"><div class="changed-l">In the final build</div><p class="find-p">Up to three photos on every listing, and the owner&#8217;s full note on its page.</p></div>
+        </div>
+        <div class="heard-row">
+          <div><div class="tally"><i></i><i class="on"></i><i></i><i class="on"></i><i></i><span>Asish, Jenny</span></div>
+            <p class="heard">People wanted to ask questions without leaving the site.</p></div>
+          <div class="changed"><div class="changed-l">In the final build</div><p class="find-p">Messages on every listing, opening right beside the piece.</p></div>
+        </div>
+        <div class="heard-row">
+          <div><div class="tally"><i></i><i></i><i class="on"></i><i class="on"></i><i></i><span>Elissa, Jenny</span></div>
+            <p class="heard">They wanted to see work already finished through Circuvo.</p></div>
+          <div class="changed"><div class="changed-l">In the final build</div><p class="find-p">A before and after slider on the homepage, and Recently completed on listings.</p></div>
+        </div>
+        <div class="heard-row">
+          <div><div class="tally"><i></i><i></i><i></i><i></i><i class="on"></i><span>Murtuza</span></div>
+            <p class="heard">Paying in the app, with refunds, would feel safer than Facebook Marketplace.</p></div>
+          <div class="changed"><div class="changed-l">In the final build</div><p class="find-p">Pay and accept: Circuvo holds the money until the owner approves the work.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="sub-block" style="margin-top: max(64px, calc(112 * var(--s)));">
+      <h2 class="sub-head" style="margin-bottom: max(20px, calc(28 * var(--s)));"><button type="button" class="sub-toggle" aria-expanded="true">What to refine</button></h2>
+      <div class="fb-group">
+        <div class="pri h">High priority</div>
+        <div class="fb-items">
+          <div class="find"><div class="find-n">01</div><h3 class="find-t">Match Makers to demand</h3><p class="find-p">People let go of clothing and textiles most (76%), then kitchen and household items (59%), so Makers need to cover more than one craft.</p></div>
+          <div class="find"><div class="find-n">02</div><h3 class="find-t">Keep Makers on platform</h3><p class="find-p">After a first match, Makers could take work offline, so protection and care credit need testing.</p></div>
+          <div class="find"><div class="find-n">03</div><h3 class="find-t">Validate with owners</h3><p class="find-p">Owners were the hardest group to reach and need deeper research.</p></div>
+        </div>
+      </div>
+      <div class="fb-group">
+        <div class="pri m">Medium priority</div>
+        <div class="fb-items">
+          <div class="find"><div class="find-n">04</div><h3 class="find-t">Account and role switching</h3><p class="find-p">Testing showed Maker status not saving and My listings hard to find.</p></div>
+          <div class="find"><div class="find-n">05</div><h3 class="find-t">Accessibility</h3><p class="find-p">Add visible focus outlines, and 16px text in form fields on phones.</p></div>
+          <div class="find"><div class="find-n">06</div><h3 class="find-t">Name</h3><p class="find-p">Circuvo isn&#8217;t final and needs a trademark check.</p></div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- DESIGN -->
+  <div class="section" id="design">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="design-body">Design</button></div>
+    <div class="sec-body" id="design-body">
+    <!-- Design system first (Shrin, 2026-11-13) -->
+    <div class="sub-block" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+    <h2 class="sub-head" style="margin-bottom: max(24px, calc(40 * var(--s)));"><button type="button" class="sub-toggle" aria-expanded="true">Design system</button></h2>
+    <figure>
+      <!-- Design system as live on circuvo.app (Shrin, 2026-11-13; "Circuvo design system (final, matches circuvo.app)@2x (1).png", 2800 by 4358, 790 KB, lazy). Shown in full, no scroll box. -->
+      <div class="media" data-file="circuvo-design-system.png" style="background:#fff;"><img src="images/case-studies/circuvo/circuvo-design-system.png?v=3" width="2800" height="4358" alt="Circuvo design system as live on circuvo.app: colour (Forest, Stone, Ink, White, Soft grey, Line grey, Error red), type (Albert Sans, Regular and Medium), interface states, listing cards and kind icons, and proportion" loading="lazy"></div>
+    </figure>
+    </div>
+    <!-- Four live pages, full length, captured from the final build (2026-11-13). The strip uses light -thumb copies (720 wide, lazy);
+         the overlay loads the 1440 wide copy only when a screen is opened. Originals (PNG, 2880 wide) are in Product Builder/Circuvo/Screens. -->
+    <div class="screen-names four"><button type="button" class="sn" data-i="0">Home</button><button type="button" class="sn" data-i="1">Marketplace</button><button type="button" class="sn" data-i="2">About</button><button type="button" class="sn" data-i="3">Our impact</button></div>
+    <figure class="screens">
+      <p class="screen-hint screen-cta"><span>+ Click a screen to view it in detail</span></p>
+      <div class="hits four"><button type="button" class="hit" data-i="0" aria-label="View Home screen"></button><button type="button" class="hit" data-i="1" aria-label="View Marketplace screen"></button><button type="button" class="hit" data-i="2" aria-label="View About screen"></button><button type="button" class="hit" data-i="3" aria-label="View Our impact screen"></button></div>
+      <div class="screens-grid">
+        <img src="images/case-studies/circuvo/circuvo-screen-home-thumb.jpg" width="720" height="2720" alt="Circuvo homepage, full page" loading="lazy">
+        <img src="images/case-studies/circuvo/circuvo-screen-marketplace-thumb.jpg" width="720" height="1733" alt="Circuvo Marketplace, full page" loading="lazy">
+        <img src="images/case-studies/circuvo/circuvo-screen-about-thumb.jpg" width="720" height="1819" alt="Circuvo About page, full page" loading="lazy">
+        <img src="images/case-studies/circuvo/circuvo-screen-impact-thumb.jpg" width="720" height="1749" alt="Circuvo Our impact page, full page" loading="lazy">
+      </div>
+    </figure>
+    <p class="block-text design-dir">The design direction is calm, editorial and photo led, inspired by Toteme, Everlane and Markaware. Quiet and generous with space, so repaired and remade pieces can speak.</p>
+    <!-- Design canvas link goes here once it can be shared: <a href="..." target="_blank" rel="noopener" class="proto-link design-link">View design canvas ↗</a> -->
+
+    <!-- Design decisions: the two key forms (cropped from the final build, shown at the same scale) sit under the decisions they show; 03 and 04 are text only -->
+    <div class="mirror sub-block" style="margin-top: max(48px, calc(72 * var(--s))); margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Design decisions</button></h2>
+        <p class="block-text" style="margin-bottom:0;">Four choices shaped the build. The first two live in its key forms.</p>
+      </div>
+      <div class="dec-grid">
+        <div class="find">
+          <div class="find-n">01</div>
+          <h3 class="find-t">Three plain choices</h3>
+          <p class="find-p">One Fix or sell screen: Repair/Refurbish, Upcycle or Sell it as is. Each opens only the field it needs.</p>
+          <img class="form-shot" src="images/case-studies/circuvo/circuvo-form-fix-or-sell.jpg?v=2" width="992" height="1033" alt="The Fix or sell form on circuvo.app, with three choices: Repair/Refurbish, Upcycle and Sell it as is" loading="lazy">
+        </div>
+        <div class="find">
+          <div class="find-n">02</div>
+          <h3 class="find-t">One profile, Maker added on</h3>
+          <p class="find-p">Becoming a Maker is a one time step on the same account. It unlocks quoting and claiming.</p>
+          <img class="form-shot" src="images/case-studies/circuvo/circuvo-form-become-a-maker.jpg?v=2" width="866" height="1984" style="width: 87.3%;" alt="The Become a Maker form on circuvo.app: photo, skills, pickup area, website, Instagram, portfolio photos and pricing approach" loading="lazy">
+        </div>
+        <div class="find">
+          <div class="find-n">03</div>
+          <h3 class="find-t">The Maker on every listing</h3>
+          <p class="find-p">Trust came up again and again, so every piece shows who worked on it, and how.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">04</div>
+          <h3 class="find-t">Reviews for Makers only</h3>
+          <p class="find-p">Skill is what buyers need to trust, so Makers are reviewed and products never are.</p>
+        </div>
+      </div>
+    </div>
+
+
+    </div>
+  </div>
+
+  <!-- LIVE BUILD (anchor #build) -->
+  <div class="section" id="build">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="build-body">Live Build</button></div>
+    <div class="sec-body" id="build-body">
+    <div class="split r75 build-split">
+      <figure>
+        <!-- FIND: a short screen recording of circuvo.app: the looping homepage, then posting an item, comparing quotes and a Maker's profile.
+             Fill with <video controls playsinline preload="metadata" src="images/case-studies/circuvo/circuvo-build-walkthrough.mp4"></video> and remove "is-empty" (no autoplay). -->
+        <div class="media is-empty r-video" data-file="circuvo-build-walkthrough.mp4"></div>
+      </figure>
+      <div class="split-text">
+        <p class="block-text" style="color: var(--ink);">I moved the prototype into a Vite and React project with shadcn/ui and my own DESIGN.md, built through Claude Code and deployed on Vercel. It works on phone, tablet and desktop, with log in as Owner, Maker or both, and the quote, compare and accept flow.</p>
+      </div>
+    </div>
+    <a href="https://www.circuvo.app/" target="_blank" rel="noopener" class="proto-link build-link">Visit circuvo.app ↗</a>
+    <p class="status"><b>Note</b>Still a concept: Give to a Maker, the My stuff inventory, care credit and wishlist alerts. Photos from Unsplash+.</p>
+    </div>
+  </div>
+
+  <!-- REFLECTION (anchor #reflection). Closes the case study. -->
+  <div class="section" id="reflection">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="reflection-body">Reflection</button></div>
+    <div class="sec-body" id="reflection-body">
+    <div class="block">
+      <p class="block-text">I learned I can take a product from research to a live site without Figma, by designing in the browser and setting clear rules in a design system.</p>
+      <p class="block-text">I also learned to validate earlier. Our strongest decisions came straight from what people told us, and the biggest gaps came from groups we reached late.</p>
+      <p class="block-text">Next, I&#8217;d recruit Makers in furniture and textiles to match demand, build Give to a Maker, and test what keeps owners and Makers coming back. I&#8217;m also setting Circuvo up properly with legal advice.</p>
+    </div>
+    <p class="status" style="margin-bottom: max(8px, calc(10 * var(--s)));"><b>Team</b>Build Different: Pranjal Gorantyal (research), Lucas Oishi (market intelligence) and Shourya Sharma (go to market).</p>
+    <p class="status"><b>Thanks</b>Matt and Tony, our Product BC mentors, Ashley for reviewing our surveys and prototype, and Elissa for her design feedback.</p>
+    </div>
+  </div>
+
+  <!-- NEXT PROJECT: points to the Facebook Marketplace tile on the homepage until facebook-marketplace.html exists -->
+  <div class="next-project">
+    <a href="index.html#facebook-marketplace" class="next-link"><span class="np-label">Next project</span><span class="np-title">Facebook Marketplace &#8594;</span></a>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <a class="go-up-mark" href="#top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">
+      <img src="images/fingerprint.png" alt="">
+      <div class="go-up-text">Go up</div>
+      <span class="go-up-arrow" aria-hidden="true">&#8593;</span>
+    </a>
+  </div>
+
+</div><!-- /page -->
+
+
+<!-- Screen overlay: opens from the five screens in Design -->
+<div class="lb" id="lb" data-alt="Circuvo" role="dialog" aria-modal="true" aria-labelledby="lb-title" hidden>
+  <div class="lb-img" id="lb-scroll">
+    <div class="lb-page" id="lb-page">
+      <img id="lb-pic" alt="">
+    </div>
+  </div>
+  <div class="lb-side">
+    <div class="lb-top"><span class="lb-count" id="lb-count">01 / 05</span><button type="button" class="lb-btn" id="lb-close">Close ×</button></div>
+    <h2 class="sub-head" id="lb-title">Home</h2>
+    <p class="block-text" id="lb-text"></p>
+    <div id="lb-pri"><div class="lb-pri-h">UX priority</div><p class="block-text lb-pri-t" id="lb-pri-t"></p></div>
+    <div class="lb-nav"><button type="button" class="lb-btn" id="lb-prev">← Previous</button><button type="button" class="lb-btn" id="lb-next">Next →</button></div>
+  </div>
+</div>
+
+<!-- FigJam board viewer -->
+<div class="bz" id="bz" role="dialog" aria-modal="true" aria-label="FigJam board" hidden>
+  <div class="bz-bar"><span id="bz-hint">Click the board to zoom in</span><button type="button" class="bz-close" id="bz-close">Close ×</button></div>
+  <div class="bz-scroll" id="bz-scroll"><img id="bz-img" alt="Circuvo FigJam research board, enlarged"></div>
+</div>
+
+<!-- PHONE BOTTOM NAV -->
+<nav class="phone-nav">
+  <div style="display:flex;gap:max(16px,calc(20 * var(--s)));">
+    <a href="index.html">Home</a>
+    <a href="index.html#info">Info</a>
+  </div>
+  <div style="display:flex;gap:max(16px,calc(20 * var(--s)));">
+    <a href="https://shrin-roym.com/" target="_blank" rel="noopener">Apparel</a>
+    <a href="https://drive.google.com/file/d/1_RReoEcfpWw8kHrpOY6_ot2mFG-YOgYb/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+  </div>
+</nav>
+
+<script>
+// Circuvo screens for the Design overlay (read by site.js): the four live pages, 1440 wide, loaded only when opened.
+window.SCREENS = [
+  {"name": "Home", "img": "images/case-studies/circuvo/circuvo-screen-home.jpg", "text": "A full width video hero carries the line “Not trash. Just unfinished.” and two clear paths, Fix or sell and Become a Maker.\n\nBelow it, “What brings you to Circuvo?” splits buyers from owners, then Just restored, a before and after slider, a Maker spotlight and Makers in your neighbourhood.", "pri": "Help each visitor see their own path in seconds.", "video": {"src": "images/case-studies/circuvo/circuvo-home-hero.mp4", "top_image": "images/case-studies/circuvo/circuvo-home-hero-top.png", "top": "0.625%", "height": "11.3445%"}},
+  {"name": "Marketplace", "img": "images/case-studies/circuvo/circuvo-screen-marketplace.jpg", "text": "A search first page headed “Find something worth keeping.”, with category words and filters for price, status and sort.\n\nEach card keeps the photo clean, then shows the kind with its icon, the name and price, the neighbourhood and Maker, and the status.", "pri": "Trust at a glance, through clean photos and named Makers."},
+  {"name": "About", "img": "images/case-studies/circuvo/circuvo-screen-about.jpg", "text": "A side menu leads through Who we are, What we do, Our purpose, Our Makers and Join us.\n\nWhat we do explains Refurbish, Upcycle and Plain sell in plain words, and Our Makers introduces the people behind the work.", "pri": "Explain the model simply and put the Makers first."},
+  {"name": "Our impact", "img": "images/case-studies/circuvo/circuvo-screen-impact.jpg", "text": "The same side menu layout covers Why we exist, What guides us, So far and Join us.\n\nSo far counts items given a second life, verified Makers and kilograms kept from landfill, clearly marked as sample data for the prototype.", "pri": "Show the purpose without overstating results."}
+];
+</script>
+<script src="site.js?v=7"></script>
+</body>
+</html>

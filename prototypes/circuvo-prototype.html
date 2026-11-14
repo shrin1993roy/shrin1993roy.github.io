@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Circuvo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.26.4/babel.min.js"></script>
+<style>
+  :root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body { margin: 0; background: #F5F4EC; font-family: Montserrat, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  select { font-family: inherit; }
+  /* Phone: leave room for the bottom tab bar on screens that show it */
+  @media (max-width: 767px) { body:has(.circuvo-tabbar) { padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)); } }
+  input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+  .no-scrollbar { scrollbar-width: none; } .no-scrollbar::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useContext } = React;
+// Lets the shared footer reach app navigation without threading props
+// through every screen. Provided by the root component.
+const FooterNavContext = React.createContext(null);
+// Lets the header search on any screen send a search to the Marketplace.
+const HeaderSearchContext = React.createContext(null);
+
+const theme = {
+  background: "oklch(0.9711 0.0074 80.7211)",
+  foreground: "oklch(0.3000 0.0358 30.2042)",
+  card: "oklch(1 0 0)",
+  primary: "oklch(0.5234 0.1347 144.1672)",
+  primaryForeground: "oklch(1.0000 0 0)",
+  secondary: "oklch(0.9571 0.0210 147.6360)",
+  secondaryForeground: "oklch(0.4254 0.1159 144.3078)",
+  muted: "oklch(0.9370 0.0142 74.4218)",
+  mutedForeground: "oklch(0.4495 0.0486 39.2110)",
+  accent: "oklch(0.8952 0.0504 146.0366)",
+  accentForeground: "oklch(0.4254 0.1159 144.3078)",
+  border: "oklch(0.8805 0.0208 74.6428)",
+};
+
+/* ---------- minimal UI primitives replacing shadcn/ui ---------- */
+function Button({ variant, size, className = "", style = {}, children, ...rest }) {
+  const base = "text-sm rounded-md transition-colors";
+  const sizing = size === "icon" ? "w-9 h-9 flex items-center justify-center" : "px-4 py-2";
+  const look =
+    variant === "outline"
+      ? { background: "transparent", border: `0.5px solid ${style.borderColor || theme.border}` }
+      : { background: theme.muted, border: "none" };
+  return (
+    <button className={`${base} ${sizing} ${className}`} style={{ ...look, ...style }} {...rest}>
+      {children}
+    </button>
+  );
+}
+function PrimaryButton({ children, onClick, className = "", disabled, ...rest }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        background: disabled ? theme.muted : hover ? "oklch(0.4600 0.1347 144.1672)" : theme.primary,
+        color: disabled ? theme.mutedForeground : theme.primaryForeground,
+        boxShadow: hover && !disabled ? "0 4px 10px rgba(15,110,86,0.35)" : "0 1px 3px rgba(15,110,86,0.25)",
+        transform: hover && !disabled ? "translateY(-1px)" : "none",
+        transition: "all 0.15s ease",
+        cursor: disabled ? "default" : "pointer",
+      }}
+      className={`text-sm px-4 py-2 rounded-md flex items-center justify-center gap-2 ${className}`}
+      {...rest}
+    >
+      {children}
+    </button>
+  );
+}
+function Card({ className = "", style = {}, children, ...rest }) {
+  return (
+    <div className={`rounded-xl ${className}`} style={{ border: `0.5px solid ${theme.border}`, ...style }} {...rest}>
+      {children}
+    </div>
+  );
+}
+function CardContent({ className = "", children }) {
+  return <div className={className}>{children}</div>;
+}
+function Badge({ className = "", style = {}, children }) {
+  return (
+    <span className={`inline-block text-xs px-2 py-0.5 rounded-md ${className}`} style={style}>
+      {children}
+    </span>
+  );
+}
+function Avatar({ className = "", children }) {
+  return (
+    <div className={`rounded-full overflow-hidden flex items-center justify-center ${className}`}>
+      {children}
+    </div>
+  );
+}
+function AvatarFallback({ style = {}, children }) {
+  return (
+    <div className="w-full h-full flex items-center justify-center font-medium" style={style}>
+      {children}
+    </div>
+  );
+}
+function Input(props) {
+  return (
+    <input
+      {...props}
+      className={`h-9 rounded-md px-3 text-sm outline-none ${props.className || ""}`}
+      style={{ border: `0.5px solid ${theme.border}`, background: theme.card, ...props.style }}
+    />
+  );
+}
+function Separator({ orientation, className = "", style = {} }) {
+  if (orientation === "vertical") {
+    return <div className={className} style={{ width: 1, background: theme.border, ...style }} />;
+  }
+  return <div className={className} style={{ height: 1, background: theme.border, ...style }} />;
+}
+
+/* ---------- minimal icon set (inline SVG, replacing lucide-react) ---------- */
+function Icon({ path, size = 16, style = {}, viewBox = "0 0 24 24", fill = "none", className = "" }) {
+  return (
+    <svg width={size} height={size} viewBox={viewBox} fill={fill} stroke="currentColor" strokeWidth="2"
+      strokeLinecap="round" strokeLinejoin="round" style={{ color: style.color || "currentColor", flexShrink: 0, ...style }}
+      className={className}>
+      {path}
+    </svg>
+  );
+}
+const Search = (p) => <Icon {...p} path={<><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>} />;
+const SlidersHorizontal = (p) => <Icon {...p} path={<><line x1="4" y1="6" x2="20" y2="6"/><circle cx="10" cy="6" r="2" fill="currentColor"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="16" cy="12" r="2" fill="currentColor"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="8" cy="18" r="2" fill="currentColor"/></>} />;
+const ArrowUpDown = (p) => <Icon {...p} path={<><path d="M8 9l4-4 4 4"/><path d="M16 15l-4 4-4-4"/></>} />;
+const Recycle = (p) => <Icon {...p} path={<><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></>} />;
+const ArrowLeft = (p) => <Icon {...p} path={<path d="M19 12H5M12 19l-7-7 7-7"/>} />;
+const ArrowUpRight = (p) => <Icon {...p} path={<><path d="M7 17 17 7"/><path d="M7 7h10v10"/></>} />;
+const ShieldCheck = (p) => <Icon {...p} path={<><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></>} />;
+const ImageIcon = (p) => <Icon {...p} path={<><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21"/></>} />;
+const Armchair = (p) => <Icon {...p} path={<><path d="M5 12V7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v5"/><path d="M3 12h18v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M5 18v2M19 18v2"/></>} />;
+const Heart = (p) => <Icon {...p} path={<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/>} />;
+const Star = (p) => <Icon {...p} fill={p.fill || "none"} path={<polygon points="12 2 15 8.5 22 9.3 17 14 18.5 21 12 17.5 5.5 21 7 14 2 9.3 9 8.5"/>} />;
+const MapPin = (p) => <Icon {...p} path={<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></>} />;
+const ShoppingBag = (p) => <Icon {...p} path={<><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></>} />;
+const Leaf = (p) => <Icon {...p} path={<path d="M11 20A7 7 0 0 1 4 13V6a1 1 0 0 1 1-1h6a7 7 0 0 1 7 7 7 7 0 0 1-7 7Z"/>} />;
+const X = (p) => <Icon {...p} path={<><path d="M18 6 6 18"/><path d="M6 6l12 12"/></>} />;
+const ArrowUp = (p) => <Icon {...p} path={<><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></>} />;
+const Store = (p) => <Icon {...p} path={<><path d="M3 9l1-5h16l1 5"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/></>} />;
+const Wrench = (p) => <Icon {...p} path={<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>} />;
+const Plus = (p) => <Icon {...p} path={<><path d="M12 5v14"/><path d="M5 12h14"/></>} />;
+const ListIcon = (p) => <Icon {...p} path={<><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></>} />;
+const UserIcon = (p) => <Icon {...p} fill="currentColor" path={<><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></>} />;
+const ChatIcon = (p) => <Icon {...p} path={<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>} />;
+
+/* ---------- data ---------- */
+const categories = ["All", "Furniture", "Clothing", "Home decor", "Lighting", "Bags and accessories", "Kitchenware", "Textiles", "Art and wall decor"];
+const STATUSES = ["Recently completed", "Recently posted", "In progress"];
+const listings = [
+  { id: 1, title: "Rocking chair", category: "Furniture", pathway: "Refurbished", price: "$85", maker: "Priya", initials: "P", location: "Mount Pleasant", dimensions: "95cm H x 60cm W x 80cm D", status: "Recently completed",
+    story: "This chair came in with a cracked leg and worn fabric. I rebuilt the joint and reupholstered the seat with leftover canvas from another project, nothing new bought for it.",
+    stages: ["Before repair", "Reupholstering", "Detailing", "Finished"],
+    makerBio: "Furniture refurbisher with a focus on solid wood repair and reupholstering. Everything's fixed with reused or leftover materials where possible.",
+    makerStats: { items: 14, tenure: "8mo", location: "Mount Pleasant, Vancouver", rating: 4.8, reviews: 39 },
+    makerOther: [{ title: "Floor lamp", price: "$30" }, { title: "Side table", price: "$55" }] },
+  { id: 2, title: "Denim tote bag", category: "Bags and accessories", pathway: "Upcycled", price: "$40", maker: "Jordan", initials: "J", location: "Kitsilano", dimensions: "35cm H x 40cm W x 12cm D", status: "Recently posted",
+    story: "Made from a pair of jeans that ripped beyond repair. Sewn into a tote with the original pockets kept intact for extra storage.",
+    stages: ["Old jeans", "Cutting and sewing", "Finishing touches", "Finished"],
+    makerBio: "Textile upcycler turning worn clothing into everyday bags and accessories, mostly denim and canvas.",
+    makerStats: { items: 9, tenure: "5mo", location: "Kitsilano, Vancouver", rating: 4.8, reviews: 26 },
+    makerOther: [{ title: "Patched denim jacket", price: "$65" }] },
+  { id: 3, title: "Floor lamp", category: "Lighting", pathway: "Refurbished", price: "$30", maker: "Priya", initials: "P", location: "Mount Pleasant", dimensions: "140cm H, 30cm shade diameter", status: "In progress",
+    story: "Rewired the base and replaced the frayed cord. Shade was cleaned and the dent in the base was worked out by hand.",
+    stages: ["Before repair", "Rewiring", "Testing", "Finished"],
+    makerBio: "Furniture refurbisher with a focus on solid wood repair and reupholstering. Everything's fixed with reused or leftover materials where possible.",
+    makerStats: { items: 14, tenure: "8mo", location: "Mount Pleasant, Vancouver", rating: 4.8, reviews: 39 },
+    makerOther: [{ title: "Rocking chair", price: "$85" }, { title: "Side table", price: "$55" }] },
+  { id: 4, title: "Patchwork stool", category: "Furniture", pathway: "Upcycled", price: "$60", maker: "Nadia", initials: "N", location: "Commercial Drive", dimensions: "45cm H x 35cm diameter", status: "Recently completed",
+    story: "Built the seat from offcut fabric scraps in a patchwork pattern over a reclaimed wooden stool frame.",
+    stages: ["Old frame", "Patchwork seat", "Attaching", "Finished"],
+    makerBio: "Works mostly in furniture upcycling, combining reclaimed wood frames with fabric scraps and offcuts.",
+    makerStats: { items: 6, tenure: "3mo", location: "Commercial Drive, Vancouver", rating: 5.0, reviews: 6 }, makerOther: [] },
+  { id: 5, title: "Side table", category: "Furniture", pathway: "Refurbished", price: "$55", maker: "Priya", initials: "P", location: "Mount Pleasant", dimensions: "50cm H x 45cm W x 45cm D", status: "Recently posted",
+    story: "Sanded down and refinished with a food-safe oil. One leg was reglued and reinforced.",
+    stages: ["Before repair", "Sanding", "Refinishing", "Finished"],
+    makerBio: "Furniture refurbisher with a focus on solid wood repair and reupholstering. Everything's fixed with reused or leftover materials where possible.",
+    makerStats: { items: 14, tenure: "8mo", location: "Mount Pleasant, Vancouver", rating: 4.8, reviews: 39 },
+    makerOther: [{ title: "Rocking chair", price: "$85" }, { title: "Floor lamp", price: "$30" }] },
+  { id: 6, title: "Patched denim jacket", category: "Clothing", pathway: "Upcycled", price: "$65", maker: "Jordan", initials: "J", location: "Kitsilano", dimensions: "Men's size M", status: "In progress",
+    story: "Elbow patches and a reworked collar made from a second, unwearable jacket. Original stitching kept wherever possible.",
+    stages: ["Old jacket", "Patchwork", "Stitching", "Finished"],
+    makerBio: "Textile upcycler turning worn clothing into everyday bags and accessories, mostly denim and canvas.",
+    makerStats: { items: 9, tenure: "5mo", location: "Kitsilano, Vancouver", rating: 4.8, reviews: 26 },
+    makerOther: [{ title: "Denim tote bag", price: "$40" }] },
+  { id: 7, title: "Vintage table lamp", category: "Lighting", pathway: "Refurbished", price: "$35", maker: "Owen", initials: "O", location: "Riley Park", dimensions: "55cm H, 20cm shade diameter", status: "Recently completed",
+    story: "Rewired end to end and fitted with a new switch. Kept the original brass base, just cleaned it up.",
+    stages: ["Before repair", "Rewiring", "Testing", "Finished"],
+    makerBio: "Fixes small electricals and lighting, rewiring and rebuilding rather than replacing where possible.",
+    makerStats: { items: 11, tenure: "6mo", location: "Riley Park, Vancouver", rating: 4.7, reviews: 12 }, makerOther: [] },
+  { id: 8, title: "Woven market bag", category: "Bags and accessories", pathway: "Upcycled", price: "$22", maker: "Leila", initials: "L", location: "Kitsilano", dimensions: "30cm H x 35cm W", status: "Recently posted",
+    story: "Woven from strips of an old canvas tarp that was too worn to patch anymore. Sturdy enough for groceries.",
+    stages: ["Old material", "Weaving", "Finishing", "Finished"],
+    makerBio: "Works with reclaimed canvas and rope, mostly bags and small home textiles.",
+    makerStats: { items: 8, tenure: "4mo", location: "Kitsilano, Vancouver", rating: 4.6, reviews: 8 }, makerOther: [] },
+  { id: 9, title: "Cast iron pan", category: "Kitchenware", pathway: "Refurbished", price: "$25", maker: "Owen", initials: "O", location: "Riley Park", dimensions: "25cm diameter", status: "Recently completed",
+    story: "Stripped the rust back and re-seasoned it properly. Cooks like new once it's got a season or two back on it.",
+    stages: ["Before repair", "Re-seasoning", "Curing", "Finished"],
+    makerBio: "Fixes small electricals and lighting, rewiring and rebuilding rather than replacing where possible.",
+    makerStats: { items: 11, tenure: "6mo", location: "Riley Park, Vancouver", rating: 4.7, reviews: 12 }, makerOther: [] },
+  { id: 10, title: "Patchwork quilt", category: "Textiles", pathway: "Upcycled", price: "$70", maker: "Theo", initials: "T", location: "Mount Pleasant", dimensions: "150cm x 200cm", status: "In progress",
+    story: "Made from offcuts of old shirts and bedsheets that were otherwise headed for the bin. No two squares match on purpose.",
+    stages: ["Old fabric", "Piecing", "Quilting", "Finished"],
+    makerBio: "Textile upcycler, mostly quilts and soft furnishings made from fabric scraps and worn clothing.",
+    makerStats: { items: 7, tenure: "4mo", location: "Mount Pleasant, Vancouver", rating: 4.9, reviews: 15 }, makerOther: [] },
+  { id: 11, title: "Linen napkin set", category: "Textiles", pathway: "Refurbished", price: "$18", maker: "Leila", initials: "L", location: "Kitsilano", dimensions: "40cm x 40cm each, set of 6", status: "Recently posted",
+    story: "Stains lifted, hems restitched. A full set of six, ready to use again.",
+    stages: ["Before repair", "Restitching", "Pressing", "Finished"],
+    makerBio: "Works with reclaimed canvas and rope, mostly bags and small home textiles.",
+    makerStats: { items: 8, tenure: "4mo", location: "Kitsilano, Vancouver", rating: 4.6, reviews: 8 }, makerOther: [] },
+  { id: 12, title: "Reclaimed wood wall art", category: "Art and wall decor", pathway: "Upcycled", price: "$50", maker: "Nadia", initials: "N", location: "Commercial Drive", dimensions: "60cm W x 40cm H", status: "Recently completed",
+    story: "Built from offcuts left over from a stool project, arranged into a simple geometric piece.",
+    stages: ["Old offcuts", "Arranging", "Sealing", "Finished"],
+    makerBio: "Works mostly in furniture upcycling, combining reclaimed wood frames with fabric scraps and offcuts.",
+    makerStats: { items: 6, tenure: "3mo", location: "Commercial Drive, Vancouver", rating: 5.0, reviews: 6 }, makerOther: [] },
+  { id: 13, title: "Framed botanical print", category: "Art and wall decor", pathway: "Refurbished", price: "$28", maker: "Theo", initials: "T", location: "Mount Pleasant", dimensions: "30cm W x 40cm H", status: "In progress",
+    story: "Original frame was intact but the glass was cracked and the print water-damaged. Replaced both, kept the frame.",
+    stages: ["Before repair", "Reframing", "Cleaning", "Finished"],
+    makerBio: "Textile upcycler, mostly quilts and soft furnishings made from fabric scraps and worn clothing.",
+    makerStats: { items: 7, tenure: "4mo", location: "Mount Pleasant, Vancouver", rating: 4.9, reviews: 15 }, makerOther: [] },
+  { id: 14, title: "Enamel mug set", category: "Kitchenware", pathway: "Upcycled", price: "$20", maker: "Jordan", initials: "J", location: "Kitsilano", dimensions: "9cm H, set of 4", status: "Recently posted",
+    story: "Chipped originals repainted with food-safe enamel and a simple pattern, a set of four.",
+    stages: ["Old material", "Repainting", "Curing", "Finished"],
+    makerBio: "Textile upcycler turning worn clothing into everyday bags and accessories, mostly denim and canvas.",
+    makerStats: { items: 9, tenure: "5mo", location: "Kitsilano, Vancouver", rating: 4.8, reviews: 26 }, makerOther: [] },
+  { id: 15, title: "Wool throw blanket", category: "Home decor", pathway: "Refurbished", price: "$45", maker: "Leila", initials: "L", location: "Kitsilano", dimensions: "130cm x 170cm", status: "Recently completed",
+    story: "Moth holes rewoven and the edges rebound. Still soft, still warm, just needed some care.",
+    stages: ["Before repair", "Rewoven", "Edging", "Finished"],
+    makerBio: "Works with reclaimed canvas and rope, mostly bags and small home textiles.",
+    makerStats: { items: 8, tenure: "4mo", location: "Kitsilano, Vancouver", rating: 4.6, reviews: 8 }, makerOther: [] },
+  { id: 16, title: "Ceramic planter", category: "Home decor", pathway: "Upcycled", price: "$24", maker: "Owen", initials: "O", location: "Riley Park", dimensions: "20cm H x 18cm diameter", status: "In progress",
+    story: "An old jar that no longer sealed properly, drilled and glazed into a planter instead.",
+    stages: ["Old jar", "Glazing", "Firing", "Finished"],
+    makerBio: "Fixes small electricals and lighting, rewiring and rebuilding rather than replacing where possible.",
+    makerStats: { items: 11, tenure: "6mo", location: "Riley Park, Vancouver", rating: 4.7, reviews: 12 }, makerOther: [] },
+];
+
+function ItemImage({ className = "h-40", title }) {
+  return (
+    <div style={{ background: theme.muted }} className={`w-full ${className} flex items-center justify-center rounded-md`}>
+      <Armchair size={26} style={{ color: theme.mutedForeground }} />
+    </div>
+  );
+}
+function PathwayBadge({ pathway }) {
+  const styles = pathway === "Refurbished" || pathway === "Refurbish"
+    ? { background: "#3e2723", color: "#ffffff" }
+    : pathway === "Plain sell"
+    ? { background: "#e9f1fb", color: "#1a5ea8" }
+    : pathway === "Give to a Maker"
+    ? { background: "#eef0f5", color: "#4a5568" }
+    : { background: "#2e7d32", color: "#ffffff" };
+  const width = pathway === "Give to a Maker" ? {} : { width: "108px" };
+  return <Badge style={{ ...styles, ...width }} className="text-center">{pathway}</Badge>;
+}
+function StarRating({ rating, reviews, size = 13 }) {
+  return (
+    <div className="flex items-center gap-1">
+      <Star size={size} fill={theme.primary} style={{ color: theme.primary }} />
+      <span className="text-xs font-medium">{rating}</span>
+      {reviews != null && <span className="text-xs" style={{ color: theme.mutedForeground }}>({reviews})</span>}
+    </div>
+  );
+}
+
+function TopBar({ onBack, onLogoClick, onBrowseClick, onListingsClick, onPostClick, onCartClick, onAccountClick, onMessagesClick, onSignOut, profile, cartCount = 0, activeNav = "browse", searchValue, onSearchChange }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  // On the Marketplace the search filters live. Everywhere else it keeps
+  // what you type here and, on Enter, opens the Marketplace with results.
+  const headerSearch = useContext(HeaderSearchContext);
+  const [draftSearch, setDraftSearch] = useState("");
+  const isLiveSearch = !!onSearchChange;
+  const searchText = isLiveSearch ? searchValue || "" : draftSearch;
+  const setSearchText = (v) => (isLiveSearch ? onSearchChange(v) : setDraftSearch(v));
+  const submitSearch = () => {
+    const q = searchText.trim();
+    if (isLiveSearch) { if (headerSearch) headerSearch.showResults(); return; }
+    if (q && headerSearch) headerSearch.search(q);
+  };
+  const navBtn = (active) => ({
+    background: active ? theme.primary : "transparent",
+    color: active ? theme.primaryForeground : theme.foreground,
+    border: `1px solid ${active ? theme.primary : theme.border}`,
+  });
+  return (
+    <header style={{ borderBottom: `0.5px solid ${theme.border}`, background: theme.card }} className="px-4 md:px-8 py-3 flex flex-wrap items-center gap-x-6 gap-y-3 sticky top-0 z-10">
+        <div className="order-1 flex items-center gap-3 shrink-0">
+          {onBack && <button onClick={onBack} className="flex items-center gap-1 text-sm" aria-label="Go back"><ArrowLeft size={16} /></button>}
+          <button onClick={onLogoClick} className="flex items-center gap-2">
+            <div style={{ background: theme.primary }} className="w-7 h-7 rounded-md flex items-center justify-center">
+              <Recycle size={16} style={{ color: theme.primaryForeground }} />
+            </div>
+            <span className="font-medium text-lg">Circuvo</span>
+          </button>
+        </div>
+        <div className="relative order-4 basis-full lg:order-2 lg:basis-auto lg:flex-1 lg:max-w-[520px] lg:min-w-[220px]">
+          <Search size={15} style={{ color: theme.mutedForeground }} className="absolute left-3 top-1/2 -translate-y-1/2" />
+          <Input type="search" placeholder="Search refurbished and upcycled items" className="pl-9 pr-9 w-full" aria-label="Search"
+            enterKeyHint="search" value={searchText} onChange={(e) => setSearchText(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); submitSearch(); } }} />
+          {searchText !== "" && (
+            <button onClick={() => setSearchText("")} aria-label="Clear search" title="Clear search"
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-lg leading-none"
+              style={{ color: theme.mutedForeground }}>&times;</button>
+          )}
+        </div>
+
+      <nav className="order-2 lg:order-3 ml-auto hidden md:flex items-center gap-2 shrink-0">
+        <button onClick={onBrowseClick} style={navBtn(activeNav === "browse")} className="text-sm font-medium px-3 py-2 rounded-md text-center transition-colors whitespace-nowrap flex items-center justify-center gap-1.5"><Store size={14} />Marketplace</button>
+        <button onClick={onPostClick} style={navBtn(activeNav === "post")} className="text-sm font-medium px-3 py-2 rounded-md text-center transition-colors whitespace-nowrap flex items-center justify-center gap-1.5"><Plus size={14} />Post</button>
+        <button onClick={onListingsClick} style={navBtn(activeNav === "listings")} className="text-sm font-medium px-3 py-2 rounded-md text-center transition-colors whitespace-nowrap flex items-center justify-center gap-1.5"><ListIcon size={14} />Listings</button>
+        <button onClick={onCartClick} style={navBtn(activeNav === "cart")} className="relative text-sm font-medium px-3 py-2 rounded-md text-center transition-colors whitespace-nowrap flex items-center justify-center gap-1.5" aria-label="View cart">
+          <ShoppingBag size={14} />Cart
+          {cartCount > 0 && <span style={{ background: activeNav === "cart" ? theme.primaryForeground : theme.primary, color: activeNav === "cart" ? theme.primary : theme.primaryForeground }} className="text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>}
+        </button>
+      </nav>
+
+      <div className="order-3 lg:order-4 ml-auto md:ml-0 shrink-0 relative">
+        {profile ? (
+          <>
+            <button onClick={() => setMenuOpen((v) => !v)} style={{ background: theme.accent, color: theme.accentForeground }} className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium" aria-label="Account menu">
+              {profile.name.trim().charAt(0).toUpperCase()}
+            </button>
+            {menuOpen && (
+              <>
+                <div onClick={() => setMenuOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 20 }} />
+                <div style={{ border: `1px solid ${theme.border}`, background: theme.card, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }} className="absolute right-0 top-9 rounded-md py-1 w-44 z-30">
+                  {[
+                    { label: profile.isMaker ? "Profile" : "Account", action: () => { setMenuOpen(false); onAccountClick(); } },
+                    { label: "Messages", action: () => { setMenuOpen(false); if (onMessagesClick) onMessagesClick(); } },
+                    { label: profile.isMaker ? "My jobs" : "Orders", action: () => setMenuOpen(false) },
+                    { label: "Favourites", action: () => setMenuOpen(false) },
+                    { label: "Settings", action: () => setMenuOpen(false) },
+                  ].map((item) => (
+                    <button key={item.label} onClick={item.action} className="w-full text-left text-sm px-3 py-2 hover:opacity-70" style={{ color: theme.foreground }}>
+                      {item.label}
+                    </button>
+                  ))}
+                  <div style={{ borderTop: `0.5px solid ${theme.border}` }} className="mt-1 pt-1">
+                    <button onClick={() => { setMenuOpen(false); onSignOut(); }} className="w-full text-left text-sm px-3 py-2 hover:opacity-70" style={{ color: "#c0392b" }}>
+                      Sign out
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </>
+        ) : (
+          <button onClick={onAccountClick} style={{ color: theme.primary }} className="text-sm font-medium whitespace-nowrap">
+            Sign in / Sign up
+          </button>
+        )}
+      </div>
+      {/* Phone only: main navigation as a bottom tab bar */}
+      <nav aria-label="Main" className="circuvo-tabbar md:hidden fixed bottom-0 inset-x-0 z-20 flex px-2"
+        style={{ background: theme.card, borderTop: `1px solid ${theme.border}`, paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+        {[
+          { key: "browse", label: "Marketplace", Icon: Store, onClick: onBrowseClick },
+          { key: "post", label: "Post", Icon: Plus, onClick: onPostClick },
+          { key: "listings", label: "Listings", Icon: ListIcon, onClick: onListingsClick },
+          { key: "cart", label: "Cart", Icon: ShoppingBag, onClick: onCartClick },
+        ].map(({ key, label, Icon: TabIcon, onClick }) => {
+          const active = activeNav === key;
+          const color = active ? theme.primary : theme.mutedForeground;
+          return (
+            <button key={key} onClick={onClick} aria-current={active ? "page" : undefined}
+              className="flex-1 flex flex-col items-center justify-center gap-1 pt-2 pb-2 relative" style={{ minHeight: "60px", color }}>
+              <span className="relative">
+                <TabIcon size={20} style={{ color }} />
+                {key === "cart" && cartCount > 0 && (
+                  <span style={{ background: theme.primary, color: theme.primaryForeground }} className="absolute -top-1.5 -right-2.5 text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
+                )}
+              </span>
+              <span className="text-[11px]" style={{ fontWeight: active ? 600 : 500 }}>{label}</span>
+            </button>
+          );
+        })}
+      </nav>
+    </header>
+  );
+}
+
+function TrustStrip({ onBecomeMaker, profile }) {
+  const stats = [{ Icon: Recycle, label: "items diverted", value: "312" }, { Icon: ShieldCheck, label: "verified Makers", value: "24" }, { Icon: Leaf, label: "kg kept from landfill", value: "1,860" }];
+  return (
+    <div style={{ background: theme.secondary, borderBottom: `0.5px solid ${theme.border}` }} className="py-3">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 flex flex-wrap items-center justify-between gap-x-8 gap-y-2">
+        <div className="flex flex-wrap items-center gap-x-6 md:gap-x-8 gap-y-1">
+          {stats.map((s) => (
+            <div key={s.label} className="flex items-center gap-2">
+              <s.Icon size={15} style={{ color: theme.secondaryForeground }} />
+              <span className="text-sm font-medium" style={{ color: theme.secondaryForeground }}>{s.value}</span>
+              <span className="text-sm" style={{ color: theme.mutedForeground }}>{s.label}</span>
+            </div>
+          ))}
+        </div>
+        {profile && profile.isMaker ? (
+          <span style={{ color: theme.secondaryForeground }} className="text-sm font-medium flex items-center gap-1.5">
+            <ShieldCheck size={14} />You're a Maker
+          </span>
+        ) : (
+          <button onClick={onBecomeMaker} style={{ background: theme.primary, color: theme.primaryForeground }} className="text-sm font-medium px-3 py-1.5 rounded-full whitespace-nowrap">
+            Become a Maker
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function BackToTop() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 500);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  if (!visible) return null;
+  return (
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      aria-label="Back to top"
+      style={{ background: theme.primary, color: theme.primaryForeground, boxShadow: "0 2px 8px rgba(0,0,0,0.2)" }}
+      className="fixed bottom-24 md:bottom-6 right-4 md:right-6 w-11 h-11 rounded-full flex items-center justify-center z-20"
+    >
+      <ArrowUp size={18} />
+    </button>
+  );
+}
+
+// The "Want to get in touch?" form is simulated: it checks the email
+// looks valid, then shows a thank you. Nothing is actually sent.
+function Footer() {
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactError, setContactError] = useState("");
+  const [contactSent, setContactSent] = useState("");
+  const submitContact = () => {
+    const email = contactEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setContactError("Enter a valid email address"); return; }
+    setContactError("");
+    setContactSent(email);
+    setContactEmail("");
+  };
+  const nav = useContext(FooterNavContext);
+  const [comingSoon, setComingSoon] = useState("");
+  const comingSoonTimer = useRef(null);
+  useEffect(() => () => clearTimeout(comingSoonTimer.current), []);
+  const go = (fn) => () => { if (fn) fn(); window.scrollTo(0, 0); };
+  const showComingSoon = (label) => () => {
+    setComingSoon(label);
+    clearTimeout(comingSoonTimer.current);
+    comingSoonTimer.current = setTimeout(() => setComingSoon(""), 2500);
+  };
+  const link = (label, onClick) => (
+    <button onClick={onClick} className="text-left hover:underline" style={{ color: theme.mutedForeground }}>{label}</button>
+  );
+  const focusContact = () => {
+    const el = document.getElementById("footer-contact-email");
+    if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.focus({ preventScroll: true }); }
+  };
+  return (
+    <footer style={{ background: theme.background, borderTop: `0.5px solid ${theme.border}` }} className="mt-8">
+      <div style={{ borderBottom: `0.5px solid ${theme.border}` }} className="py-10">
+        <div className="max-w-6xl mx-auto px-4 md:px-8 flex flex-wrap items-center justify-between gap-6">
+          <div>
+            <p className="text-xl font-medium mb-1">Want to get in touch?</p>
+            <p className="text-sm" style={{ color: theme.mutedForeground }}>Questions about a listing, becoming a Maker, or anything else, we're happy to hear from you.</p>
+          </div>
+          {contactSent ? (
+            <div role="status" style={{ background: theme.secondary, color: theme.secondaryForeground }} className="rounded-md px-4 py-3 text-sm max-w-sm">
+              Thanks! We'll get back to you at <span className="font-medium">{contactSent}</span> soon.
+              <button onClick={() => setContactSent("")} className="block text-xs underline mt-1" style={{ color: theme.secondaryForeground }}>Send another</button>
+            </div>
+          ) : (
+            <div className="flex flex-col w-full sm:w-auto">
+              <div className="flex items-center gap-2">
+                <Input id="footer-contact-email" type="email" placeholder="you@email.com" className="flex-1 min-w-0 sm:flex-none sm:w-56" aria-label="Your email"
+                  value={contactEmail} onChange={(e) => { setContactEmail(e.target.value); if (contactError) setContactError(""); }}
+                  onKeyDown={(e) => { if (e.key === "Enter") submitContact(); }} />
+                <PrimaryButton className="h-9 px-5 shrink-0" onClick={submitContact}>Contact us</PrimaryButton>
+              </div>
+              {contactError && <p className="text-xs mt-1" style={{ color: "#c0392b" }}>{contactError}</p>}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="py-10">
+        <div className="max-w-6xl mx-auto px-4 md:px-8">
+          <div className="flex flex-wrap items-start justify-between gap-8 mb-8">
+            <div className="max-w-xs">
+              <div className="flex items-center gap-2 mb-2">
+                <div style={{ background: theme.primary }} className="w-6 h-6 rounded-md flex items-center justify-center"><Recycle size={13} style={{ color: theme.primaryForeground }} /></div>
+                <span className="font-medium text-sm">Circuvo</span>
+              </div>
+              <p className="text-xs" style={{ color: theme.mutedForeground }}>Not trash. Just unfinished. A Vancouver marketplace for refurbished and upcycled goods.</p>
+            </div>
+            <div className="flex flex-wrap gap-x-12 gap-y-6 text-xs">
+              <div><p className="font-medium mb-2">Marketplace</p>
+                <div className="flex flex-col gap-1.5" style={{ color: theme.mutedForeground }}>{link("Browse", go(nav && nav.goBrowse))}{link("Post an item", go(nav && nav.goPost))}{link("Listings", go(nav && nav.goListings))}</div></div>
+              <div><p className="font-medium mb-2">Circuvo</p>
+                <div className="flex flex-col gap-1.5" style={{ color: theme.mutedForeground }}>{link("About", showComingSoon("About"))}{link("Become a Maker", go(nav && nav.becomeMaker))}{link("Help", showComingSoon("Help"))}</div></div>
+              <div><p className="font-medium mb-2">Support</p>
+                <div className="flex flex-col gap-1.5" style={{ color: theme.mutedForeground }}>{link("FAQ", showComingSoon("FAQ"))}{link("Trust and safety", showComingSoon("Trust and safety"))}{link("Contact us", focusContact)}</div></div>
+            </div>
+          </div>
+          <p role="status" className="text-xs mb-2 text-right" style={{ color: theme.primary, minHeight: "16px" }}>{comingSoon && `${comingSoon} is coming soon.`}</p>
+          <Separator className="mb-4" />
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs" style={{ color: theme.mutedForeground }}>
+            <span>&copy; {new Date().getFullYear()} Circuvo, Vancouver</span>
+            <span className="flex items-center gap-1"><Leaf size={12} />312 items diverted from landfill so far</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// Shared top row for the onboarding screens: logo, progress dots, Skip.
+function OnboardingHeader({ step, total, onSkip }) {
+  return (
+    <div className="px-4 md:px-8 py-5 flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <div style={{ background: theme.primary }} className="w-7 h-7 rounded-md flex items-center justify-center"><Recycle size={16} style={{ color: theme.primaryForeground }} /></div>
+        <span className="font-medium text-lg">Circuvo</span>
+      </div>
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-1.5" aria-label={`Step ${step} of ${total}`}>
+          {Array.from({ length: total }, (_, i) => (
+            <span key={i} className="h-2 rounded-full transition-all" style={{ width: i + 1 === step ? 20 : 8, background: i + 1 === step ? theme.primary : theme.border }} />
+          ))}
+        </div>
+        <button onClick={onSkip} className="text-sm font-medium px-1 py-3" style={{ color: theme.mutedForeground }}>Skip</button>
+      </div>
+    </div>
+  );
+}
+
+// Onboarding step 1: welcome line, then a loop showing how items move
+// through Circuvo (List, Makers in the middle, Shop), with Makers
+// explained where the role appears.
+function OnboardingWelcome({ onNext, onSkip }) {
+  const node = (x, y, size, bg, fg, IconCmp) => (
+    <div style={{ position: "absolute", left: x - size / 2, top: y - size / 2, width: size, height: size, borderRadius: size / 2, background: bg, boxShadow: `0 0 0 6px ${theme.background}` }}
+      className="flex items-center justify-center"><IconCmp size={22} style={{ color: fg }} /></div>
+  );
+  return (
+    <div className="min-h-screen flex flex-col">
+      <OnboardingHeader step={1} total={2} onSkip={onSkip} />
+      <div className="flex-1 flex flex-col items-center justify-center px-8 pb-10 text-center">
+        <h1 className="text-3xl font-medium mb-3 max-w-md text-balance">Welcome to Circuvo</h1>
+        <p className="text-sm mb-5 max-w-sm md:max-w-none md:whitespace-nowrap" style={{ color: theme.mutedForeground }}>Buy and sell secondhand locally, and keep good things in circulation.</p>
+        <div className="hidden lg:block mb-7">
+          <div role="img" aria-label="List an item, a local Maker repairs or upcycles it, then someone shops it, and around again. Makers are local repairers, tailors, woodworkers and upcyclers."
+            style={{ position: "relative", width: 900, height: 320 }}>
+            <svg width="900" height="320" viewBox="0 0 900 320" style={{ position: "absolute", left: 0, top: 0 }} aria-hidden="true">
+            <ellipse cx="450" cy="165" rx="230" ry="100" fill="none" stroke={theme.accent} strokeWidth="3" />
+            <path d="M-6,-6 L4,0 L-6,6" transform="translate(287.4,94.3) rotate(-23.5)" fill="none" stroke={theme.primary} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M-6,-6 L4,0 L-6,6" transform="translate(612.6,94.3) rotate(23.5)" fill="none" stroke={theme.primary} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M-6,-6 L4,0 L-6,6" transform="translate(612.6,235.7) rotate(156.5)" fill="none" stroke={theme.primary} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M-6,-6 L4,0 L-6,6" transform="translate(287.4,235.7) rotate(-156.5)" fill="none" stroke={theme.primary} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {node(220, 165, 52, theme.accent, theme.accentForeground, Plus)}
+            {node(450, 65, 60, theme.primary, theme.primaryForeground, Wrench)}
+            {node(680, 165, 52, theme.accent, theme.accentForeground, ShoppingBag)}
+            <div style={{ position: "absolute", left: 0, top: 135, width: 180, textAlign: "right" }}>
+              <p className="text-base font-semibold mb-1">List</p>
+              <p className="text-[13px] leading-relaxed" style={{ color: theme.mutedForeground }}>Sell, repair or upcycle something you own.</p>
+            </div>
+            <div style={{ position: "absolute", left: 720, top: 135, width: 180, textAlign: "left" }}>
+              <p className="text-base font-semibold mb-1">Shop</p>
+              <p className="text-[13px] leading-relaxed" style={{ color: theme.mutedForeground }}>Buy unique, one of a kind pieces, ready today.</p>
+            </div>
+            <div style={{ position: "absolute", left: 305, top: 104, width: 290, textAlign: "center" }}>
+              <p className="text-[15px] font-semibold mb-1">Makers</p>
+              <p className="text-[13px] leading-relaxed" style={{ color: theme.mutedForeground }}>Local repairers, tailors, woodworkers and upcyclers. They repair and upcycle items, and sell what they create here.</p>
+            </div>
+            <p style={{ position: "absolute", left: 330, top: 279, width: 240, color: theme.mutedForeground }} className="text-xs text-center">and around again</p>
+          </div>
+        </div>
+        {/* Phone and tablet: the same loop, drawn as a tall closed track */}
+        <div className="lg:hidden w-full mb-7"><PhoneLoop /></div>
+        <PrimaryButton className="w-full max-w-xs" onClick={onNext}>Continue</PrimaryButton>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+
+// Phone and tablet version of the onboarding loop. The three steps sit on
+// the right side of a closed, rounded track: down through List, Makers and
+// Shop, around the bottom, back up the left side and into List again. Node
+// positions are measured so the track always meets the circles, however
+// the text wraps.
+function PhoneLoop() {
+  const wrapRef = useRef(null);
+  const nodeRefs = [useRef(null), useRef(null), useRef(null)];
+  const [geo, setGeo] = useState(null);
+  const steps = [
+    { title: "List", text: "Sell, repair or upcycle something you own.", Icon: Plus, big: false },
+    { title: "Makers", text: "Local repairers, tailors, woodworkers and upcyclers. They repair and upcycle items, and sell what they create here.", Icon: Wrench, big: true },
+    { title: "Shop", text: "Buy unique, one of a kind pieces, ready today.", Icon: ShoppingBag, big: false },
+  ];
+  React.useLayoutEffect(() => {
+    const measure = () => {
+      const wrap = wrapRef.current;
+      if (!wrap || nodeRefs.some((r) => !r.current)) return;
+      const box = wrap.getBoundingClientRect();
+      const centers = nodeRefs.map((r) => {
+        const n = r.current.getBoundingClientRect();
+        return { x: n.left - box.left + n.width / 2, y: n.top - box.top + n.height / 2 };
+      });
+      setGeo({ w: box.width, h: box.height, centers });
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    if (ro && wrapRef.current) ro.observe(wrapRef.current);
+    return () => { window.removeEventListener("resize", measure); if (ro) ro.disconnect(); };
+  }, []);
+
+  let track = null;
+  if (geo) {
+    const [c1, c2, c3] = geo.centers;
+    const x = c1.x, L = x - 52, ext = 44, r = 22;
+    const top = c1.y - ext, bot = c3.y + ext;
+    const d = `M ${x} ${c1.y} V ${bot - r} Q ${x} ${bot} ${x - r} ${bot} H ${L + r} Q ${L} ${bot} ${L} ${bot - r} V ${top + r} Q ${L} ${top} ${L + r} ${top} H ${x - r} Q ${x} ${top} ${x} ${top + r} Z`;
+    const chevron = (key, cx, cy, angle) => (
+      <path key={key} d="M-5,-5 L4,0 L-5,5" transform={`translate(${cx},${cy}) rotate(${angle})`}
+        fill="none" stroke={theme.primary} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    );
+    track = (
+      <svg width={geo.w} height={geo.h} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }} aria-hidden="true">
+        <path d={d} fill="none" stroke={theme.accent} strokeWidth="3" />
+        {chevron("down1", x, (c1.y + c2.y) / 2, 90)}
+        {chevron("down2", x, (c2.y + c3.y) / 2, 90)}
+        {chevron("bottom", (x + L) / 2, bot, 180)}
+        {chevron("up", L, (top + bot) / 2, -90)}
+        {chevron("top", (x + L) / 2, top, 0)}
+      </svg>
+    );
+  }
+
+  return (
+    <div ref={wrapRef} className="relative mx-auto" style={{ maxWidth: 360, paddingLeft: 64, paddingTop: 48, paddingBottom: 30 }}
+      role="img" aria-label="List an item, a local Maker repairs or upcycles it, then someone shops it, and around again. Makers are local repairers, tailors, woodworkers and upcyclers.">
+      {track}
+      <div className="relative flex flex-col" style={{ gap: 36 }}>
+        {steps.map((stepItem, idx) => {
+          const size = stepItem.big ? 56 : 48;
+          const StepIcon = stepItem.Icon;
+          return (
+            <div key={stepItem.title} className="flex items-center gap-4 text-left">
+              <div className="flex justify-center shrink-0" style={{ width: 56 }}>
+                <div ref={nodeRefs[idx]} className="flex items-center justify-center"
+                  style={{ width: size, height: size, borderRadius: size / 2, background: stepItem.big ? theme.primary : theme.accent, boxShadow: `0 0 0 6px ${theme.background}` }}>
+                  <StepIcon size={20} style={{ color: stepItem.big ? theme.primaryForeground : theme.accentForeground }} />
+                </div>
+              </div>
+              <div>
+                <p className="text-base font-semibold mb-0.5">{stepItem.title}</p>
+                <p className="text-[13px] leading-relaxed" style={{ color: theme.mutedForeground }}>{stepItem.text}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-xs text-left" style={{ color: theme.mutedForeground, marginTop: 22, marginLeft: -24 }}>and around again</p>
+    </div>
+  );
+}
+
+// Onboarding step 2: the three ways to list an item. Makers have already
+// been introduced on step 1. Get started goes straight to the Marketplace.
+function OnboardingPathways({ onNext, onSkip }) {
+  const pathways = [
+    { name: "Plain Sell", desc: "You sell the item as is.", pay: "No fixing needed, we'll help it find its next home." },
+    { name: "Repair/Refurbish", desc: "A Maker fixes and restores the item.", pay: "You pay the Maker for the repair, and it comes back good as new." },
+    { name: "Upcycle", desc: "A Maker transforms the item into something new.", pay: "You pay the Maker for the transformation, and it comes back reimagined." },
+  ];
+  return (
+    <div className="min-h-screen flex flex-col">
+      <OnboardingHeader step={2} total={2} onSkip={onSkip} />
+      <div className="flex-1 flex flex-col items-center justify-center px-8 pb-10 text-center">
+        <h1 className="text-3xl font-medium mb-3 max-w-md text-balance">Have something to let go?</h1>
+        <p className="text-sm mb-7 max-w-md" style={{ color: theme.mutedForeground }}>When you list an item, you choose what happens to it next.</p>
+        <div className="flex flex-col gap-3 w-full max-w-md mb-8 text-left">
+          {pathways.map((p) => (
+            <div key={p.name} style={{ border: `1px solid ${theme.border}`, background: theme.card }} className="rounded-md p-4">
+              <p className="text-sm font-medium mb-1">{p.name}</p>
+              <p className="text-sm mb-2" style={{ color: theme.mutedForeground }}>{p.desc}</p>
+              <p className="text-xs" style={{ color: theme.primary }}>{p.pay}</p>
+            </div>
+          ))}
+        </div>
+        <PrimaryButton className="w-full max-w-xs" onClick={onNext}>Get started</PrimaryButton>
+      </div>
+      <Footer />
+    </div>
+  );
+}
+function DashboardView({ searchTerm, setSearchTerm, scrollToResults, onResultsShown, onMessagesClick, onSelectItem, onGoListings, onGoPost, onGoHome, onCartClick, onAccountClick, onSignOut, onBecomeMaker, profile, cartCount }) {
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [hoveredCategory, setHoveredCategory] = useState(null);
+  const resultsRef = useRef(null);
+  // Arriving from a search on another screen: bring the results into view.
+  // Runs after the app's scroll to top on screen change.
+  useEffect(() => {
+    if (!scrollToResults) return;
+    const t = setTimeout(() => {
+      if (resultsRef.current) resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (onResultsShown) onResultsShown();
+    }, 60);
+    return () => clearTimeout(t);
+  }, [scrollToResults]);
+  const [priceRange, setPriceRange] = useState("any");
+  const [sortBy, setSortBy] = useState("featured");
+  const [statusFilter, setStatusFilter] = useState("any");
+
+  const priceValue = (item) => parseInt(item.price.replace("$", ""), 10);
+  const inPriceRange = (item, range) => {
+    const p = priceValue(item);
+    if (range === "under50") return p < 50;
+    if (range === "50to100") return p >= 50 && p <= 100;
+    if (range === "over100") return p > 100;
+    return true;
+  };
+
+  let filtered = activeCategory === "All" ? listings : listings.filter((l) => l.category === activeCategory);
+  filtered = filtered.filter((item) => inPriceRange(item, priceRange));
+  if (statusFilter !== "any") filtered = filtered.filter((item) => item.status === statusFilter);
+  if (searchTerm.trim() !== "") {
+    const q = searchTerm.trim().toLowerCase();
+    filtered = filtered.filter((item) => item.title.toLowerCase().includes(q) || item.maker.toLowerCase().includes(q) || item.category.toLowerCase().includes(q) || item.pathway.toLowerCase().includes(q));
+  }
+  filtered = [...filtered].sort((a, b) => {
+    if (sortBy === "price-asc") return priceValue(a) - priceValue(b);
+    if (sortBy === "price-desc") return priceValue(b) - priceValue(a);
+    if (sortBy === "rating-desc") return b.makerStats.rating - a.makerStats.rating;
+    if (sortBy === "refurbished-first") return a.pathway === "Refurbished" ? -1 : b.pathway === "Refurbished" ? 1 : 0;
+    if (sortBy === "upcycled-first") return a.pathway === "Upcycled" ? -1 : b.pathway === "Upcycled" ? 1 : 0;
+    return 0;
+  });
+
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} searchValue={searchTerm} onSearchChange={setSearchTerm} onLogoClick={onGoHome} onBrowseClick={() => {}}
+        onListingsClick={onGoListings} onPostClick={onGoPost} onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={cartCount} activeNav="browse" />
+      <TrustStrip onBecomeMaker={onBecomeMaker} profile={profile} />
+      <div style={{ background: "#2e7d32", borderBottom: `0.5px solid ${theme.border}` }} className="py-8 md:py-14">
+        <div className="max-w-6xl mx-auto px-4 md:px-8">
+          <h1 className="text-3xl md:text-5xl mb-3 max-w-xl leading-tight tracking-tight" style={{ color: "#ffffff", fontWeight: 400 }}>Made to be loved twice</h1>
+          <p className="text-base" style={{ color: "#e3f2e4" }}>Every listing shows who fixed or transformed it, and how. Browse by category or by pathway to find something worth keeping.</p>
+        </div>
+      </div>
+      <main className="px-4 md:px-8 py-8 max-w-6xl mx-auto">
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+          <div>
+            <h2 className="text-xl font-medium mb-1">Marketplace</h2>
+            <p className="text-sm" style={{ color: theme.mutedForeground }}>Browse refurbished and upcycled items, made by real people you can see and trust.</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <div style={{ border: `0.5px solid ${theme.border}` }} className="flex items-center gap-2 rounded-md px-3 h-9 text-sm">
+              <SlidersHorizontal size={14} style={{ color: theme.mutedForeground }} />
+              <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)} className="outline-none border-none text-sm bg-transparent">
+                <option value="any">Any price</option><option value="under50">Under $50</option><option value="50to100">$50 to $100</option><option value="over100">Over $100</option>
+              </select>
+            </div>
+            <div style={{ border: `0.5px solid ${theme.border}` }} className="flex items-center gap-2 rounded-md px-3 h-9 text-sm">
+              <ShieldCheck size={14} style={{ color: theme.mutedForeground }} />
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="outline-none border-none text-sm bg-transparent">
+                <option value="any">Any status</option>
+                {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            <div style={{ border: `0.5px solid ${theme.border}` }} className="flex items-center gap-2 rounded-md px-3 h-9 text-sm">
+              <ArrowUpDown size={14} style={{ color: theme.mutedForeground }} />
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="outline-none border-none text-sm bg-transparent">
+                <option value="featured">Featured</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option>
+                <option value="rating-desc">Highest rated Maker</option><option value="refurbished-first">Refurbished first</option><option value="upcycled-first">Upcycled first</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div className="relative mb-8 -mx-4 md:mx-0">
+        <div className="no-scrollbar flex items-center gap-2 overflow-x-auto md:flex-wrap md:overflow-visible px-4 md:px-0 py-1">
+          {categories.map((cat) => {
+            const active = cat === activeCategory;
+            const isHovered = cat === hoveredCategory;
+            return (
+              <button key={cat} onClick={() => setActiveCategory(cat)} onMouseEnter={() => setHoveredCategory(cat)} onMouseLeave={() => setHoveredCategory(null)}
+                style={{ background: active ? theme.primary : isHovered ? theme.accent : "transparent",
+                  color: active ? theme.primaryForeground : isHovered ? theme.accentForeground : theme.foreground,
+                  border: `1px solid ${active ? theme.primary : theme.border}`,
+                  transform: isHovered && !active ? "translateY(-1px)" : "none" }}
+                className="shrink-0 whitespace-nowrap text-sm px-4 py-1.5 rounded-full transition-all">{cat}</button>
+            );
+          })}
+        </div>
+        <div aria-hidden="true" className="md:hidden pointer-events-none absolute right-0 top-0 bottom-0 w-12" style={{ background: `linear-gradient(to right, transparent, ${theme.background})` }} />
+        </div>
+        <p ref={resultsRef} className="text-sm mb-4" style={{ color: theme.mutedForeground, scrollMarginTop: "184px" }}>{filtered.length} {filtered.length === 1 ? "item" : "items"}{searchTerm.trim() !== "" && ` matching "${searchTerm.trim()}"`}</p>
+        {filtered.length === 0 && (
+          <div style={{ border: `1px solid ${theme.border}` }} className="rounded-md py-12 text-center mb-4">
+            <p className="text-sm" style={{ color: theme.mutedForeground }}>Nothing matches that search yet. Try a different word or clear your filters.</p>
+          </div>
+        )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filtered.map((item) => (
+            <Card key={item.id} onClick={() => onSelectItem(item)} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer p-0 group" style={{ background: theme.card }}>
+              <ItemImage title={item.title} />
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-1 gap-2">
+                  <h3 className="font-medium text-sm">{item.title}</h3>
+                  <PathwayBadge pathway={item.pathway} />
+                </div>
+                <div className="mb-1 flex justify-end"><OneOfAKindBadge /></div>
+                <p className="text-xs mb-1 flex items-center gap-1" style={{ color: theme.mutedForeground }}><MapPin size={11} />{item.location}</p>
+                <p className="text-xs mb-3" style={{ color: theme.primary }}>{item.status}</p>
+                <Separator className="mb-3" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Avatar className="w-6 h-6"><AvatarFallback style={{ background: theme.accent, color: theme.accentForeground, fontSize: "10px" }}>{item.initials}</AvatarFallback></Avatar>
+                    <span className="text-xs" style={{ color: theme.mutedForeground }}>by {item.maker}</span>
+                  </div>
+                  <span className="text-base font-medium" style={{ color: theme.primary }}>{item.price}</span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </main>
+      <Footer />
+      <BackToTop />
+    </div>
+  );
+}
+
+function OneOfAKindBadge() {
+  return (
+    <Badge style={{ background: "#c8e6c9", color: "#1b5e20", border: "1px solid #a5d6a7", width: "108px" }} className="font-normal text-center">
+      One of a kind
+    </Badge>
+  );
+}
+
+function PhotoGallery({ title }) {
+  const angles = ["Front", "Side", "Detail", "Back"];
+  const [active, setActive] = useState(0);
+  return (
+    <div className="h-full flex flex-col">
+      <ItemImage className="flex-1 min-h-[300px] mb-2" title={title} />
+      <div className="grid grid-cols-2 gap-2">
+        {angles.map((angle, i) => (
+          <div key={angle} className="flex flex-col items-center">
+            <button
+              onClick={() => setActive(i)}
+              style={{ border: `${active === i ? 2 : 1}px solid ${active === i ? theme.primary : theme.border}` }}
+              className="rounded-md overflow-hidden w-full"
+            >
+              <ItemImage className="h-20" title={title} />
+            </button>
+            <span className="text-xs mt-1" style={{ color: active === i ? theme.primary : theme.mutedForeground }}>{angle} view</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ItemDetailView({ onMessagesClick, item, cart, onBack, onViewProfile, onLogoClick, onAddToCart, onMessage, onGoPost, onGoListings, onGoBrowse, onCartClick, onAccountClick, onSignOut, profile, cartCount }) {
+  const inCart = cart && cart.some((i) => i.id === item.id);
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onBack={onBack} onLogoClick={onLogoClick} onBrowseClick={onGoBrowse} onListingsClick={onGoListings} onPostClick={onGoPost}
+        onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={cartCount} activeNav="detail" />
+      <main className="px-8 py-10 max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <PhotoGallery title={item.title} />
+          <div>
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <h1 className="text-2xl font-medium">{item.title}</h1>
+              <PathwayBadge pathway={item.pathway} />
+            </div>
+            <div className="mb-2 flex justify-end"><OneOfAKindBadge /></div>
+            <p className="text-xl font-medium mb-2" style={{ color: theme.primary }}>{item.price}</p>
+            <p className="text-sm mb-1 flex items-center gap-1" style={{ color: theme.mutedForeground }}><MapPin size={13} />{item.category} &middot; Pickup in {item.location}</p>
+            <p className="text-sm mb-6" style={{ color: theme.mutedForeground }}>Dimensions: {item.dimensions}</p>
+            <Separator className="mb-4" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <Avatar className="w-9 h-9"><AvatarFallback style={{ background: theme.accent, color: theme.accentForeground }}>{item.initials}</AvatarFallback></Avatar>
+                <div><p className="text-sm font-medium">{item.maker}</p>
+                  <p className="text-xs flex items-center gap-1" style={{ color: theme.mutedForeground }}><ShieldCheck size={12} style={{ color: theme.primary }} />Verified Maker &middot; {item.makerStats.items} items restored</p></div>
+              </div>
+              <div className="flex items-center gap-3">
+                <button onClick={() => onViewProfile(item)} className="text-sm underline" style={{ color: theme.primary }}>View profile</button>
+                <button onClick={onMessage} aria-label="Message Maker" title="Message Maker" style={{ color: theme.mutedForeground }}><ChatIcon size={17} /></button>
+              </div>
+            </div>
+            <button onClick={() => onViewProfile(item)} className="flex items-center gap-1 mb-4" aria-label="View Maker rating">
+              <Star size={13} fill={theme.primary} style={{ color: theme.primary }} />
+              <span className="text-xs font-medium">{item.makerStats.rating}</span>
+              <span className="text-xs underline" style={{ color: theme.primary }}>Maker rating &middot; {item.makerStats.reviews} reviews</span>
+            </button>
+            <p className="text-xs font-medium mb-2">How it was made</p>
+            <div className="grid grid-cols-4 gap-2 mb-4">
+              {item.stages.map((stage, i) => (
+                <div key={stage} className="flex flex-col items-center">
+                  <div style={{ background: theme.muted }} className="h-16 w-full rounded-md flex items-center justify-center">
+                    {i === item.stages.length - 1 ? <Armchair size={18} style={{ color: theme.primary }} /> : <ImageIcon size={18} style={{ color: theme.mutedForeground }} />}
+                  </div>
+                  <span className="text-xs mt-1 text-center" style={{ color: theme.mutedForeground }}>{stage}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm mb-8" style={{ color: theme.mutedForeground }}>&ldquo;{item.story}&rdquo;</p>
+            <div className="flex items-center gap-2">
+              {inCart ? (
+                <Button variant="outline" style={{ borderColor: theme.primary, color: theme.primary }} className="flex-1 gap-2 flex items-center justify-center" onClick={onCartClick}>
+                  <ShieldCheck size={15} />Added to cart &middot; View cart
+                </Button>
+              ) : (
+                <PrimaryButton onClick={() => onAddToCart(item)} className="flex-1"><ShoppingBag size={15} />Add to cart &middot; {item.price}</PrimaryButton>
+              )}
+              <Button variant="outline" size="icon" aria-label="Save to wishlist"><Heart size={16} /></Button>
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+      <BackToTop />
+    </div>
+  );
+}
+
+function ProviderProfileView({ onMessagesClick, item, onBack, onLogoClick, onGoPost, onGoListings, onGoBrowse, onCartClick, onAccountClick, onSignOut, profile, cartCount }) {
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onBack={onBack} onLogoClick={onLogoClick} onBrowseClick={onGoBrowse} onListingsClick={onGoListings} onPostClick={onGoPost} onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={cartCount} activeNav="detail" />
+      <main className="px-8 py-10 max-w-2xl mx-auto">
+        <div className="flex flex-col items-center text-center mb-6">
+          <Avatar className="w-16 h-16 mb-3"><AvatarFallback style={{ background: theme.accent, color: theme.accentForeground, fontSize: "20px" }}>{item.initials}</AvatarFallback></Avatar>
+          <h1 className="text-xl font-medium">{item.maker}</h1>
+          <p className="text-sm flex items-center gap-1 mt-1" style={{ color: theme.primary }}><ShieldCheck size={14} />Verified Maker</p>
+        </div>
+        <Separator className="mb-6" />
+        <div className="flex justify-around mb-6 text-center">
+          <div><p className="text-lg font-medium">{item.makerStats.items}</p><p className="text-xs" style={{ color: theme.mutedForeground }}>Items restored</p></div>
+          <div><p className="text-lg font-medium">{item.makerStats.tenure}</p><p className="text-xs" style={{ color: theme.mutedForeground }}>On Circuvo</p></div>
+          <div><p className="text-lg font-medium">{item.location}</p><p className="text-xs" style={{ color: theme.mutedForeground }}>{item.makerStats.location.split(", ")[1]}</p></div>
+        </div>
+        <Separator className="mb-6" />
+        <p className="text-sm mb-8" style={{ color: theme.mutedForeground }}>{item.makerBio}</p>
+        {item.makerOther.length > 0 && (
+          <>
+            <p className="text-sm font-medium mb-3">Also by {item.maker}</p>
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              {item.makerOther.map((other) => (
+                <Card key={other.title} className="p-0 overflow-hidden">
+                  <ItemImage className="h-20" title={other.title} />
+                  <CardContent className="p-3"><p className="text-sm font-medium">{other.title}</p><p className="text-xs" style={{ color: theme.mutedForeground }}>{other.price}</p></CardContent>
+                </Card>
+              ))}
+            </div>
+          </>
+        )}
+        <Button variant="outline" className="w-full" onClick={onBack}>Back to item</Button>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function CartView({ onMessagesClick, cart, onRemove, onCheckout, onGoBrowse, onGoListings, onGoPost, onGoHome, onCartClick, onAccountClick, onSignOut, profile }) {
+  const groups = {};
+  cart.forEach((item) => { if (!groups[item.maker]) groups[item.maker] = []; groups[item.maker].push(item); });
+  const total = cart.reduce((sum, item) => sum + Number(item.price.replace("$", "")), 0);
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onLogoClick={onGoHome} onBrowseClick={onGoBrowse} onListingsClick={onGoListings} onPostClick={onGoPost} onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={cart.length} activeNav="cart" />
+      <main className="px-8 py-10 max-w-2xl mx-auto">
+        <h1 className="text-xl font-medium mb-6">Your cart</h1>
+        {cart.length === 0 ? (
+          <div style={{ border: `1px solid ${theme.border}` }} className="rounded-md py-16 text-center">
+            <ShoppingBag size={28} style={{ color: theme.mutedForeground }} className="mx-auto mb-3" />
+            <p className="text-sm mb-4" style={{ color: theme.mutedForeground }}>Nothing in your cart yet.</p>
+            <Button variant="outline" onClick={onGoBrowse}>Browse the marketplace</Button>
+          </div>
+        ) : (
+          <>
+            {Object.entries(groups).map(([maker, items]) => {
+              const subtotal = items.reduce((sum, item) => sum + Number(item.price.replace("$", "")), 0);
+              return (
+                <div key={maker} style={{ border: `1px solid ${theme.border}` }} className="rounded-md p-4 mb-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Avatar className="w-7 h-7"><AvatarFallback style={{ background: theme.accent, color: theme.accentForeground, fontSize: "11px" }}>{maker[0]}</AvatarFallback></Avatar>
+                    <p className="text-sm font-medium">{maker}</p>
+                    <p className="text-xs ml-auto" style={{ color: theme.mutedForeground }}>Pickup in {items[0].location}</p>
+                  </div>
+                  {items.map((item) => (
+                    <div key={item.id} className="flex items-center justify-between py-2" style={{ borderTop: `0.5px solid ${theme.border}` }}>
+                      <div className="flex items-center gap-3">
+                        <ItemImage title={item.title} className="w-12 h-12 rounded" />
+                        <div><p className="text-sm font-medium">{item.title}</p><PathwayBadge pathway={item.pathway} /></div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium" style={{ color: theme.primary }}>{item.price}</span>
+                        <button onClick={() => onRemove(item.id)} aria-label={`Remove ${item.title}`} style={{ color: theme.mutedForeground }}><X size={14} /></button>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="flex items-center justify-between pt-2 mt-2 text-xs" style={{ borderTop: `0.5px solid ${theme.border}`, color: theme.mutedForeground }}>
+                    <span>Subtotal from {maker}</span><span>${subtotal}</span>
+                  </div>
+                </div>
+              );
+            })}
+            <Separator className="mb-4" />
+            <div className="flex items-center justify-between mb-6"><p className="text-sm font-medium">Total</p><p className="text-lg font-medium" style={{ color: theme.primary }}>${total}</p></div>
+            <PrimaryButton className="w-full" onClick={onCheckout}>Checkout</PrimaryButton>
+          </>
+        )}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function CheckoutView({ onMessagesClick, cart, onPlaceOrder, onBack, onGoBrowse, onGoListings, onGoPost, onGoHome, onCartClick, onAccountClick, onSignOut, profile }) {
+  const [placing, setPlacing] = useState(false);
+  const groups = {};
+  cart.forEach((item) => { if (!groups[item.maker]) groups[item.maker] = []; groups[item.maker].push(item); });
+  const total = cart.reduce((sum, item) => sum + Number(item.price.replace("$", "")), 0);
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onBack={onBack} onLogoClick={onGoBrowse} onBrowseClick={onGoBrowse} onListingsClick={onGoListings} onPostClick={onGoPost} onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={cart.length} activeNav="cart" />
+      <main className="px-8 py-10 max-w-lg mx-auto">
+        <h1 className="text-xl font-medium mb-6">Checkout</h1>
+        <p className="text-xs font-medium mb-2" style={{ color: theme.mutedForeground }}>Order summary</p>
+        <div style={{ border: `1px solid ${theme.border}` }} className="rounded-md p-4 mb-6">
+          {Object.entries(groups).map(([maker, items], i) => (
+            <div key={maker} className={i > 0 ? "mt-3 pt-3" : ""} style={i > 0 ? { borderTop: `0.5px solid ${theme.border}` } : {}}>
+              <p className="text-xs font-medium mb-1">{maker} &middot; pickup in {items[0].location}</p>
+              {items.map((item) => (
+                <div key={item.id} className="flex items-center justify-between text-sm py-0.5">
+                  <span style={{ color: theme.mutedForeground }}>{item.title}</span><span>{item.price}</span>
+                </div>
+              ))}
+            </div>
+          ))}
+          <div className="flex items-center justify-between pt-3 mt-3 text-sm font-medium" style={{ borderTop: `0.5px solid ${theme.border}` }}>
+            <span>Total</span><span style={{ color: theme.primary }}>${total}</span>
+          </div>
+        </div>
+        <p className="text-xs font-medium mb-2" style={{ color: theme.mutedForeground }}>Payment</p>
+        <div style={{ border: `1px solid ${theme.border}`, background: theme.card }} className="rounded-md p-3 mb-2 flex items-center justify-between">
+          <div className="flex items-center gap-3"><ShoppingBag size={16} style={{ color: theme.mutedForeground }} /><span className="text-sm">Card ending in 4242</span></div>
+          <span className="text-xs underline" style={{ color: theme.primary }}>Change</span>
+        </div>
+        <p className="text-xs mb-6" style={{ color: theme.mutedForeground }}>You're only charged once each Maker confirms your pickup.</p>
+        <PrimaryButton className="w-full" onClick={() => { setPlacing(true); onPlaceOrder(); }} disabled={placing}>
+          {placing ? "Placing order..." : `Place order \u00b7 $${total}`}
+        </PrimaryButton>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function CartConfirmedView({ onMessagesClick, purchasedItems, onGoBrowse, onGoListings, onGoPost, onGoHome, onCartClick, onAccountClick, onSignOut, profile }) {
+  const groups = {};
+  purchasedItems.forEach((item) => { if (!groups[item.maker]) groups[item.maker] = { location: item.location, items: [] }; groups[item.maker].items.push(item); });
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onLogoClick={onGoBrowse} onBrowseClick={onGoBrowse} onListingsClick={onGoListings} onPostClick={onGoPost} onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={0} activeNav="cart" />
+      <main className="px-8 py-16 max-w-md mx-auto text-center">
+        <div style={{ background: theme.secondary }} className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"><ShieldCheck size={26} style={{ color: theme.secondaryForeground }} /></div>
+        <h1 className="text-xl font-medium mb-2">Order confirmed</h1>
+        <p className="text-sm mb-6" style={{ color: theme.mutedForeground }}>{purchasedItems.length} {purchasedItems.length === 1 ? "item" : "items"} reserved. Each Maker will confirm a pickup time.</p>
+        <div className="text-left mb-8">
+          {Object.entries(groups).map(([maker, group]) => (
+            <div key={maker} style={{ border: `1px solid ${theme.border}` }} className="rounded-md p-3 mb-2">
+              <p className="text-sm font-medium mb-1">{maker}</p>
+              <p className="text-xs mb-1" style={{ color: theme.mutedForeground }}>Pickup in {group.location}</p>
+              <p className="text-xs" style={{ color: theme.mutedForeground }}>{group.items.map((i) => i.title).join(", ")}</p>
+            </div>
+          ))}
+        </div>
+        <PrimaryButton className="w-full" onClick={onGoBrowse}>Back to browsing</PrimaryButton>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+/* ---------- MVP 3: provider job flow ---------- */
+const JOB_PATHWAYS = ["All", "Plain sell", "Refurbish", "Upcycle", "Give to a Maker"];
+const initialJobs = [
+  { id: 101, title: "Rocking chair", category: "Furniture", pathway: "Refurbish", owner: "Nick", location: "Mount Pleasant", budgetMin: 20, budgetMax: 40, note: "Family heirloom, cracked leg and worn seat fabric. Would love it fixed rather than thrown out." },
+  { id: 102, title: "Old table lamp", category: "Home decor", pathway: "Upcycle", owner: "Alina", location: "Kitsilano", budgetMin: 15, budgetMax: 30, note: "Doesn't switch on anymore but I love the shape. Would be amazing turned into something totally different." },
+  { id: 103, title: "Wobbly stool", category: "Furniture", pathway: "Plain sell", owner: "Sam", location: "Commercial Drive", budgetMin: null, budgetMax: null, note: "Just want it gone. Still structurally fine if someone wants to fix the wobble or use it for parts." },
+  { id: 104, title: "Patched denim jacket", category: "Clothing", pathway: "Upcycle", owner: "Morgan", location: "Mount Pleasant", budgetMin: 25, budgetMax: 45, note: "Ripped at the elbows, too far gone to just patch and wear again. Open to something creative with it." },
+];
+
+function ListingsView({ onMessagesClick, jobs, onSelectJob, onGoBrowse, onGoPost, onGoHome, onCartClick, onAccountClick, onSignOut, profile, cartCount }) {
+  const [activePathway, setActivePathway] = useState("All");
+  const filtered = activePathway === "All" ? jobs : jobs.filter((j) => j.pathway === activePathway);
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onLogoClick={onGoHome} onBrowseClick={onGoBrowse} onListingsClick={() => {}} onPostClick={onGoPost} onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={cartCount} activeNav="listings" />
+      <main className="px-4 md:px-8 py-8 max-w-6xl mx-auto">
+        <h1 className="text-xl font-medium mb-1">Listings</h1>
+        <p className="text-sm mb-1" style={{ color: theme.mutedForeground }}>Items other people have posted that still need a fixer. Claim one outright, or give a quote for the work.</p>
+        <p className="text-xs mb-6" style={{ color: theme.mutedForeground }}>Open for anyone to browse. Taking on a job needs a Maker profile.</p>
+        <div className="flex flex-wrap items-center gap-2 mb-6">
+          {JOB_PATHWAYS.map((p) => {
+            const active = p === activePathway;
+            return <button key={p} onClick={() => setActivePathway(p)} style={{ background: active ? theme.primary : "transparent", color: active ? theme.primaryForeground : theme.foreground, border: `1px solid ${active ? theme.primary : theme.border}` }} className="text-sm px-4 py-1.5 rounded-full transition-all">{p}</button>;
+          })}
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filtered.map((job) => (
+            <Card key={job.id} onClick={() => onSelectJob(job)} className="overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer p-0">
+              <div className="relative"><ItemImage title={job.title} /><div className="absolute top-2 left-2"><PathwayBadge pathway={job.pathway} /></div></div>
+              <CardContent className="p-4">
+                <h3 className="font-medium text-sm mb-1">{job.title}</h3>
+                <p className="text-xs mb-1" style={{ color: theme.primary }}>{job.pathway === "Refurbish" || job.pathway === "Upcycle" ? "Waiting for a Maker" : "Waiting to be claimed"}</p>
+                <p className="text-xs mb-3 flex items-center gap-1" style={{ color: theme.mutedForeground }}><MapPin size={11} />{job.location}</p>
+                <Separator className="mb-3" />
+                <div className="flex items-center justify-between text-xs">
+                  <span style={{ color: theme.mutedForeground }}>Posted by {job.owner}</span>
+                  {job.budgetMax != null ? <span className="font-medium" style={{ color: theme.primary }}>${job.budgetMin}&ndash;${job.budgetMax}</span>
+                    : job.budgetMin != null ? <span className="font-medium" style={{ color: theme.primary }}>${job.budgetMin}</span>
+                    : <span style={{ color: theme.mutedForeground }}>No fee</span>}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </main>
+      <Footer />
+      <BackToTop />
+    </div>
+  );
+}
+
+function JobDetailView({ onMessagesClick, job, onBack, onGoBrowse, onGiveQuote, onClaim, onMessage, onGoPost, onGoHome, onCartClick, onAccountClick, onSignOut, profile, cartCount }) {
+  const isFreeToClaim = job.pathway === "Plain sell" || job.pathway === "Give to a Maker";
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onBack={onBack} onLogoClick={onGoHome} onBrowseClick={onGoBrowse} onListingsClick={onBack} onPostClick={onGoPost} onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={cartCount} activeNav="listings" />
+      <main className="px-8 py-10 max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+          <ItemImage className="h-80" title={job.title} />
+          <div>
+            <div className="mb-2"><PathwayBadge pathway={job.pathway} /></div>
+            <h1 className="text-2xl font-medium mb-1">{job.title}</h1>
+            <p className="text-xs font-medium mb-2" style={{ color: theme.primary }}>{job.pathway === "Refurbish" || job.pathway === "Upcycle" ? "Waiting for a Maker" : "Waiting to be claimed"}</p>
+            {job.budgetMax != null ? <p className="text-xl font-medium mb-2" style={{ color: theme.primary }}>Budget: ${job.budgetMin}&ndash;${job.budgetMax}</p>
+              : job.budgetMin != null ? <p className="text-xl font-medium mb-2" style={{ color: theme.primary }}>Price: ${job.budgetMin}</p>
+              : <p className="text-sm mb-2" style={{ color: theme.mutedForeground }}>{job.pathway === "Give to a Maker" ? "No fee, given freely to a Maker" : "No fee, the owner just wants it gone"}</p>}
+            <p className="text-sm mb-6 flex items-center gap-1" style={{ color: theme.mutedForeground }}><MapPin size={13} />{job.category} &middot; {job.location}</p>
+            <Separator className="mb-4" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <Avatar className="w-9 h-9"><AvatarFallback style={{ background: theme.accent, color: theme.accentForeground }}>{job.owner[0]}</AvatarFallback></Avatar>
+                <div><p className="text-sm font-medium">Posted by {job.owner}</p><p className="text-xs" style={{ color: theme.mutedForeground }}>Owner</p></div>
+              </div>
+              {job.owner !== "You" && <button onClick={onMessage} aria-label={`Message ${job.owner}`} title={`Message ${job.owner}`} style={{ color: theme.mutedForeground }}><ChatIcon size={17} /></button>}
+            </div>
+            <p className="text-sm mb-8" style={{ color: theme.mutedForeground }}>&ldquo;{job.note}&rdquo;</p>
+            <PrimaryButton className="w-full" onClick={() => (isFreeToClaim ? onClaim(job) : onGiveQuote(job))}>{isFreeToClaim ? "Claim item" : "Give a quote"}</PrimaryButton>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function QuoteFormView({ onMessagesClick, job, onBack, onGoBrowse, onSubmitQuote, onGoPost, onGoHome, onCartClick, onAccountClick, onSignOut, profile, cartCount }) {
+  const [price, setPrice] = useState("");
+  const [note, setNote] = useState("");
+  const [error, setError] = useState("");
+  const handleSubmit = () => {
+    const cleaned = price.replace(/[^0-9.]/g, "");
+    if (cleaned === "" || isNaN(Number(cleaned))) { setError("Enter a price first"); return; }
+    setError(""); onSubmitQuote(job);
+  };
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onBack={onBack} onLogoClick={onGoHome} onBrowseClick={onGoBrowse} onListingsClick={onBack} onPostClick={onGoPost} onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={cartCount} activeNav="listings" />
+      <main className="px-8 py-10 max-w-md mx-auto">
+        <p className="text-lg font-medium mb-1">Submit your quote</p>
+        <p className="text-sm mb-6" style={{ color: theme.mutedForeground }}>{job.title} &middot; {job.owner}'s budget: ${job.budgetMin}&ndash;${job.budgetMax}</p>
+        <label className="text-sm block mb-1" style={{ color: theme.mutedForeground }}>Your price</label>
+        <Input placeholder={`$${job.budgetMin}`} value={price} onChange={(e) => setPrice(e.target.value)} className="mb-1 w-full" />
+        {error && <p className="text-xs mb-3" style={{ color: "#c0392b" }}>{error}</p>}
+        <label className="text-sm block mb-1 mt-3" style={{ color: theme.mutedForeground }}>Note to {job.owner} (optional)</label>
+        <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="I'll rebuild the joint and reupholster with reused fabric" rows={3}
+          style={{ border: `1px solid ${theme.border}`, background: theme.card }} className="w-full rounded-md p-3 text-sm mb-4 resize-none" />
+        <div style={{ background: theme.muted }} className="rounded-md p-3 text-xs mb-6">
+          <p style={{ color: theme.mutedForeground }}>This is a one-time quote within {job.owner}'s stated range. They can accept or decline, there's no back-and-forth.</p>
+        </div>
+        <PrimaryButton className="w-full" onClick={handleSubmit}>Submit quote</PrimaryButton>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function QuoteSentView({ onMessagesClick, job, onGoListings, onGoBrowse, onGoPost, onGoHome, onCartClick, onAccountClick, onSignOut, profile, cartCount }) {
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onLogoClick={onGoHome} onBrowseClick={onGoBrowse} onListingsClick={onGoListings} onPostClick={onGoPost} onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={cartCount} activeNav="listings" />
+      <main className="px-8 py-16 max-w-md mx-auto text-center">
+        <div style={{ background: theme.secondary }} className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"><ShieldCheck size={26} style={{ color: theme.secondaryForeground }} /></div>
+        <h1 className="text-xl font-medium mb-2">Quote sent</h1>
+        <p className="text-sm mb-8" style={{ color: theme.mutedForeground }}>{job.owner} has received your quote for the {job.title.toLowerCase()} and will be in touch if they accept.</p>
+        <div className="flex flex-col gap-2">
+          <PrimaryButton className="w-full" onClick={onGoListings}>Back to Listings</PrimaryButton>
+          <Button variant="outline" className="w-full" onClick={onGoBrowse}>Back to browsing</Button>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function JobClaimedView({ onMessagesClick, job, onGoListings, onGoBrowse, onGoPost, onGoHome, onCartClick, onAccountClick, onSignOut, profile, cartCount }) {
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onLogoClick={onGoHome} onBrowseClick={onGoBrowse} onListingsClick={onGoListings} onPostClick={onGoPost} onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={cartCount} activeNav="listings" />
+      <main className="px-8 py-16 max-w-md mx-auto text-center">
+        <div style={{ background: theme.secondary }} className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"><ShieldCheck size={26} style={{ color: theme.secondaryForeground }} /></div>
+        <h1 className="text-xl font-medium mb-2">Item claimed</h1>
+        <p className="text-sm mb-8" style={{ color: theme.mutedForeground }}>The {job.title.toLowerCase()} is yours. Coordinate pickup with {job.owner} in {job.location}.</p>
+        <div className="flex flex-col gap-2">
+          <PrimaryButton className="w-full" onClick={onGoListings}>Back to Listings</PrimaryButton>
+          <Button variant="outline" className="w-full" onClick={onGoBrowse}>Back to browsing</Button>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+/* ---------- MVP 1: owner post flow ---------- */
+const POST_CATEGORIES = ["Furniture", "Clothing", "Home decor", "Lighting", "Bags and accessories", "Kitchenware", "Textiles", "Art and wall decor", "Walls and spaces"];
+const ON_SITE_CATEGORIES = ["Walls and spaces"];
+
+function payLine(pathway) {
+  if (pathway === "Refurbish") return "You pay the Maker. The item comes back to you.";
+  if (pathway === "Upcycle") return "You pay the Maker. The new piece comes back to you.";
+  if (pathway === "Plain sell") return "The buyer pays you.";
+  if (pathway === "Give to a Maker") return "No payment. A Maker takes it and may sell the result.";
+  return "";
+}
+
+function pathwayTag(pathway) {
+  if (pathway === "Refurbish") return "Repair/Refurbish";
+  return pathway;
+}
+
+function WantItBackStep({ draft, setDraft, onContinue }) {
+  return (
+    <div className="max-w-md mx-auto">
+      <p className="text-lg font-medium mb-1">Do you want this item back?</p>
+      <p className="text-sm mb-6" style={{ color: theme.mutedForeground }}>This helps us match you with the right Maker or buyer.</p>
+      <div className="flex flex-col gap-2 mb-6">
+        {[
+          { id: "yes", label: "Yes, I want it back" },
+          { id: "no", label: "No, I'm letting it go" },
+        ].map((opt) => {
+          const active = draft.wantBack === opt.id;
+          return (
+            <button key={opt.id} onClick={() => setDraft({ ...draft, wantBack: opt.id })}
+              style={{ border: `${active ? 2 : 1}px solid ${active ? theme.primary : theme.border}`, background: theme.card }}
+              className="rounded-md p-3 text-left transition-colors">
+              <p className="text-sm font-medium">{opt.label}</p>
+            </button>
+          );
+        })}
+      </div>
+      <PrimaryButton className="w-full" onClick={onContinue} disabled={!draft.wantBack}>Continue</PrimaryButton>
+    </div>
+  );
+}
+
+function WhatDoneStep({ draft, setDraft, onContinue, onBack, onViewTransformation }) {
+  const options = [
+    { id: "Refurbish", title: "Repair/Refurbish", desc: "Fix and restore it. You pay the Maker, and it comes back to you." },
+    { id: "Upcycle", title: "Upcycle", desc: "Transform it into something new. You pay the Maker, and the new piece comes back to you." },
+  ];
+  const canContinue = draft.pathway === "Refurbish" || (draft.pathway === "Upcycle" && draft.upcycleGoal.trim() !== "");
+  return (
+    <div className="max-w-md mx-auto">
+      <p className="text-lg font-medium mb-6">What should a Maker do with it?</p>
+      <div className="flex flex-col gap-2 mb-4">
+        {options.map((opt) => {
+          const active = draft.pathway === opt.id;
+          return (
+            <button key={opt.id} onClick={() => setDraft({ ...draft, pathway: opt.id })}
+              style={{ border: `${active ? 2 : 1}px solid ${active ? theme.primary : theme.border}`, background: theme.card }}
+              className="rounded-md p-3 text-left transition-colors">
+              <p className="text-sm font-medium">{opt.title}</p>
+              <p className="text-xs" style={{ color: theme.mutedForeground }}>{opt.desc}</p>
+            </button>
+          );
+        })}
+      </div>
+
+      {draft.pathway === "Upcycle" && (
+        <div className="mb-4">
+          <label className="text-sm block mb-1" style={{ color: theme.mutedForeground }}>What would you like it turned into?</label>
+          <Input placeholder="A patchwork stool, a wall hanging..." value={draft.upcycleGoal} onChange={(e) => setDraft({ ...draft, upcycleGoal: e.target.value })} className="w-full" />
+        </div>
+      )}
+
+      {draft.pathway && (
+        <button onClick={() => onViewTransformation(draft.pathway)} style={{ border: `1px solid ${theme.border}`, background: theme.card }} className="rounded-md p-3 mb-4 text-left w-full hover:shadow-sm transition-shadow">
+          <p className="text-xs font-medium mb-2" style={{ color: theme.primary }}>See a past transformation on the marketplace<ArrowUpRight size={11} className="inline ml-1" /></p>
+          <div className="grid grid-cols-3 gap-2 mb-2">
+            {(draft.pathway === "Upcycle" ? ["Old material", "Transforming", "Finished"] : ["Before", "In progress", "Finished"]).map((s, i) => (
+              <div key={s} style={{ background: theme.muted }} className="h-14 rounded-md flex items-center justify-center">
+                {i === 2 ? (draft.pathway === "Upcycle" ? <ShoppingBag size={16} style={{ color: theme.primary }} /> : <Armchair size={16} style={{ color: theme.primary }} />) : <ImageIcon size={16} style={{ color: theme.mutedForeground }} />}
+              </div>
+            ))}
+          </div>
+        </button>
+      )}
+
+      {draft.pathway && (
+        <div className="mb-6">
+          <label className="text-sm block mb-1" style={{ color: theme.mutedForeground }}>Your budget range (optional)</label>
+          <p className="text-xs mb-2" style={{ color: theme.mutedForeground }}>Makers will send quotes.</p>
+          <div className="flex items-center gap-2">
+            <Input placeholder="Min $" value={draft.budgetMin} onChange={(e) => setDraft({ ...draft, budgetMin: e.target.value })} className="w-full" />
+            <span style={{ color: theme.mutedForeground }}>to</span>
+            <Input placeholder="Max $" value={draft.budgetMax} onChange={(e) => setDraft({ ...draft, budgetMax: e.target.value })} className="w-full" />
+          </div>
+        </div>
+      )}
+
+      <div className="flex gap-2">
+        <Button variant="outline" onClick={onBack}>Back</Button>
+        <PrimaryButton className="flex-1" onClick={onContinue} disabled={!canContinue}>Continue</PrimaryButton>
+      </div>
+    </div>
+  );
+}
+
+function HowLetGoStep({ draft, setDraft, onContinue, onBack }) {
+  const options = [
+    { id: "Plain sell", title: "Plain Sell", desc: "Sell it as is. The buyer pays you." },
+    { id: "Give to a Maker", title: "Give to a Maker", desc: "Hand it off for free. A Maker gives it new life and may sell the result." },
+  ];
+  const canContinue = draft.pathway === "Give to a Maker" || (draft.pathway === "Plain sell" && draft.plainSellPrice.trim() !== "");
+  return (
+    <div className="max-w-md mx-auto">
+      <p className="text-lg font-medium mb-6">Where should it go next?</p>
+      <div className="flex flex-col gap-2 mb-4">
+        {options.map((opt) => {
+          const active = draft.pathway === opt.id;
+          return (
+            <button key={opt.id} onClick={() => setDraft({ ...draft, pathway: opt.id })}
+              style={{ border: `${active ? 2 : 1}px solid ${active ? theme.primary : theme.border}`, background: theme.card }}
+              className="rounded-md p-3 text-left transition-colors">
+              <p className="text-sm font-medium">{opt.title}</p>
+              <p className="text-xs" style={{ color: theme.mutedForeground }}>{opt.desc}</p>
+            </button>
+          );
+        })}
+      </div>
+      {draft.pathway === "Plain sell" && (
+        <div className="mb-6">
+          <label className="text-sm block mb-1" style={{ color: theme.mutedForeground }}>Price</label>
+          <Input placeholder="$40" value={draft.plainSellPrice} onChange={(e) => setDraft({ ...draft, plainSellPrice: e.target.value })} className="w-full" />
+        </div>
+      )}
+      <div className="flex gap-2">
+        <Button variant="outline" onClick={onBack}>Back</Button>
+        <PrimaryButton className="flex-1" onClick={onContinue} disabled={!canContinue}>Continue</PrimaryButton>
+      </div>
+    </div>
+  );
+}
+
+function ItemDetailsStep({ draft, setDraft, onContinue, onBack }) {
+  const [error, setError] = useState("");
+  const handleContinue = () => { if (draft.title.trim() === "") { setError("Give your item a name first"); return; } setError(""); onContinue(); };
+  return (
+    <div className="max-w-md mx-auto">
+      <p className="text-lg font-medium mb-4">Tell us about your item</p>
+
+      <label className="text-sm block mb-1" style={{ color: theme.mutedForeground }}>Add photos from a few angles</label>
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        {[1, 2, 3].map((n) => (
+          <div key={n} style={{ border: `1px dashed ${theme.border}` }} className="rounded-md py-6 text-center">
+            <ImageIcon size={18} style={{ color: theme.mutedForeground }} className="mx-auto" />
+          </div>
+        ))}
+      </div>
+
+      <label className="text-sm block mb-1" style={{ color: theme.mutedForeground }}>Item name</label>
+      <Input placeholder="Rocking chair" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className="mb-1 w-full" />
+      {error && <p className="text-xs mb-2" style={{ color: "#c0392b" }}>{error}</p>}
+
+      <label className="text-sm block mb-1 mt-3" style={{ color: theme.mutedForeground }}>Category</label>
+      <select value={draft.category} onChange={(e) => setDraft({ ...draft, category: e.target.value })} style={{ border: `1px solid ${theme.border}`, background: theme.card }} className="w-full rounded-md h-9 px-3 text-sm mb-3">
+        {POST_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+      </select>
+
+      <div className="flex items-center justify-between mb-1">
+        <label className="text-sm block" style={{ color: theme.mutedForeground }}>Description</label>
+        <button className="text-xs underline" style={{ color: theme.primary }}>Need help describing it?</button>
+      </div>
+      <textarea value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} placeholder="Wooden chair, chipped paint, needs a new seat cushion" rows={3}
+        style={{ border: `1px solid ${theme.border}`, background: theme.card }} className="w-full rounded-md p-3 text-sm mb-6 resize-none" />
+
+      <div className="flex gap-2">
+        <Button variant="outline" onClick={onBack}>Back</Button>
+        <PrimaryButton className="flex-1" onClick={handleContinue}>Continue</PrimaryButton>
+      </div>
+    </div>
+  );
+}
+
+function HandoffStep({ draft, setDraft, onContinue, onBack }) {
+  const isOnSite = ON_SITE_CATEGORIES.includes(draft.category);
+
+  if (isOnSite) {
+    return (
+      <div className="max-w-md mx-auto">
+        <p className="text-lg font-medium mb-1">Where is the job?</p>
+        <p className="text-sm mb-4" style={{ color: theme.mutedForeground }}>On site jobs happen at your place, not a Maker's workshop.</p>
+        <label className="text-sm block mb-1" style={{ color: theme.mutedForeground }}>Neighbourhood</label>
+        <Input placeholder="Mount Pleasant" value={draft.location} onChange={(e) => setDraft({ ...draft, location: e.target.value })} className="mb-6 w-full" />
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={onBack}>Back</Button>
+          <PrimaryButton className="flex-1" onClick={onContinue}>Continue</PrimaryButton>
+        </div>
+      </div>
+    );
+  }
+
+  const options = [
+    { id: "pickup", title: "Request pickup", desc: "A Maker or buyer comes to you.", disabled: false },
+    { id: "dropoff", title: "Drop off", desc: "Bring it to the Maker's workshop within a set time window.", disabled: false },
+    { id: "delivery", title: "Delivery", desc: "Coming soon", disabled: true },
+  ];
+  return (
+    <div className="max-w-md mx-auto">
+      <p className="text-lg font-medium mb-6">How should the handoff work?</p>
+      <div className="flex flex-col gap-2 mb-6">
+        {options.map((opt) => {
+          const active = draft.handoff === opt.id;
+          return (
+            <button key={opt.id} disabled={opt.disabled} onClick={() => setDraft({ ...draft, handoff: opt.id })}
+              style={{ border: `${active ? 2 : 1}px solid ${active ? theme.primary : theme.border}`, background: theme.card, opacity: opt.disabled ? 0.5 : 1 }}
+              className="rounded-md p-3 text-left transition-colors">
+              <p className="text-sm font-medium">{opt.title}</p>
+              <p className="text-xs" style={{ color: theme.mutedForeground }}>{opt.desc}</p>
+            </button>
+          );
+        })}
+      </div>
+      <div className="flex gap-2">
+        <Button variant="outline" onClick={onBack}>Back</Button>
+        <PrimaryButton className="flex-1" onClick={onContinue} disabled={!draft.handoff}>Continue</PrimaryButton>
+      </div>
+    </div>
+  );
+}
+
+function ReviewStep({ draft, onEditSection, onSubmit }) {
+  const isOnSite = ON_SITE_CATEGORIES.includes(draft.category);
+  const handoffLabel = isOnSite ? `Job in ${draft.location || "your neighbourhood"}`
+    : draft.handoff === "pickup" ? "Request pickup"
+    : draft.handoff === "dropoff" ? "Drop off at the Maker's workshop"
+    : "Not set";
+
+  return (
+    <div className="max-w-md mx-auto">
+      <p className="text-lg font-medium mb-4">Review and post</p>
+      <Card className="overflow-hidden p-0 mb-6">
+        <ItemImage title={draft.title} className="h-40" />
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-medium text-sm">{draft.title || "Untitled item"}</p>
+            <button onClick={() => onEditSection("details")} className="text-xs underline" style={{ color: theme.primary }}>Edit</button>
+          </div>
+          {draft.description && <p className="text-xs mb-3" style={{ color: theme.mutedForeground }}>{draft.description}</p>}
+
+          <div className="flex items-center justify-between mb-1">
+            <PathwayBadge pathway={pathwayTag(draft.pathway)} />
+            <button onClick={() => onEditSection(draft.wantBack === "yes" ? "whatDone" : "howLetGo")} className="text-xs underline" style={{ color: theme.primary }}>Edit</button>
+          </div>
+          <p className="text-xs mb-3" style={{ color: theme.mutedForeground }}>{payLine(draft.pathway)}</p>
+
+          <Separator className="mb-3" />
+          <div className="flex items-center justify-between">
+            <p className="text-xs" style={{ color: theme.mutedForeground }}>{handoffLabel}</p>
+            <button onClick={() => onEditSection("handoff")} className="text-xs underline" style={{ color: theme.primary }}>Edit</button>
+          </div>
+        </CardContent>
+      </Card>
+      <PrimaryButton className="w-full" onClick={onSubmit}>Post item</PrimaryButton>
+    </div>
+  );
+}
+
+function WhatsNextStep({ draft, onGoListings, onGoBrowse }) {
+  const copy = draft.pathway === "Refurbish" || draft.pathway === "Upcycle"
+    ? "Makers nearby will send you quotes. You'll get a message when one arrives."
+    : draft.pathway === "Plain sell"
+    ? "Your item is live. Buyers can message you with questions."
+    : "Makers nearby can claim your item. You'll get a message when someone does.";
+  return (
+    <div className="max-w-md mx-auto text-center py-10">
+      <div style={{ background: theme.secondary }} className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"><ShieldCheck size={26} style={{ color: theme.secondaryForeground }} /></div>
+      <h1 className="text-xl font-medium mb-2">Posted</h1>
+      <p className="text-sm mb-8" style={{ color: theme.mutedForeground }}>{copy}</p>
+      <div className="flex flex-col gap-2">
+        <PrimaryButton className="w-full" onClick={onGoListings}>View my listing</PrimaryButton>
+        <Button variant="outline" className="w-full" onClick={onGoBrowse}>Back to home</Button>
+      </div>
+    </div>
+  );
+}
+
+function PostFlow({ onMessagesClick, onGoBrowse, onGoListings, onViewTransformation, onSubmitListing, onGoHome, onCartClick, onAccountClick, onSignOut, profile, cartCount }) {
+  const [step, setStep] = useState("wantBack");
+  const [draft, setDraft] = useState({
+    wantBack: null, pathway: null, upcycleGoal: "", budgetMin: "", budgetMax: "", plainSellPrice: "",
+    title: "", category: POST_CATEGORIES[0], description: "", handoff: null, location: "",
+  });
+
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onLogoClick={onGoHome} onBrowseClick={onGoBrowse} onListingsClick={onGoListings} onPostClick={() => {}} onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={cartCount} activeNav="post" />
+      <main className="px-8 py-10">
+        {step === "wantBack" && (
+          <WantItBackStep draft={draft} setDraft={setDraft} onContinue={() => setStep(draft.wantBack === "yes" ? "whatDone" : "howLetGo")} />
+        )}
+        {step === "whatDone" && (
+          <WhatDoneStep draft={draft} setDraft={setDraft} onContinue={() => setStep("details")} onBack={() => setStep("wantBack")} onViewTransformation={onViewTransformation} />
+        )}
+        {step === "howLetGo" && (
+          <HowLetGoStep draft={draft} setDraft={setDraft} onContinue={() => setStep("details")} onBack={() => setStep("wantBack")} />
+        )}
+        {step === "details" && (
+          <ItemDetailsStep draft={draft} setDraft={setDraft} onContinue={() => setStep("handoff")} onBack={() => setStep(draft.wantBack === "yes" ? "whatDone" : "howLetGo")} />
+        )}
+        {step === "handoff" && (
+          <HandoffStep draft={draft} setDraft={setDraft} onContinue={() => setStep("review")} onBack={() => setStep("details")} />
+        )}
+        {step === "review" && (
+          <ReviewStep draft={draft} onEditSection={(s) => setStep(s)} onSubmit={() => { onSubmitListing(draft); setStep("posted"); }} />
+        )}
+        {step === "posted" && <WhatsNextStep draft={draft} onGoListings={onGoListings} onGoBrowse={onGoBrowse} />}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+/* ---------- accounts: profile + maker upgrade ---------- */
+function CreateProfileView({ onMessagesClick, onSubmit, onCancel, profile }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const handleSubmit = () => {
+    if (email.trim() === "") { setError("Enter your email first"); return; }
+    if (password.trim() === "") { setError("Enter your password first"); return; }
+    setError("");
+    const name = email.trim().split("@")[0];
+    onSubmit({ name, contact: email.trim() });
+  };
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onBack={onCancel} onLogoClick={onCancel} onBrowseClick={onCancel} onListingsClick={onCancel} onPostClick={onCancel} onCartClick={onCancel} onAccountClick={onCancel} profile={profile} activeNav="" />
+      <main className="px-8 py-10 max-w-md mx-auto">
+        <p className="text-lg font-medium mb-1">Log in</p>
+        <p className="text-sm mb-6" style={{ color: theme.mutedForeground }}>Browsing never needs an account, only posting, buying, or working a job does.</p>
+        <label className="text-sm block mb-1" style={{ color: theme.mutedForeground }}>Email</label>
+        <Input placeholder="you@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className="mb-1 w-full" />
+        <label className="text-sm block mb-1 mt-3" style={{ color: theme.mutedForeground }}>Password</label>
+        <Input type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" value={password} onChange={(e) => setPassword(e.target.value)} className="mb-1 w-full" />
+        {error && <p className="text-xs mb-2" style={{ color: "#c0392b" }}>{error}</p>}
+        <PrimaryButton className="w-full mt-5" onClick={handleSubmit}>Log in</PrimaryButton>
+        <p className="text-xs text-center mt-4" style={{ color: theme.mutedForeground }}>
+          Don't have an account?{" "}
+          <span style={{ color: theme.mutedForeground, textDecoration: "underline", opacity: 0.6, cursor: "not-allowed" }} title="Coming soon">Create an account</span>
+        </p>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+const PRICING_APPROACHES = ["Fixed per job", "Hourly rate", "Case by case, I'll quote each one"];
+
+function BecomeMakerView({ onMessagesClick, onSubmit, onCancel, profile }) {
+  const [skills, setSkills] = useState("");
+  const [pickupArea, setPickupArea] = useState("");
+  const [pricingApproach, setPricingApproach] = useState(PRICING_APPROACHES[0]);
+  const [website, setWebsite] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [error, setError] = useState("");
+  const handleSubmit = () => {
+    if (skills.trim() === "") { setError("Tell people what you can do first"); return; }
+    setError("");
+    onSubmit({ skills: skills.trim(), pickupArea: pickupArea.trim() || "Vancouver", pricingApproach, website: website.trim(), instagram: instagram.trim() });
+  };
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onBack={onCancel} onLogoClick={onCancel} onBrowseClick={onCancel} onListingsClick={onCancel} onPostClick={onCancel} onCartClick={onCancel} onAccountClick={onCancel} profile={profile} activeNav="" />
+      <main className="px-8 py-10 max-w-md mx-auto">
+        <p className="text-lg font-medium mb-1">Become a Maker</p>
+        <p className="text-sm mb-6" style={{ color: theme.mutedForeground }}>This unlocks quoting on jobs and claiming free items. It's the same profile, just with a bit more about your work.</p>
+
+        <label className="text-sm block mb-1" style={{ color: theme.mutedForeground }}>What can you do?</label>
+        <textarea value={skills} onChange={(e) => setSkills(e.target.value)} placeholder="Furniture repair, upholstery, small electrical fixes" rows={2}
+          style={{ border: `1px solid ${theme.border}`, background: theme.card }} className="w-full rounded-md p-3 text-sm mb-1 resize-none" />
+        {error && <p className="text-xs mb-2" style={{ color: "#c0392b" }}>{error}</p>}
+
+        <label className="text-sm block mb-1 mt-3" style={{ color: theme.mutedForeground }}>Pickup area</label>
+        <Input placeholder="Mount Pleasant" value={pickupArea} onChange={(e) => setPickupArea(e.target.value)} className="mb-3 w-full" />
+
+        <label className="text-sm block mb-1" style={{ color: theme.mutedForeground }}>Website (optional)</label>
+        <Input placeholder="yourname.com" value={website} onChange={(e) => setWebsite(e.target.value)} className="mb-3 w-full" />
+
+        <label className="text-sm block mb-1" style={{ color: theme.mutedForeground }}>Instagram (optional)</label>
+        <Input placeholder="@yourhandle" value={instagram} onChange={(e) => setInstagram(e.target.value)} className="mb-3 w-full" />
+
+        <label className="text-sm block mb-1" style={{ color: theme.mutedForeground }}>Portfolio photos</label>
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          {[1, 2, 3].map((n) => (
+            <div key={n} style={{ border: `1px dashed ${theme.border}` }} className="rounded-md py-6 text-center">
+              <ImageIcon size={18} style={{ color: theme.mutedForeground }} className="mx-auto" />
+            </div>
+          ))}
+        </div>
+
+        <label className="text-sm block mb-1" style={{ color: theme.mutedForeground }}>Pricing approach</label>
+        <select value={pricingApproach} onChange={(e) => setPricingApproach(e.target.value)} style={{ border: `1px solid ${theme.border}`, background: theme.card }} className="w-full rounded-md h-9 px-3 text-sm mb-6">
+          {PRICING_APPROACHES.map((p) => <option key={p} value={p}>{p}</option>)}
+        </select>
+
+        <PrimaryButton className="w-full" onClick={handleSubmit}>Become a Maker</PrimaryButton>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function MyProfileView({ onMessagesClick, profile, onBack, onBecomeMaker }) {
+  if (!profile.isMaker) {
+    return (
+      <div>
+        <TopBar onMessagesClick={onMessagesClick} onBack={onBack} onLogoClick={onBack} onBrowseClick={onBack} onListingsClick={onBack} onPostClick={onBack} onCartClick={onBack} onAccountClick={() => {}} profile={profile} activeNav="" />
+        <main className="px-8 py-16 max-w-md mx-auto text-center">
+          <div style={{ background: theme.accent, color: theme.accentForeground }} className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-medium">
+            {profile.name.trim().charAt(0).toUpperCase()}
+          </div>
+          <p className="text-lg font-medium mb-1">{profile.name}</p>
+          <p className="text-sm mb-8" style={{ color: theme.mutedForeground }}>{profile.contact}</p>
+          <div style={{ border: `1px solid ${theme.border}` }} className="rounded-md p-4 mb-6 text-left">
+            <p className="text-sm font-medium mb-1">You're not a Maker yet</p>
+            <p className="text-xs" style={{ color: theme.mutedForeground }}>Become one to quote on jobs, claim free items, and show your own portfolio here.</p>
+          </div>
+          <PrimaryButton className="w-full" onClick={onBecomeMaker}>Become a Maker</PrimaryButton>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  const skillTags = profile.skills ? profile.skills.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  const specialty = skillTags[0] || "Maker";
+
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onBack={onBack} onLogoClick={onBack} onBrowseClick={onBack} onListingsClick={onBack} onPostClick={onBack} onCartClick={onBack} onAccountClick={() => {}} profile={profile} activeNav="" />
+      <main className="px-8 py-10 max-w-2xl mx-auto">
+        <p className="text-xl font-medium mb-6">Profile</p>
+
+        <div className="flex items-center gap-4 mb-6">
+          <div style={{ background: theme.accent, color: theme.accentForeground }} className="w-20 h-20 rounded-full flex items-center justify-center text-3xl font-medium shrink-0">
+            {profile.name.trim().charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <p className="text-lg font-medium" style={{ textTransform: "capitalize" }}>{profile.name}</p>
+            <p className="text-sm" style={{ color: theme.primary }}>{specialty}</p>
+            <p className="text-xs flex items-center gap-1 mt-1" style={{ color: theme.mutedForeground }}><ShieldCheck size={12} style={{ color: theme.primary }} />Verified Maker</p>
+          </div>
+        </div>
+
+        {profile.skills && (
+          <p className="text-sm mb-4" style={{ color: theme.mutedForeground }}>{profile.skills}</p>
+        )}
+
+        <div className="flex items-center gap-4 mb-2 text-sm" style={{ color: theme.mutedForeground }}>
+          <span className="flex items-center gap-1"><MapPin size={13} />{profile.pickupArea || "Vancouver"}</span>
+          <span className="flex items-center gap-1"><ShoppingBag size={13} />{profile.pricingApproach || "Pricing not set"}</span>
+        </div>
+        <div className="flex items-center gap-4 mb-6 text-sm flex-wrap" style={{ color: theme.mutedForeground }}>
+          <span className="flex items-center gap-1"><Search size={13} />{profile.contact}</span>
+          {profile.website ? (
+            <span className="flex items-center gap-1" style={{ color: theme.primary }}><ArrowUpRight size={13} />{profile.website}</span>
+          ) : (
+            <span className="flex items-center gap-1 opacity-60"><ArrowUpRight size={13} />Add website</span>
+          )}
+          {profile.instagram ? (
+            <span className="flex items-center gap-1" style={{ color: theme.primary }}><ImageIcon size={13} />{profile.instagram}</span>
+          ) : (
+            <span className="flex items-center gap-1 opacity-60"><ImageIcon size={13} />Add Instagram</span>
+          )}
+        </div>
+
+        <div style={{ background: theme.secondary }} className="rounded-md p-4 mb-6 flex items-center gap-3">
+          <ShieldCheck size={20} style={{ color: theme.secondaryForeground }} />
+          <div>
+            <p className="text-sm font-medium" style={{ color: theme.secondaryForeground }}>Complete your profile</p>
+            <p className="text-xs" style={{ color: theme.mutedForeground }}>Add photos of your work so buyers and owners know what you make before they reach out.</p>
+          </div>
+        </div>
+
+        <Separator className="mb-6" />
+
+        <p className="text-sm font-medium mb-3">Collections</p>
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          {[1, 2, 3].map((n) => (
+            <div key={n} style={{ border: `1px dashed ${theme.border}` }} className="rounded-md py-8 text-center">
+              <ImageIcon size={18} style={{ color: theme.mutedForeground }} className="mx-auto" />
+            </div>
+          ))}
+        </div>
+        <button style={{ border: `1px solid ${theme.border}` }} className="rounded-full px-4 py-2 text-sm flex items-center gap-2 mb-8 mx-auto">
+          Add Photos<Plus size={14} />
+        </button>
+
+        <p className="text-sm font-medium mb-3">Featured Transformation</p>
+        <div style={{ border: `1px dashed ${theme.border}` }} className="rounded-md py-16 text-center mb-3">
+          <ImageIcon size={22} style={{ color: theme.mutedForeground }} className="mx-auto" />
+        </div>
+        <button style={{ border: `1px solid ${theme.border}` }} className="rounded-full px-4 py-2 text-sm flex items-center gap-2 mb-8 mx-auto">
+          Add Videos<Plus size={14} />
+        </button>
+
+        {skillTags.length > 0 && (
+          <>
+            <p className="text-sm font-medium mb-3">Mediums of Creation</p>
+            <div className="flex flex-wrap gap-2 mb-6">
+              {skillTags.map((tag) => (
+                <span key={tag} style={{ background: theme.muted, color: theme.foreground }} className="text-xs px-3 py-1 rounded-full">{tag}</span>
+              ))}
+            </div>
+          </>
+        )}
+
+        <Separator className="mb-6" />
+
+        <p className="text-sm font-medium mb-3">Marketplace Posts</p>
+        {(() => {
+          const myPosts = listings.filter((l) => l.maker.toLowerCase() === profile.name.trim().toLowerCase());
+          if (myPosts.length === 0) {
+            return (
+              <div style={{ border: `1px solid ${theme.border}` }} className="rounded-md p-4 mb-8">
+                <p className="text-sm mb-2" style={{ color: theme.mutedForeground }}>You don't have any current artwork for sale on the Marketplace.</p>
+                <button disabled style={{ color: theme.mutedForeground, opacity: 0.6, cursor: "not-allowed" }} className="text-xs underline flex items-center gap-1" title="Coming soon">
+                  <Plus size={12} />List an item for sale
+                </button>
+              </div>
+            );
+          }
+          return (
+            <div className="flex flex-col gap-4 mb-8">
+              {myPosts.map((item) => (
+                <div key={item.id} style={{ background: theme.secondary }} className="rounded-md p-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div style={{ background: theme.accent, color: theme.accentForeground }} className="w-12 h-12 rounded-full flex items-center justify-center font-medium shrink-0">
+                      {profile.name.trim().charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium" style={{ textTransform: "capitalize" }}>{profile.name}</p>
+                      <p className="text-xs" style={{ color: theme.primary }}>{specialty}</p>
+                      <p className="text-xs flex items-center gap-1" style={{ color: theme.mutedForeground }}><ArrowUpDown size={10} />Posted recently</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-medium">{item.title}</p>
+                    <p className="text-sm font-medium" style={{ color: theme.primary }}>{item.price}</p>
+                  </div>
+                  <p className="text-xs mb-4" style={{ color: theme.mutedForeground }}>{item.story}</p>
+                  <button disabled style={{ background: theme.card, color: theme.mutedForeground, opacity: 0.7, cursor: "not-allowed" }} className="rounded-full px-4 py-2 text-xs flex items-center gap-1 ml-auto" title="Coming soon">
+                    View Post<ArrowLeft size={12} style={{ transform: "rotate(180deg)" }} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
+
+        <p className="text-sm font-medium mb-3 flex items-center gap-1">Discover Similar Makers<ArrowLeft size={13} style={{ transform: "rotate(180deg)" }} /></p>
+        <div className="flex gap-4 overflow-x-auto mb-8 pb-1">
+          {[...new Set(listings.map((l) => l.maker))]
+            .filter((name) => name.toLowerCase() !== profile.name.trim().toLowerCase())
+            .map((name) => (
+              <div key={name} className="flex flex-col items-center shrink-0" style={{ width: "64px" }}>
+                <div style={{ background: theme.accent, color: theme.accentForeground }} className="w-12 h-12 rounded-full flex items-center justify-center text-sm font-medium mb-1">
+                  {name.charAt(0).toUpperCase()}
+                </div>
+                <p className="text-xs text-center" style={{ color: theme.mutedForeground }}>{name}</p>
+              </div>
+            ))}
+        </div>
+
+        <Button variant="outline" className="w-full" onClick={onBack}>Back to browsing</Button>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+/* ---------- messaging ---------- */
+// One conversation per person. Names are the person key in this prototype.
+const personKey = (name) => name.trim().toLowerCase();
+
+// Short, human time label: "2:14 PM" today, "Yesterday", otherwise "Sep 20".
+function formatMessageTime(date) {
+  const now = new Date();
+  const sameDay = date.toDateString() === now.toDateString();
+  if (sameDay) return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+  if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
+  return date.toLocaleDateString([], { month: "short", day: "numeric" });
+}
+
+const sameRef = (a, b) => (!a && !b) || (a && b && a.kind === b.kind && a.id === b.id);
+
+// Simulated reply. The first message about a new item or job gets a reply
+// that mentions it; everything else gets a friendly general reply.
+function simulatedReply(ref, isNewTopic, replyCount) {
+  if (ref && isNewTopic) {
+    return ref.kind === "item"
+      ? `Thanks for your interest in the ${ref.title.toLowerCase()}! It's still available. Happy to answer any questions.`
+      : `Thanks for reaching out about my ${ref.title.toLowerCase()}! What did you have in mind?`;
+  }
+  const general = [
+    "Sounds good to me!",
+    "Great question. Let me check and get back to you shortly.",
+    "Thanks, that works for me.",
+    "I can do pickup most weekday evenings if that helps.",
+  ];
+  return general[replyCount % general.length];
+}
+function ChatView({ onMessagesClick, thread, isTyping, activeRef, onClearRef, onSend, onBack, onGoBrowse, onGoListings, onGoPost, onCartClick, onAccountClick, onSignOut, profile, cartCount }) {
+  const [text, setText] = useState("");
+  const endRef = useRef(null);
+  const { name, messages } = thread;
+
+  useEffect(() => {
+    if (endRef.current) endRef.current.scrollIntoView({ block: "end" });
+  }, [messages.length, isTyping]);
+
+  const handleSend = () => {
+    if (text.trim() === "") return;
+    onSend(text, activeRef);
+    setText("");
+  };
+
+  // Show an "About" note when a message starts a new topic, and a time
+  // under the last bubble in each run from the same sender.
+  let lastRef = null;
+
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onBack={onBack} onLogoClick={onGoBrowse} onBrowseClick={onGoBrowse} onListingsClick={onGoListings} onPostClick={onGoPost}
+        onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={cartCount} activeNav="" />
+      <main className="px-8 py-8 max-w-lg mx-auto">
+        <div className="flex items-center justify-between gap-3 mb-1">
+          <div className="flex items-center gap-3 min-w-0">
+            <Avatar className="w-9 h-9 shrink-0"><AvatarFallback style={{ background: theme.accent, color: theme.accentForeground }}>{name.charAt(0).toUpperCase()}</AvatarFallback></Avatar>
+            <p className="text-sm font-medium truncate">{name}</p>
+          </div>
+          <button onClick={onMessagesClick} className="text-xs font-medium shrink-0" style={{ color: theme.primary }}>All messages</button>
+        </div>
+        <Separator className="mb-4 mt-3" />
+
+        <div className="flex flex-col gap-2 mb-4 overflow-y-auto pr-1" style={{ minHeight: "240px", maxHeight: "55vh" }}>
+          {messages.length === 0 && (
+            <p className="text-xs text-center mt-8" style={{ color: theme.mutedForeground }}>
+              This is the start of your conversation with {name}.
+            </p>
+          )}
+          {messages.map((m, i) => {
+            const showRef = m.ref && !sameRef(m.ref, lastRef);
+            if (m.ref) lastRef = m.ref;
+            const next = messages[i + 1];
+            const endOfRun = !next || next.from !== m.from;
+            const mine = m.from === "me";
+            return (
+              <React.Fragment key={m.id}>
+                {showRef && (
+                  <p className={`text-xs mt-2 ${mine ? "self-end" : "self-start"}`} style={{ color: theme.mutedForeground }}>
+                    About: {m.ref.title}
+                  </p>
+                )}
+                <div className={`max-w-[75%] rounded-md px-3 py-2 text-sm ${mine ? "self-end" : "self-start"}`}
+                  style={{ background: mine ? theme.primary : theme.muted, color: mine ? theme.primaryForeground : theme.foreground }}>
+                  {m.text}
+                </div>
+                {endOfRun && (
+                  <span className={`text-[10px] -mt-1 ${mine ? "self-end" : "self-start"}`} style={{ color: theme.mutedForeground }}>
+                    {formatMessageTime(m.sentAt)}
+                  </span>
+                )}
+              </React.Fragment>
+            );
+          })}
+          {isTyping && (
+            <div className="self-start rounded-md px-3 py-2 text-sm" style={{ background: theme.muted, color: theme.mutedForeground }}>
+              {name} is typing...
+            </div>
+          )}
+          <div ref={endRef} />
+        </div>
+
+        {activeRef && (
+          <div className="flex items-center gap-2 mb-2">
+            <span style={{ background: theme.muted, color: theme.foreground }} className="text-xs rounded-full pl-3 pr-1 py-1 flex items-center gap-1">
+              About: {activeRef.title}
+              <button onClick={onClearRef} aria-label="Remove item from message" title="Remove item from message"
+                className="w-4 h-4 rounded-full flex items-center justify-center" style={{ color: theme.mutedForeground }}>×</button>
+            </span>
+          </div>
+        )}
+        <div className="flex items-center gap-2">
+          <Input placeholder="Write a message..." value={text} onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }} className="flex-1" aria-label={`Message ${name}`} />
+          <PrimaryButton onClick={handleSend} className="px-4">Send</PrimaryButton>
+        </div>
+        <p className="text-xs mt-2" style={{ color: theme.mutedForeground }}>Full pickup details unlock once a claim or purchase is confirmed.</p>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function InboxView({ onMessagesClick, conversations, typing, onOpenThread, onBack, onGoBrowse, onGoListings, onGoPost, onCartClick, onAccountClick, onSignOut, profile, cartCount }) {
+  const threads = Object.values(conversations)
+    .filter((t) => t.messages.length > 0)
+    .sort((a, b) => b.messages[b.messages.length - 1].sentAt - a.messages[a.messages.length - 1].sentAt);
+
+  return (
+    <div>
+      <TopBar onMessagesClick={onMessagesClick} onBack={onBack} onLogoClick={onGoBrowse} onBrowseClick={onGoBrowse} onListingsClick={onGoListings} onPostClick={onGoPost}
+        onCartClick={onCartClick} onAccountClick={onAccountClick} onSignOut={onSignOut} profile={profile} cartCount={cartCount} activeNav="" />
+      <main className="px-8 py-8 max-w-lg mx-auto">
+        <h1 className="text-xl font-medium mb-1">Messages</h1>
+        <p className="text-xs mb-4" style={{ color: theme.mutedForeground }}>Conversations with Makers and owners you've contacted.</p>
+        <Separator className="mb-2" />
+
+        {threads.length === 0 ? (
+          <div className="text-center py-12">
+            <div style={{ background: theme.muted, color: theme.mutedForeground }} className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+              <ChatIcon size={20} />
+            </div>
+            <p className="text-sm font-medium mb-1">No messages yet</p>
+            <p className="text-xs mb-6" style={{ color: theme.mutedForeground }}>Tap the chat icon on any item or job to ask a question.</p>
+            <Button variant="outline" onClick={onGoBrowse}>Browse the marketplace</Button>
+          </div>
+        ) : (
+          <ul className="flex flex-col">
+            {threads.map((t) => {
+              const last = t.messages[t.messages.length - 1];
+              const isTyping = typing[t.personId];
+              const preview = isTyping ? `${t.name} is typing...` : `${last.from === "me" ? "You: " : ""}${last.text}`;
+              return (
+                <li key={t.personId} style={{ borderBottom: `0.5px solid ${theme.border}` }}>
+                  <button onClick={() => onOpenThread(t.personId)} className="w-full flex items-center gap-3 py-3 text-left hover:opacity-80"
+                    aria-label={`Open conversation with ${t.name}`}>
+                    <Avatar className="w-10 h-10 shrink-0"><AvatarFallback style={{ background: theme.accent, color: theme.accentForeground }}>{t.name.charAt(0).toUpperCase()}</AvatarFallback></Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="text-sm font-medium truncate">{t.name}</p>
+                        <span className="text-xs shrink-0" style={{ color: theme.mutedForeground }}>{formatMessageTime(last.sentAt)}</span>
+                      </div>
+                      <p className="text-xs truncate" style={{ color: theme.mutedForeground, fontStyle: isTyping ? "italic" : "normal" }}>{preview}</p>
+                    </div>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+/* ---------- root ---------- */
+function CircuvoDashboard() {
+  const [view, setView] = useState("onboarding1");
+  const [activeItem, setActiveItem] = useState(null);
+  const [activeJob, setActiveJob] = useState(null);
+  const [detailBackTarget, setDetailBackTarget] = useState("browse");
+  const [jobs, setJobs] = useState(initialJobs);
+  const [cart, setCart] = useState([]);
+  const [purchasedItems, setPurchasedItems] = useState([]);
+  const [profile, setProfile] = useState(null);
+  const [pendingNext, setPendingNext] = useState("browse");
+  const [makerReturnView, setMakerReturnView] = useState("browse");
+  // Where to continue once someone finishes becoming a Maker (null means
+  // go back to where they came from). Cancelling always goes back.
+  const [makerNextView, setMakerNextView] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [scrollToResults, setScrollToResults] = useState(false);
+
+  // Every new screen opens at the top, like a normal page change.
+  useEffect(() => { window.scrollTo(0, 0); }, [view]);
+  // Messaging: all conversations live here so they persist while
+  // navigating, and reset on a full reload like the rest of the app.
+  const [conversations, setConversations] = useState({}); // { [personId]: { personId, name, messages: [] } }
+  const [typing, setTyping] = useState({});                // { [personId]: true } while a reply is pending
+  const [activeThreadId, setActiveThreadId] = useState(null);
+  const [activeRef, setActiveRef] = useState(null);        // item/job the next message is about
+  const [chatBackView, setChatBackView] = useState("browse");
+  const [inboxBackView, setInboxBackView] = useState("browse");
+
+  // Returns true if the person already has a profile and can proceed.
+  // Otherwise sends them to create one first, remembering where to
+  // return to afterward.
+  const requireProfile = (nextView) => {
+    if (!profile) {
+      setPendingNext(nextView);
+      setView("createProfile");
+      return false;
+    }
+    return true;
+  };
+
+  const submitListing = (draft) => {
+    const num = (v) => (v && v.trim() !== "" ? parseInt(v.replace(/[^0-9]/g, ""), 10) || null : null);
+    const isPaidJob = draft.pathway === "Refurbish" || draft.pathway === "Upcycle";
+    const budgetMin = isPaidJob ? num(draft.budgetMin) : draft.pathway === "Plain sell" ? num(draft.plainSellPrice) : null;
+    const budgetMax = isPaidJob ? num(draft.budgetMax) : null;
+    const note = draft.description.trim() ||
+      (draft.pathway === "Upcycle" && draft.upcycleGoal.trim() ? `Wants it turned into: ${draft.upcycleGoal.trim()}` : "No description provided.");
+    const newJob = {
+      id: Date.now(), title: draft.title.trim() || "Untitled item", category: draft.category, pathway: draft.pathway || "Plain sell", owner: "You",
+      location: draft.location.trim() || "Vancouver", budgetMin, budgetMax, note,
+    };
+    setJobs((prev) => [newJob, ...prev]);
+  };
+
+  const addToCart = (item) => setCart((prev) => (prev.some((i) => i.id === item.id) ? prev : [...prev, item]));
+  const removeFromCart = (id) => setCart((prev) => prev.filter((i) => i.id !== id));
+  const checkoutCart = () => { setPurchasedItems(cart); setCart([]); setView("cartConfirmed"); };
+
+  const goBrowse = () => { setView("browse"); setActiveItem(null); setActiveJob(null); };
+  const goListings = () => { setView("listings"); setActiveJob(null); };
+  const goPost = () => { if (!requireProfile("post")) return; setView("post"); };
+  const goDetail = (item, backTo = "browse") => { setActiveItem(item); setDetailBackTarget(backTo); setView("detail"); };
+  const backFromDetail = () => { if (detailBackTarget === "post") goPost(); else goBrowse(); setDetailBackTarget("browse"); };
+
+  const attemptCheckout = () => { if (!requireProfile("checkout")) return; setView("checkout"); };
+
+  const attemptGiveQuote = () => {
+    setMakerReturnView("jobDetail");
+    setMakerNextView("quoteForm");
+    if (!requireProfile("jobDetail")) return;
+    if (!profile.isMaker) { setView("becomeMaker"); return; }
+    setView("quoteForm");
+  };
+  const attemptClaim = () => {
+    setMakerReturnView("jobDetail");
+    setMakerNextView(null);
+    if (!requireProfile("jobDetail")) return;
+    if (!profile.isMaker) { setView("becomeMaker"); return; }
+    setView("jobClaimed");
+  };
+  const attemptBecomeMaker = () => {
+    setMakerReturnView("browse");
+    setMakerNextView(null);
+    if (!requireProfile("becomeMaker")) return;
+    if (profile.isMaker) return;
+    setView("becomeMaker");
+  };
+
+  // Opens (or continues) the conversation with a person. One thread per
+  // person: if it exists it is reused, otherwise it is created. ref notes
+  // which item or job the next message is about. Messaging needs a
+  // profile, same as posting, buying, or quoting; after signing up the
+  // person lands straight in the conversation.
+  const openThread = (name, ref, backView) => {
+    const id = personKey(name);
+    setConversations((prev) => (prev[id] ? prev : { ...prev, [id]: { personId: id, name, messages: [] } }));
+    setActiveThreadId(id);
+    setActiveRef(ref || null);
+    setChatBackView(backView);
+    if (!profile) { setPendingNext("chat"); setView("createProfile"); return; }
+    setView("chat");
+  };
+
+  const attemptMessage = (recipientName, ref, backView) => openThread(recipientName, ref, backView);
+
+  const openInbox = () => {
+    if (view !== "inbox" && view !== "chat") setInboxBackView(view);
+    setView("inbox");
+  };
+
+  const openThreadFromInbox = (personId) => {
+    setActiveThreadId(personId);
+    setActiveRef(null);
+    setChatBackView("inbox");
+    setView("chat");
+  };
+
+  const sendMessage = (personId, text, ref) => {
+    const body = text.trim();
+    if (!body) return;
+    const thread = conversations[personId];
+    const prior = thread ? thread.messages : [];
+    const lastMine = [...prior].reverse().find((m) => m.from === "me");
+    const isNewTopic = !!ref && !(lastMine && sameRef(lastMine.ref, ref));
+    const replyCount = prior.filter((m) => m.from === "them").length;
+    const mine = { id: `m${Date.now()}${Math.random().toString(36).slice(2, 6)}`, from: "me", text: body, sentAt: new Date(), ref: ref || null };
+    const append = (msg) => setConversations((prev) => {
+      const t = prev[personId];
+      if (!t) return prev;
+      return { ...prev, [personId]: { ...t, messages: [...t.messages, msg] } };
+    });
+    append(mine);
+    setTyping((prev) => ({ ...prev, [personId]: true }));
+    setTimeout(() => {
+      append({ id: `m${Date.now()}r`, from: "them", text: simulatedReply(ref, isNewTopic, replyCount), sentAt: new Date(), ref: null });
+      setTyping((prev) => { const next = { ...prev }; delete next[personId]; return next; });
+    }, 900 + Math.random() * 600);
+  };
+
+  const onProfileCreated = ({ name, contact }) => {
+    setProfile({ name, contact, isMaker: false });
+    setView(pendingNext);
+  };
+  const onMakerCreated = (makerInfo) => {
+    setProfile((prev) => ({ ...prev, isMaker: true, ...makerInfo }));
+    setView(makerNextView || makerReturnView);
+  };
+
+  // Clicking the header account spot: if signed out, opens sign-in and
+  // remembers the current screen to return to. If already signed in,
+  // it opens the actual profile page.
+  const goAccount = () => {
+    if (!profile) {
+      setPendingNext(view);
+      setView("createProfile");
+      return;
+    }
+    setView("myProfile");
+  };
+
+  const signOut = () => {
+    setProfile(null);
+    setConversations({});
+    setTyping({});
+    setActiveThreadId(null);
+    goBrowse();
+  };
+
+  return (
+    <HeaderSearchContext.Provider value={{
+      search: (q) => { setSearchTerm(q); goBrowse(); setScrollToResults(true); },
+      showResults: () => setScrollToResults(true) }}>
+    <FooterNavContext.Provider value={{ goBrowse, goPost, goListings,
+      becomeMaker: () => { if (profile && profile.isMaker) goAccount(); else attemptBecomeMaker(); } }}>
+    <div style={{ background: theme.background, color: theme.foreground, fontFamily: "Montserrat, -apple-system, Segoe UI, Roboto, sans-serif" }} className="min-h-screen w-full">
+      {view === "onboarding1" && <OnboardingWelcome onNext={() => setView("onboarding2")} onSkip={goBrowse} />}
+      {view === "onboarding2" && <OnboardingPathways onNext={goBrowse} onSkip={goBrowse} />}
+      {view === "browse" && (
+        <DashboardView searchTerm={searchTerm} setSearchTerm={setSearchTerm} scrollToResults={scrollToResults} onResultsShown={() => setScrollToResults(false)}
+          onMessagesClick={openInbox} onGoListings={goListings} onGoPost={goPost} onGoHome={goBrowse} onCartClick={() => setView("cart")} onAccountClick={goAccount} onSignOut={signOut} onBecomeMaker={attemptBecomeMaker} profile={profile} cartCount={cart.length}
+          onSelectItem={(item) => { setActiveItem(item); setView("detail"); }} />
+      )}
+      {view === "detail" && activeItem && (
+        <ItemDetailView onMessagesClick={openInbox} item={activeItem} cart={cart} onBack={backFromDetail} onLogoClick={goBrowse} onGoBrowse={goBrowse} onGoListings={goListings} onGoPost={goPost} onAccountClick={goAccount} onSignOut={signOut} profile={profile}
+          onCartClick={() => setView("cart")} cartCount={cart.length} onViewProfile={() => setView("profile")} onAddToCart={addToCart}
+          onMessage={() => attemptMessage(activeItem.maker, { kind: "item", id: activeItem.id, title: activeItem.title }, "detail")} />
+      )}
+      {view === "profile" && activeItem && (
+        <ProviderProfileView onMessagesClick={openInbox} item={activeItem} onBack={() => setView("detail")} onLogoClick={goBrowse} onGoBrowse={goBrowse} onGoListings={goListings} onGoPost={goPost} onAccountClick={goAccount} onSignOut={signOut} profile={profile}
+          onCartClick={() => setView("cart")} cartCount={cart.length} />
+      )}
+      {view === "cart" && (
+        <CartView onMessagesClick={openInbox} cart={cart} onRemove={removeFromCart} onCheckout={attemptCheckout} onGoBrowse={goBrowse} onGoListings={goListings} onGoPost={goPost} onAccountClick={goAccount} onSignOut={signOut} profile={profile}
+          onGoHome={goBrowse} onCartClick={() => setView("cart")} />
+      )}
+      {view === "checkout" && (
+        <CheckoutView onMessagesClick={openInbox} cart={cart} onPlaceOrder={checkoutCart} onBack={() => setView("cart")} onGoBrowse={goBrowse} onGoListings={goListings} onGoPost={goPost} onAccountClick={goAccount} onSignOut={signOut} profile={profile}
+          onGoHome={goBrowse} onCartClick={() => setView("cart")} />
+      )}
+      {view === "cartConfirmed" && (
+        <CartConfirmedView onMessagesClick={openInbox} purchasedItems={purchasedItems} onGoBrowse={goBrowse} onGoListings={goListings} onGoPost={goPost} onGoHome={goBrowse} onCartClick={() => setView("cart")} onAccountClick={goAccount} onSignOut={signOut} profile={profile} />
+      )}
+      {view === "listings" && (
+        <ListingsView onMessagesClick={openInbox} jobs={jobs} onGoBrowse={goBrowse} onGoPost={goPost} onGoHome={goBrowse} onCartClick={() => setView("cart")} onAccountClick={goAccount} onSignOut={signOut} profile={profile} cartCount={cart.length}
+          onSelectJob={(job) => { setActiveJob(job); setView("jobDetail"); }} />
+      )}
+      {view === "jobDetail" && activeJob && (
+        <JobDetailView onMessagesClick={openInbox} job={activeJob} onBack={goListings} onGoBrowse={goBrowse} onGoPost={goPost} onGoHome={goBrowse} onCartClick={() => setView("cart")} onAccountClick={goAccount} onSignOut={signOut} profile={profile} cartCount={cart.length}
+          onGiveQuote={attemptGiveQuote} onClaim={attemptClaim} onMessage={() => attemptMessage(activeJob.owner, { kind: "job", id: activeJob.id, title: activeJob.title }, "jobDetail")} />
+      )}
+      {view === "quoteForm" && activeJob && (
+        <QuoteFormView onMessagesClick={openInbox} job={activeJob} onBack={() => setView("jobDetail")} onGoBrowse={goBrowse} onGoPost={goPost} onGoHome={goBrowse} onCartClick={() => setView("cart")} onAccountClick={goAccount} onSignOut={signOut} profile={profile}
+          cartCount={cart.length} onSubmitQuote={() => setView("quoteSent")} />
+      )}
+      {view === "quoteSent" && activeJob && (
+        <QuoteSentView onMessagesClick={openInbox} job={activeJob} onGoListings={goListings} onGoBrowse={goBrowse} onGoPost={goPost} onGoHome={goBrowse} onCartClick={() => setView("cart")} onAccountClick={goAccount} onSignOut={signOut} profile={profile} cartCount={cart.length} />
+      )}
+      {view === "jobClaimed" && activeJob && (
+        <JobClaimedView onMessagesClick={openInbox} job={activeJob} onGoListings={goListings} onGoBrowse={goBrowse} onGoPost={goPost} onGoHome={goBrowse} onCartClick={() => setView("cart")} onAccountClick={goAccount} onSignOut={signOut} profile={profile} cartCount={cart.length} />
+      )}
+      {view === "post" && (
+        <PostFlow onMessagesClick={openInbox} onGoBrowse={goBrowse} onGoListings={goListings} onGoHome={goBrowse} onCartClick={() => setView("cart")} onAccountClick={goAccount} onSignOut={signOut} profile={profile} cartCount={cart.length} onSubmitListing={submitListing}
+          onViewTransformation={(pathway) => { const exampleTitle = pathway === "Upcycle" ? "Denim tote bag" : "Rocking chair"; const example = listings.find((l) => l.title === exampleTitle) || listings[0]; goDetail(example, "post"); }} />
+      )}
+
+      {view === "createProfile" && (
+        <CreateProfileView onMessagesClick={openInbox} onSubmit={onProfileCreated} onCancel={goBrowse} profile={profile} />
+      )}
+      {view === "becomeMaker" && (
+        <BecomeMakerView onMessagesClick={openInbox} onSubmit={onMakerCreated} onCancel={() => setView(makerReturnView)} profile={profile} />
+      )}
+      {view === "myProfile" && profile && (
+        <MyProfileView onMessagesClick={openInbox} profile={profile} onBack={goBrowse} onBecomeMaker={attemptBecomeMaker} />
+      )}
+      {view === "inbox" && profile && (
+        <InboxView onMessagesClick={openInbox} conversations={conversations} typing={typing} onOpenThread={openThreadFromInbox}
+          onBack={() => setView(inboxBackView)} onGoBrowse={goBrowse} onGoListings={goListings} onGoPost={goPost}
+          onCartClick={() => setView("cart")} onAccountClick={goAccount} onSignOut={signOut} profile={profile} cartCount={cart.length} />
+      )}
+      {view === "chat" && activeThreadId && conversations[activeThreadId] && (
+        <ChatView onMessagesClick={openInbox}
+          thread={conversations[activeThreadId]}
+          isTyping={!!typing[activeThreadId]}
+          activeRef={activeRef}
+          onClearRef={() => setActiveRef(null)}
+          onSend={(text, ref) => sendMessage(activeThreadId, text, ref)}
+          onBack={() => setView(chatBackView)}
+          onGoBrowse={goBrowse}
+          onGoListings={goListings}
+          onGoPost={goPost}
+          onCartClick={() => setView("cart")}
+          onAccountClick={goAccount}
+          onSignOut={signOut}
+          profile={profile}
+          cartCount={cart.length}
+        />
+      )}
+    </div>
+    </FooterNavContext.Provider>
+    </HeaderSearchContext.Provider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<CircuvoDashboard />);
+</script>
+</body>
+</html>
