@@ -123,7 +123,7 @@
     aspect-ratio: var(--r, 4 / 3);
     background: var(--tile, var(--tile-a));
   }
-  .frame > img, .frame > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .frame > img, .frame > video, .frame > picture > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .ph {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
@@ -416,7 +416,7 @@
     .tile[style*="--o:1"] .frame { width: calc(336 * var(--mu)); height: calc(346 * var(--mu)); aspect-ratio: auto; }
     .tile[style*="--o:2"] .frame { width: calc(336 * var(--mu)); height: calc(253 * var(--mu)); aspect-ratio: auto; }
     .tile[style*="--o:3"] .frame { width: calc(336 * var(--mu)); height: calc(343 * var(--mu)); aspect-ratio: auto; }
-    .tile[style*="--o:4"] .frame { width: calc(336 * var(--mu)); height: calc(175 * var(--mu)); aspect-ratio: auto; }
+    .tile[style*="--o:4"] .frame { width: calc(336 * var(--mu)); height: calc(224 * var(--mu)); aspect-ratio: auto; }
     figcaption { width: 0; min-width: 100%; margin-top: calc(12 * var(--mu)); }
     /* Homepage phone type, matching the template (Mobile_Inter: 550, 13 / 14) */
     /* The template's phone canvas is 360 wide, so its 13 / 14 type is 375/360 larger on ours, with -0.3 tracking */
@@ -547,7 +547,7 @@
 
       <figure class="tile" style="--o:4">
         <a href="https://shrin-roym.com/flowing-rhythm-textures" target="_blank" rel="noopener">
-          <div class="frame" style="--r:3/2; --tile:var(--tile-d)"><img src="images/home/tile-flowing-rhythm.jpg?v=3" alt="Flowing Rhythm: two models in printed and textured denim jackets"></div>
+          <div class="frame" style="--r:3/2; --tile:var(--tile-d)"><picture><source media="(max-width: 600px)" srcset="images/home/tile-flowing-rhythm-phone.jpg"><img src="images/home/tile-flowing-rhythm.jpg?v=3" alt="Flowing Rhythm: two models in printed and textured denim jackets"></picture></div>
         </a>
         <figcaption>
           <a href="https://shrin-roym.com/flowing-rhythm-textures" target="_blank" rel="noopener"><span class="t">Flowing Rhythm</span></a><br>
