@@ -122,9 +122,10 @@
   <!-- HERO MEDIA: the Circuvo hero video only -->
   <div class="hero-media">
     <div class="hero-single">
-      <!-- The Circuvo hero video only (Shrin, 2026-11-13): high resolution desktop screens get circuvo-hero-4k.mp4 (the 4K original, Circuvo/Website/7219703-uhd_4096_2160_25fps.mp4, H.264 4096 by 2160, 21 MB); everyone else gets circuvo-hero-hd.mp4 (1080p H.264 made from it with avconvert PresetAppleM4V1080pHD, 12.8 MB). circuvo-hero-poster.jpg is the 4K video's own first frame at 2880 wide, shown sharp the moment the page loads until the video takes over.
-           Shared video script (id heroVid / heroVidBtn): muted loop, plays while on screen, pauses off screen, starts paused with reduced motion. -->
-      <div class="media hero-vid"><video id="heroVid" muted loop playsinline preload="none" poster="images/case-studies/circuvo/circuvo-hero-poster.jpg" aria-label="The Circuvo hero video: hands working on an old glass bottle"><source src="images/case-studies/circuvo/circuvo-hero-4k.mp4" type="video/mp4" media="(min-width: 1000px) and (min-resolution: 2dppx)"><source src="images/case-studies/circuvo/circuvo-hero-hd.mp4" type="video/mp4"></video><button type="button" class="vid-toggle" id="heroVidBtn" aria-label="Pause video">Pause</button></div>
+      <!-- The Circuvo hero video only (Shrin, 2026-11-13): the first 15 s of Circuvo/Website/7220979-uhd_4096_2160_25fps.mp4 (a green bottle on a grinding wheel), no sound.
+           High resolution desktop screens get circuvo-hero-grind-2560.mp4 (2560 by 1350, 11 Mbps, 17 MB); everyone else gets circuvo-hero-grind-1080.mp4 (1920 by 1012, 7 Mbps, 11.5 MB). Poster is its first frame at 2560.
+           Shared video script: muted loop, plays while on screen, pauses off screen, starts paused with reduced motion. -->
+      <div class="media hero-vid"><video id="heroVid" muted loop playsinline preload="none" poster="images/case-studies/circuvo/circuvo-hero-grind-poster.jpg" aria-label="Hands shaping a green glass bottle on a grinding wheel"><source src="images/case-studies/circuvo/circuvo-hero-grind-2560.mp4" type="video/mp4" media="(min-width: 1000px) and (min-resolution: 2dppx)"><source src="images/case-studies/circuvo/circuvo-hero-grind-1080.mp4" type="video/mp4"></video><button type="button" class="vid-toggle" id="heroVidBtn" aria-label="Pause video">Pause</button></div>
       <a href="https://www.circuvo.app/" target="_blank" rel="noopener" class="hero-site-link">Circuvo &#8599;</a>
     </div>
   </div>
@@ -422,7 +423,7 @@
   <div class="mirror sub-block">
       <div class="mirror-text">
         <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">What testing changed</button></h2>
-        <p class="block-text" style="margin-bottom:0;">Five people tested the prototype. What they struggled with shaped the design, and most of what they asked for is now in the live build.</p>
+        <p class="block-text" style="margin-bottom:0;">What testers struggled with shaped the design, and most of what they asked for is now in the live build.</p>
         <div class="testers">
           <div class="tester"><div class="tester-n">Tony</div><div class="tester-d">Mentor, walked the whole prototype</div></div>
           <div class="tester"><div class="tester-n">Asish</div><div class="tester-d">All three flows</div></div>
