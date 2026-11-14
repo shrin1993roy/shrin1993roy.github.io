@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="images/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=15">
 <style>
 /* Circuvo only: the large number in The problem, at the title size */
 /* Live Build walkthrough: white behind the video, and the same 1px light grey frame as the design screens (Shrin) */
@@ -41,10 +41,6 @@
 .hero-single .hero-vid video { aspect-ratio: 1920 / 1012; object-fit: cover; }
 @media (max-width: 820px) { .hero-single { padding-left: max(12px, calc(12 * var(--s))); padding-right: max(12px, calc(12 * var(--s))); } }
 .screens-grid img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); box-sizing: border-box; }
-/* Design decisions: two columns, each key form under its decision (Become a Maker at 87.3% so both forms share one scale; each form has a 24px white inset and a 1px light grey frame, Shrin asked for it) */
-.dec-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: max(24px, calc(40 * var(--s))); row-gap: max(36px, calc(56 * var(--s))); }
-.form-shot { display: block; width: 100%; height: auto; margin-top: max(36px, calc(56 * var(--s))); border: 1px solid var(--rule); box-sizing: border-box; }
-@media (max-width: 820px) { .dec-grid { grid-template-columns: 1fr; } }
 /* Testing: what testers said and what changed in the final build. Dots follow the tester order Tony, Asish, Elissa, Jenny, Murtuza */
 .testers { margin-top: max(24px, calc(36 * var(--s))); }
 .tester { margin-bottom: max(12px, calc(16 * var(--s))); }
@@ -68,6 +64,18 @@
 .evolve .step:last-child .step-q { color: var(--ink); }
 @media (max-width: 820px) { .evolve { grid-template-columns: 1fr; row-gap: 12px; } .evolve .arrow { padding-top: 0; transform: rotate(90deg); width: fit-content; } }
 @media (max-width: 820px) { .big-num { font-size: max(16px, calc(18 * var(--s))); line-height: max(18px, calc(19 * var(--s))); } }
+/* Design decisions page viewer (uses the shared flow viewer; Previous and Next sit under the page, small) */
+.dd-stage .dd-page { border: 1px solid var(--rule); box-sizing: border-box; }
+.dd-nav { display: flex; justify-content: space-between; gap: 16px; margin-top: max(8px, calc(12 * var(--s))); }
+.dd-stage .flow-prev { background: #fff; color: #000; border: 0; font-family: inherit; font-weight: 480; text-transform: uppercase; cursor: pointer; padding: 2px 4px; font-size: max(9px, calc(10 * var(--s))); line-height: 1.3; letter-spacing: -0.2px; }
+.dd-stage .flow-prev:hover, .dd-stage .flow-prev:focus-visible { background: var(--neon); outline: none; }
+.dd-stage .flow-next { position: static; display: block; margin: 0 0 0 auto; padding: 2px 4px; font-size: max(9px, calc(10 * var(--s))); line-height: 1.3; letter-spacing: -0.2px; }
+.media.scroll-shot.dd-page { aspect-ratio: 3 / 2; }
+.dd-page img { display: block; width: 100%; height: auto; }
+.dd-text .find:not(:has(.flow-pick.on)) { display: none; }
+.dd-text .find { max-width: 62%; }
+.dd-text .flow-pick, .dd-text .flow-pick.on, .dd-text .flow-pick:hover { color: #000; background: none; cursor: default; }
+@media (max-width: 820px) { .dd-text .find { max-width: none; } }
 </style>
 </head>
 <body id="top">
@@ -522,38 +530,44 @@
     <p class="block-text design-dir">The design direction is calm, editorial and photo led, inspired by Toteme, Everlane and Markaware. Quiet and generous with space, so repaired and remade pieces can speak.</p>
     <!-- Design canvas link goes here once it can be shared: <a href="..." target="_blank" rel="noopener" class="proto-link design-link">View design canvas ↗</a> -->
 
-    <!-- Design decisions: the two key forms (cropped from the final build, shown at the same scale) sit under the decisions they show; 03 and 04 are text only -->
+    <!-- Design decisions: four pillars in a page viewer like the user flows. One full page from the build at a time (2880 wide captures, scrolling inside a 3:2 box when taller), Previous and Next under it, and only the current pillar's writeup below. Order set by Shrin: One of a kind first. -->
     <div class="mirror sub-block" style="margin-top: max(48px, calc(72 * var(--s))); margin-bottom: max(48px, calc(72 * var(--s)));">
       <div class="mirror-text">
         <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Design decisions</button></h2>
-        <p class="block-text" style="margin-bottom:0;">Four choices shaped the build. The first two live in its key forms.</p>
+        <p class="block-text" style="margin-bottom:0;">Four pillars shaped the build. Each one can be seen on the live site.</p>
       </div>
-      <div class="dec-grid">
-        <div class="find">
-          <div class="find-n">01</div>
-          <h3 class="find-t">Three plain choices</h3>
-          <p class="find-p">One Fix or sell screen: Repair/Refurbish, Upcycle or Sell it as is. Each opens only the field it needs.</p>
-          <img class="form-shot" src="images/case-studies/circuvo/circuvo-form-fix-or-sell.jpg?v=2" width="992" height="1033" alt="The Fix or sell form on circuvo.app, with three choices: Repair/Refurbish, Upcycle and Sell it as is" loading="lazy">
-        </div>
-        <div class="find">
-          <div class="find-n">02</div>
-          <h3 class="find-t">One profile, Maker added on</h3>
-          <p class="find-p">Becoming a Maker is a one time step on the same account. It unlocks quoting and claiming.</p>
-          <img class="form-shot" src="images/case-studies/circuvo/circuvo-form-become-a-maker.jpg?v=2" width="866" height="1984" style="width: 87.3%;" alt="The Become a Maker form on circuvo.app: photo, skills, pickup area, website, Instagram, portfolio photos and pricing approach" loading="lazy">
-        </div>
-        <div class="find">
-          <div class="find-n">03</div>
-          <h3 class="find-t">The Maker on every listing</h3>
-          <p class="find-p">Trust came up again and again, so every piece shows who worked on it, and how.</p>
-        </div>
-        <div class="find">
-          <div class="find-n">04</div>
-          <h3 class="find-t">Reviews for Makers only</h3>
-          <p class="find-p">Skill is what buyers need to trust, so Makers are reviewed and products never are.</p>
+      <div class="flows dd-flows">
+        <figure class="flow-stage dd-stage">
+          <div class="media scroll-shot flow-slide dd-page is-on" tabindex="0" data-file="circuvo-page-one-of-a-kind.jpg"><img src="images/case-studies/circuvo/circuvo-page-one-of-a-kind.jpg?v=5" width="2880" height="1908" alt="The Vintage table lamp listing: a rotary telephone rewired as a lamp, only one made, with photos of how it was made" loading="lazy"></div>
+          <div class="media scroll-shot flow-slide dd-page" tabindex="0" data-file="circuvo-page-fix-or-sell.jpg"><img src="images/case-studies/circuvo/circuvo-page-fix-or-sell.jpg?v=5" width="2880" height="1890" alt="The Fix or sell page on circuvo.app, with three choices: Repair/Refurbish, Upcycle and Sell it as is" loading="lazy"></div>
+          <div class="media scroll-shot flow-slide dd-page" tabindex="0" data-file="circuvo-page-trust.jpg"><img src="images/case-studies/circuvo/circuvo-page-trust.jpg?v=5" width="2880" height="2550" alt="The owner's page for a refurbished rocking chair: before and after photos and the Maker's progress updates" loading="lazy"></div>
+          <div class="media scroll-shot flow-slide dd-page" tabindex="0" data-file="circuvo-page-materials.jpg"><img src="images/case-studies/circuvo/circuvo-page-materials.jpg?v=5" width="2880" height="1900" alt="The Materials page: free fabric scraps, tree trunk sections, a broken chair and paint splattered canvas, each waiting to be claimed" loading="lazy"></div>
+          <div class="dd-nav"><button type="button" class="flow-prev">&#8592; Previous: Maker support</button><button type="button" class="flow-next">Next: Three plain choices &#8594;</button></div>
+        </figure>
+        <div class="dd-text">
+          <div class="find">
+            <div class="find-n">01 / 04</div>
+            <h3 class="find-t"><button type="button" class="flow-pick on" aria-pressed="true">One of a kind</button></h3>
+            <p class="find-p">Every piece is the only one. Its listing says so, and shows how it was made, step by step.</p>
+          </div>
+          <div class="find">
+            <div class="find-n">02 / 04</div>
+            <h3 class="find-t"><button type="button" class="flow-pick" aria-pressed="false">Three plain choices</button></h3>
+            <p class="find-p">One Fix or sell screen: Repair/Refurbish, Upcycle or Sell it as is. Each opens only the field it needs.</p>
+          </div>
+          <div class="find">
+            <div class="find-n">03 / 04</div>
+            <h3 class="find-t"><button type="button" class="flow-pick" aria-pressed="false">Trust</button></h3>
+            <p class="find-p">Makers post photos as they work. Owners follow every stage and approve the finished piece before the labour is paid.</p>
+          </div>
+          <div class="find">
+            <div class="find-n">04 / 04</div>
+            <h3 class="find-t"><button type="button" class="flow-pick" aria-pressed="false">Maker support</button></h3>
+            <p class="find-p">Materials lists free fabric, wood and parts from neighbours and local businesses, for Makers to claim.</p>
+          </div>
         </div>
       </div>
     </div>
-
 
     </div>
   </div>
@@ -651,6 +665,6 @@ window.SCREENS = [
   {"name": "Our impact", "img": "images/case-studies/circuvo/circuvo-screen-impact.jpg", "text": "The same side menu layout covers Why we exist, What guides us, So far and Join us.\n\nSo far counts items given a second life, verified Makers and kilograms kept from landfill, clearly marked as sample data for the prototype.", "pri": "Show the purpose without overstating results."}
 ];
 </script>
-<script src="site.js?v=11"></script>
+<script src="site.js?v=15"></script>
 </body>
 </html>

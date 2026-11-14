@@ -157,19 +157,22 @@ document.querySelectorAll('.copy-pw').forEach(btn => {
   });
 })();
 
-// Flow viewer: Next (inside the box) or a flow's name switches the image
+// Flow viewer: Next (and Previous, where there is one) or a name switches the image
 document.querySelectorAll('.flows').forEach(box => {
-  const slides = [...box.querySelectorAll('.flow-slide')], picks = [...box.querySelectorAll('.flow-pick')], next = box.querySelector('.flow-next');
+  const slides = [...box.querySelectorAll('.flow-slide')], picks = [...box.querySelectorAll('.flow-pick')], next = box.querySelector('.flow-next'), prev = box.querySelector('.flow-prev');
   if (!slides.length) return;
   let cur = 0;
+  const n = slides.length;
   function show(i) {
     cur = i;
     slides.forEach((s, k) => s.classList.toggle('is-on', k === i));
     picks.forEach((p, k) => { p.classList.toggle('on', k === i); p.setAttribute('aria-pressed', String(k === i)); });
-    if (next) next.textContent = 'Next: ' + picks[(i + 1) % picks.length].textContent + ' \u2192';
+    if (next) next.textContent = 'Next: ' + picks[(i + 1) % n].textContent + ' \u2192';
+    if (prev) prev.textContent = '\u2190 Previous: ' + picks[(i - 1 + n) % n].textContent;
   }
   picks.forEach((p, k) => p.addEventListener('click', () => show(k)));
-  if (next) next.addEventListener('click', () => show((cur + 1) % slides.length));
+  if (next) next.addEventListener('click', () => show((cur + 1) % n));
+  if (prev) prev.addEventListener('click', () => show((cur - 1 + n) % n));
   show(0);
 });
 
@@ -216,7 +219,7 @@ document.querySelectorAll('.flows').forEach(box => {
   document.querySelectorAll('.hero-vid').forEach(box => {
     const v = box.querySelector('video'), b = box.querySelector('.vid-toggle'); if (!v || !b) return;
     let userPaused = calm; // people who ask for less motion press Play themselves
-    const set = () => { const on = !v.paused; b.textContent = on ? 'Pause' : 'Play'; b.setAttribute('aria-label', on ? 'Pause video' : 'Play video'); };
+    const set = () => { const on = !v.paused; b.textContent = on ? 'Pause' : 'Play'; b.classList.toggle('is-playing', on); b.setAttribute('aria-label', on ? 'Pause video' : 'Play video'); };
     b.addEventListener('click', () => { if (v.paused) { userPaused = false; v.play(); } else { userPaused = true; v.pause(); } });
     v.addEventListener('play', set); v.addEventListener('pause', set); set();
     // Load and play only when the video is on screen, pause when it scrolls away
