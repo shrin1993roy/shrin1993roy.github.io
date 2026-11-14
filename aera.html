@@ -217,6 +217,11 @@ body {
   flex-shrink: 0;
 }
 
+.fact-value .hi { white-space: nowrap; }
+.hero-summary .summary-link { color: inherit; text-decoration: none; }
+.hero-summary .summary-link:hover,
+.hero-summary .summary-link:focus-visible { background: var(--neon); }
+
 /* Open section: black on neon. Others: grey, neon on hover */
 .section-nav a:hover,
 .section-nav a:focus-visible,
@@ -393,10 +398,11 @@ body {
   border-bottom: 1px solid var(--ink);
   padding-bottom: 1px;
   margin-bottom: max(24px, calc(32 * var(--s)));
-  transition: opacity 0.15s;
+  transition: background-color 0.15s;
 }
 
-.proto-link:hover { opacity: 0.4; }
+.proto-link:hover,
+.proto-link:focus-visible { background: var(--neon); outline: none; }
 
 /* ── FOOTER ── */
 .footer {
@@ -461,8 +467,8 @@ body {
 .media video, .media img { width: 100%; height: auto; display: block; }
 .media.is-empty.r-video { aspect-ratio: 16/9; }
 .media.is-empty.r-shot  { aspect-ratio: 16/10; }
-/* Full page screenshots that scroll inside their box; the page itself does not scroll while inside */
-.media.scroll-shot { aspect-ratio: 16/10; overflow-y: auto; overscroll-behavior: contain; background: #fff; scrollbar-width: thin; scrollbar-color: var(--grey) transparent; }
+/* Full page screenshots that scroll inside their box; once the end is reached, scrolling carries on down the page */
+.media.scroll-shot { aspect-ratio: 4/3; overflow-y: auto; overscroll-behavior: auto; background: #fff; scrollbar-width: thin; scrollbar-color: var(--grey) transparent; }
 .media.scroll-shot:focus-visible { outline: 2px solid var(--neon); outline-offset: 2px; }
 
 .cap {
@@ -475,7 +481,8 @@ body {
 }
 .pad-x { padding-left: max(20px, calc(32 * var(--s))); padding-right: max(20px, calc(32 * var(--s))); }
 
-.hero-media { margin-top: max(32px, calc(48 * var(--s))); }
+.hero-media { margin-top: max(8px, calc(16 * var(--s))); }
+.hero-media .pair:first-child { margin-top: 0; }
 .hero-media .pair {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: max(4px, calc(6 * var(--s)));
@@ -503,6 +510,7 @@ body {
   margin: max(16px, calc(24 * var(--s))) 0 max(48px, calc(72 * var(--s)));
 }
 .split-text .block-text { margin-bottom: 0; }
+@media (min-width: 821px) { .split.r75 { grid-template-columns: 75fr 25fr; } }
 
 .opps {
   display: grid;
@@ -697,6 +705,33 @@ body {
 }
 
 .research-board { margin-bottom: max(48px, calc(72 * var(--s))); }
+.finds.brand-grid { grid-template-columns: repeat(4, 1fr); row-gap: max(32px, calc(48 * var(--s))); }
+.brand-logo { height: max(30px, calc(40 * var(--s))); display: flex; align-items: flex-end; margin-bottom: max(12px, calc(16 * var(--s))); }
+.brand-logo img { display: block; height: max(calc(var(--lh) * 1px), calc(var(--lh) * 1.25 * var(--s))); width: auto; max-width: 100%; }
+@media (max-width: 820px) { .finds.brand-grid { grid-template-columns: 1fr 1fr; column-gap: 20px; } }
+/* FigJam board: click to open large, click again to zoom in */
+.board-open { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.board-open img { display: block; width: 100%; height: auto; }
+.bz { position: fixed; inset: 0; z-index: 1000; background: #fff; display: none; flex-direction: column; }
+.bz.open { display: flex; }
+.bz-bar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px max(12px, calc(32 * var(--s))); font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; color: var(--grey); }
+.bz-close { background: none; border: 0; padding: 2px 4px; font: inherit; color: #000; text-transform: uppercase; cursor: pointer; }
+.bz-close:hover, .bz-close:focus-visible { background: var(--neon); outline: none; }
+.bz-scroll { flex: 1; overflow: auto; overscroll-behavior: contain; }
+.bz-scroll img { display: block; width: 100%; height: auto; margin: 0 auto; cursor: zoom-in; }
+.bz.zoomed .bz-scroll img { max-width: none; cursor: zoom-out; }
+/* Hero video: plays muted on a loop, one small Pause / Play button */
+.hero-vid { position: relative; }
+.vid-toggle { position: absolute; left: max(10px, calc(16 * var(--s))); bottom: max(10px, calc(16 * var(--s))); background: #fff; color: #000; border: 0; padding: 3px 6px; font-family: inherit; font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; cursor: pointer; }
+.vid-toggle:hover, .vid-toggle:focus-visible { background: var(--neon); outline: none; }
+.client-quote { margin: 0; }
+.quote-src { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; color: var(--grey); margin-top: max(10px, calc(12 * var(--s))); }
+.bench-body { min-width: 0; }
+@media (min-width: 821px) { .bench-body .brand-flow { flex-wrap: nowrap; gap: calc(28 * var(--s)); } }
+.bench-body .brand-note { max-width: max(280px, calc(520 * var(--s))); }
+.bench-body > .block-text { margin-bottom: max(20px, calc(28 * var(--s))); max-width: calc(620 * var(--s)); }
+.bench-body > .block-text + .block-text { margin-top: calc(-1 * max(8px, calc(12 * var(--s)))); }
+.bench-body > .block-text:last-child { margin-bottom: 0; }
 /* Screen names above the five screens: same columns and gap as the image, same style as 01, 02 */
 .screen-names { display: grid; grid-template-columns: repeat(5, 1fr); column-gap: max(4px, calc(8 * var(--s))); margin-bottom: max(10px, calc(14 * var(--s))); }
 .screen-names span { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; color: var(--grey); }
@@ -719,11 +754,9 @@ body {
 .bname { background: none; border: 0; padding: 0 0 max(4px, calc(6 * var(--s))); cursor: pointer; display: inline-flex; align-items: flex-end; box-shadow: inset 0 -3px 0 transparent; transition: box-shadow 0.15s ease; }
 .bname img { display: block; height: max(calc(var(--lh) * 0.8px), calc(var(--lh) * var(--s))); width: auto; }
 .bname:hover, .bname:focus-visible, .bname.on { box-shadow: inset 0 -3px 0 var(--neon); outline: none; }
-.bbreak { display: none; }
 /* Desktop: logos a little bigger, Alphalete starts the second line. Tablet and phone keep the plain wrap. */
 @media (min-width: 821px) {
   .bname img { height: calc(var(--lh) * var(--s) * 1.2); }
-  .bbreak { display: block; flex-basis: 100%; height: 0; margin-top: calc(-1 * max(16px, calc(20 * var(--s)))); }
 }
 .brand-note {
   font-size: max(11px, calc(13 * var(--s)));
@@ -788,9 +821,9 @@ body.lb-open { overflow: hidden; }
 
 
 /* Instruction under the five screens: centred, black on neon so it is noticed */
-.screen-cta { position: absolute; z-index: 3; left: 20.2%; right: 0; top: calc(66.9% + max(24px, calc(40 * var(--s)))); text-align: center; margin: 0; pointer-events: none; }
+.screen-cta { position: absolute; z-index: 3; right: 0; bottom: max(28px, calc(44 * var(--s))); text-align: right; margin: 0; pointer-events: none; }
 @media (max-width: 820px) { .screen-cta { position: static; margin: 16px 0 4px; } .screens { display: flex; flex-direction: column; } .screens .screen-cta { order: 2; } }
-.screen-cta span { display: inline-block; background: var(--neon); color: #000; text-transform: uppercase; padding: 2px 4px; font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; }
+.screen-cta span { display: inline-block; color: var(--grey); text-transform: uppercase; font-size: max(10px, calc(11 * var(--s))); line-height: max(12px, calc(13 * var(--s))); font-weight: 480; letter-spacing: -0.4px; }
 /* Prototype intro: full width, black */
 #prototype-body .block { max-width: none; }
 #prototype-body .block-text { max-width: none; color: var(--ink); }
@@ -924,7 +957,7 @@ body.lb-open { overflow: hidden; }
     </div>
     <div class="hero-right">
       <p class="hero-summary">
-        At FLUI Design Jam ’26, I led a two night redesign of Aera Activewear’s website. A client interview and a review of seven brands shaped a high fidelity eCommerce prototype where brand storytelling, product discovery and fit guidance work together.
+        In two nights at <a class="summary-link" href="https://www.linkedin.com/company/fluidesignjam/posts/" target="_blank" rel="noopener">FLUI Design Jam ’26</a>, I led the redesign of Aera Activewear’s website around the biggest reason customers hesitated to buy: sizing. The judges recognised the work, and I took it further on my own, building it as a five page Shopify store.
       </p>
     </div>
   </div>
@@ -933,19 +966,19 @@ body.lb-open { overflow: hidden; }
   <div class="facts">
     <div class="fact">
       <div class="fact-label">Role</div>
-      <div class="fact-value">UX/UI Design Lead</div>
+      <div class="fact-value">UX/UI Design Lead / Web Designer</div>
     </div>
     <div class="fact">
       <div class="fact-label">Timeline</div>
-      <div class="fact-value">2 night hackathon / independent concept build in progress</div>
+      <div class="fact-value">2 night hackathon, then an independent Shopify build</div>
     </div>
     <div class="fact">
       <div class="fact-label">Tools</div>
-      <div class="fact-value">Figma, Claude and Claude Code, Miro, Tally Forms, Adobe Creative Suite</div>
+      <div class="fact-value">Figma, Shopify (Dawn, Liquid), Claude Code, Miro, Tally Forms, Adobe Creative Suite</div>
     </div>
     <div class="fact">
       <div class="fact-label">Outcome</div>
-      <div class="fact-value"><span class="hi">Recognised by judges</span> for brand storytelling, conversational voice and size guide depth.</div>
+      <div class="fact-value">Recognised by judges for storytelling, voice and sizing guidance, then taken from prototype to a working five page <span class="hi">Shopify store</span>.</div>
     </div>
   </div>
 
@@ -954,18 +987,14 @@ body.lb-open { overflow: hidden; }
        <video controls playsinline preload="metadata" src="images/case-studies/aera/aera-hero-video.mp4"></video>
        or <img src="images/case-studies/aera/aera-hero-01.jpg" alt="..."> and remove "is-empty". -->
   <div class="hero-media">
-    <figure>
-      <div class="media is-empty r-video" data-file="aera-hero-video.mp4" role="img" aria-label="Aera Activewear prototype walkthrough"></div>
-      <figcaption class="cap pad-x">Aera Activewear, exploring the redesigned digital experience.</figcaption>
-    </figure>
     <div class="pair">
       <figure>
         <div class="media r-shot scroll-shot" tabindex="0" aria-label="Aera homepage, full page: scroll inside to see it all"><img src="images/case-studies/aera/aera-hero-01.jpg" alt="Full page of the redesigned Aera Activewear homepage" loading="lazy"></div>
-        <figcaption class="cap pad-x">Homepage: bringing Aera's brand identity to life.</figcaption>
+        <figcaption class="cap pad-x">Shopify homepage: bringing Aera's brand identity to life.</figcaption>
       </figure>
       <figure>
         <div class="media r-shot scroll-shot" tabindex="0" aria-label="Aera product page, full page: scroll inside to see it all"><img src="images/case-studies/aera/aera-hero-02.jpg" alt="Full page of the redesigned Aera Activewear product page for the Signature Invisible Scrunch Sculpt Leggings" loading="lazy"></div>
-        <figcaption class="cap pad-x">Product experience: connecting product discovery with fit information.</figcaption>
+        <figcaption class="cap pad-x">Shopify product page: connecting product discovery with fit information.</figcaption>
       </figure>
     </div>
   </div>
@@ -1051,68 +1080,121 @@ body.lb-open { overflow: hidden; }
     <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="research-body">Research</button></div>
     <div class="sec-body" id="research-body">
 
+    <!-- Same flow as Challenge: two columns, then media left with a statement right -->
     <div class="duo">
       <details class="xp">
         <summary><h2 class="sub-head">Introduction</h2></summary>
         <div class="xp-body">
-          <p class="block-text">I began by understanding the brand, its intended audience and the existing digital experience. A nine question client interview helped clarify the business priorities, customer profile and areas where the website needed to evolve.</p>
+          <p class="block-text">I began by understanding the brand, its intended audience and the existing digital experience.</p>
           <p class="block-text">I then reviewed seven activewear brands to identify useful approaches to product discovery, product education, brand storytelling and eCommerce presentation.</p>
         </div>
       </details>
       <details class="xp">
-        <summary><h2 class="sub-head">The customer</h2></summary>
+        <summary><h2 class="sub-head">Interview</h2></summary>
         <div class="xp-body">
-          <p class="block-text">The intended audience was women aged 25 to 35 looking for elevated activewear that could move between everyday life, yoga, Pilates, walking and other low impact activities.</p>
-          <p class="block-text">The client wanted Aera to feel feminine, approachable and conversational, elevated without being overly luxurious or pretentious.</p>
-          <p class="block-text">Sizing emerged as a key customer concern. Aera’s products ran smaller than standard sizing, making accessible and prominent fit guidance an important design priority.</p>
+          <p class="block-text">A nine question client interview helped clarify the business priorities, customer profile and areas where the website needed to evolve.</p>
         </div>
       </details>
     </div>
 
-    <!-- FigJam overview screenshot: replace the empty .media with <img src="images/case-studies/aera/aera-research-01.jpg" alt="..."> -->
-    <figure class="research-board">
-      <div class="media is-empty r-video" data-file="aera-research-01.jpg" role="img" aria-label="Aera Activewear FigJam research board"></div>
-    </figure>
+    <!-- FigJam board: replace the empty .media with <img src="images/case-studies/aera/aera-research-01.jpg" alt="..."> or a <video controls playsinline preload="metadata"> -->
+    <div class="split r75">
+      <figure>
+        <button type="button" class="board-open" aria-label="Enlarge the FigJam board"><div class="media" data-file="aera-research-01.jpg" style="background:#fff;"><img src="images/case-studies/aera/aera-research-01.jpg" alt="Aera Activewear FigJam research board: project overview, client interview, brand analysis, competitor analysis, UX research and site map" loading="lazy"></div></button>
+      </figure>
+      <div class="split-text">
+        <blockquote class="client-quote"><p class="block-text" style="color: var(--ink);">“The fit of it, the sizing of it.”</p><p class="quote-src">The client, on the question customers ask most before buying. Aera’s products run small.</p></blockquote>
+      </div>
+    </div>
 
-    <!-- Research findings: same layout as Opportunities identified -->
+    <!-- The customer: same layout as Research findings -->
     <div class="mirror" style="margin-bottom: max(48px, calc(72 * var(--s)));">
       <div class="mirror-text">
-        <h2 class="sub-head">Research findings</h2>
+        <h2 class="sub-head">The customer</h2>
       </div>
       <div class="finds row3">
         <div class="find">
           <div class="find-n">01</div>
-          <h3 class="find-t">No brand story</h3>
-          <p class="find-p">The website needed to communicate Aera’s identity, brand values and point of difference more clearly.</p>
+          <h3 class="find-t">Audience</h3>
+          <p class="find-p">Women aged 25 to 35 looking for elevated activewear that moves between everyday life, yoga, Pilates, walking and other low impact activities.</p>
         </div>
         <div class="find">
           <div class="find-n">02</div>
-          <h3 class="find-t">Limited product education</h3>
-          <p class="find-p">AeraForm™ fabric, a core product differentiator, needed to be explained more effectively throughout the shopping experience.</p>
+          <h3 class="find-t">Brand feel</h3>
+          <p class="find-p">The client wanted Aera to feel feminine, approachable and conversational, elevated without being overly luxurious or pretentious.</p>
         </div>
         <div class="find">
           <div class="find-n">03</div>
-          <h3 class="find-t">Limited sizing guidance</h3>
-          <p class="find-p">Customers needed accessible information to understand how Aera’s sizing compared with standard sizing.</p>
+          <h3 class="find-t">Sizing concern</h3>
+          <p class="find-p">Aera’s products ran smaller than standard sizing, making accessible and prominent fit guidance an important design priority.</p>
         </div>
       </div>
     </div>
 
-    <!-- Competitor benchmarking: FigJam image left, write up and brands right -->
-    <div class="split">
-      <figure>
-        <div class="media is-empty r-video" data-file="aera-research-competitors.jpg" role="img" aria-label="FigJam competitor benchmarking of seven activewear brands"></div>
-      </figure>
-      <div class="split-text">
+    <!-- Competitor benchmarking: same layout as Research findings, logos in place of numbers -->
+    <div class="mirror" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
         <h2 class="sub-head">Competitor benchmarking</h2>
-        <p class="block-text">The competitor review explored how seven established activewear brands approached their digital shopping experiences. I looked at their navigation, collection structures, product presentation, visual identity, storytelling and product education.</p>
-        <p class="brand-flow"><button type="button" class="bname" data-note="Cohesive collections and lifestyle led imagery."><img src="images/case-studies/aera/logos/logo-set-active.png" alt="Set Active" style="--lh:14"></button><button type="button" class="bname" data-note="Product education and activity based navigation."><img src="images/case-studies/aera/logos/logo-lululemon.png" alt="lululemon" style="--lh:16"></button><button type="button" class="bname" data-note="Founder storytelling and brand credibility."><img src="images/case-studies/aera/logos/logo-dr-mers-club.png" alt="Dr. Mer’s Club" style="--lh:26"></button><button type="button" class="bname" data-note="Sizing guidance and membership communication."><img src="images/case-studies/aera/logos/logo-fabletics.png" alt="Fabletics" style="--lh:28"></button><span class="bbreak" aria-hidden="true"></span><button type="button" class="bname" data-note="Collection organisation and shop by colour."><img src="images/case-studies/aera/logos/logo-alphalete.png" alt="Alphalete" style="--lh:10"></button><button type="button" class="bname" data-note="Inclusive sizing and fit guidance."><img src="images/case-studies/aera/logos/logo-skims.png" alt="SKIMS" style="--lh:15"></button><button type="button" class="bname" data-note="Editorial presentation and material storytelling."><img src="images/case-studies/aera/logos/logo-aritzia-tna.png" alt="Aritzia TNA" style="--lh:14"></button></p>
-        <p class="brand-note" aria-live="polite" data-hint="Hover a brand to see what I took from it.">Hover a brand to see what I took from it.</p>
+        <p class="block-text" style="margin-bottom:0;">I reviewed seven established activewear brands, looking at navigation, collection structures, product presentation, visual identity, storytelling and product education. Here is what I took from each.</p>
+      </div>
+      <div class="finds brand-grid">
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/aera/logos/logo-set-active.png" alt="Set Active" style="--lh:14" loading="lazy"></div>
+          <p class="find-p">Cohesive collections and lifestyle led imagery.</p>
+        </div>
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/aera/logos/logo-lululemon.png" alt="lululemon" style="--lh:16" loading="lazy"></div>
+          <p class="find-p">Product education and activity based navigation.</p>
+        </div>
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/aera/logos/logo-dr-mers-club.png" alt="Dr. Mer’s Club" style="--lh:26" loading="lazy"></div>
+          <p class="find-p">Founder storytelling and brand credibility.</p>
+        </div>
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/aera/logos/logo-fabletics.png" alt="Fabletics" style="--lh:28" loading="lazy"></div>
+          <p class="find-p">Sizing guidance and membership communication.</p>
+        </div>
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/aera/logos/logo-alphalete.png" alt="Alphalete" style="--lh:10" loading="lazy"></div>
+          <p class="find-p">Collection organisation and shop by colour.</p>
+        </div>
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/aera/logos/logo-skims.png" alt="SKIMS" style="--lh:15" loading="lazy"></div>
+          <p class="find-p">Inclusive sizing and fit guidance.</p>
+        </div>
+        <div class="find brand-card">
+          <div class="brand-logo"><img src="images/case-studies/aera/logos/logo-aritzia-tna.png" alt="Aritzia TNA" style="--lh:14" loading="lazy"></div>
+          <p class="find-p">Editorial presentation and material storytelling.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key insights: what the interview and competitor review showed -->
+    <div class="mirror" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head">Key insights</h2>
+      </div>
+      <div class="finds row3">
+        <div class="find">
+          <div class="find-n">01</div>
+          <h3 class="find-t">Fit decides the sale</h3>
+          <p class="find-p">Sizing was the question customers asked most before buying, and Aera’s products run small.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">02</div>
+          <h3 class="find-t">Story builds trust</h3>
+          <p class="find-p">The brands that stood out, like Dr. Mer’s Club and Aritzia, led with founder stories and materials.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">03</div>
+          <h3 class="find-t">Show the fabric</h3>
+          <p class="find-p">AeraForm™ was Aera’s point of difference, but the website barely explained it.</p>
+        </div>
       </div>
     </div>
 
     <p class="block-text opp-line">The research pointed to an opportunity beyond a visual refresh: create an experience where brand storytelling, product education and fit guidance worked together to make shopping feel more intuitive and informed.</p>
-    <a href="https://www.figma.com/board/oI2orilzMT7AcC4Ww6ISpZ/Aera-Activewear-Figjam-Board?node-id=0-1&amp;t=88H0syeAzO8bewAA-1" target="_blank" rel="noopener" class="proto-link">Explore the full research board ↗</a>
+    <a href="https://www.figma.com/board/oI2orilzMT7AcC4Ww6ISpZ/Aera-Activewear-Figjam-Board?node-id=0-1&amp;t=88H0syeAzO8bewAA-1" target="_blank" rel="noopener" class="proto-link">View FigJam board ↗</a>
     </div>
   </div>
 
@@ -1224,7 +1306,14 @@ body.lb-open { overflow: hidden; }
   <div class="section" id="build">
     <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="build-body">Shopify Build</button></div>
     <div class="sec-body" id="build-body">
-    <p class="block-text opp-line">To take the design beyond the prototype, I built it as an independent, non commercial Shopify store for my portfolio, carrying across the information architecture, visual direction and shopping experience.</p>
+    <div class="split r75 build-split">
+      <figure>
+        <div class="media r-video hero-vid"><video id="heroVid" muted loop playsinline preload="none" src="images/case-studies/aera/aera-hero-video.mp4" aria-label="Walkthrough of the Aera Activewear Shopify concept store"></video><button type="button" class="vid-toggle" id="heroVidBtn" aria-label="Pause video">Pause</button></div>
+      </figure>
+      <div class="split-text">
+        <p class="block-text" style="color: var(--ink);">To take the design beyond the prototype, I built it as an independent, non commercial Shopify store for my portfolio, carrying across the information architecture, visual direction and shopping experience.</p>
+      </div>
+    </div>
     <a href="https://aera-redesign.myshopify.com" target="_blank" rel="noopener" class="proto-link build-link">Explore the concept store ↗</a>
     <p class="status store-pass" style="margin-bottom: max(8px, calc(10 * var(--s)));"><b>Password</b>to enter the store: <span class="pw-group"><span class="pw">aera-activewear</span> <button type="button" class="copy-pw" data-copy="aera-activewear">Copy</button></span></p>
     <p class="status"><b>Note</b>Not affiliated with Aera Activewear. Brand name, logo and photos belong to Aera Activewear, sourced from @aeraactivewear and the design brief (some sharpened with AI). Headings use Sergio Trendy by Kulokale Studio, personal use licence.</p>
@@ -1438,5 +1527,46 @@ document.querySelectorAll('.copy-pw').forEach(btn => {
 })();
 </script>
 
+
+<!-- FigJam board viewer -->
+<div class="bz" id="bz" role="dialog" aria-modal="true" aria-label="FigJam board" hidden>
+  <div class="bz-bar"><span id="bz-hint">Click the board to zoom in</span><button type="button" class="bz-close" id="bz-close">Close ×</button></div>
+  <div class="bz-scroll" id="bz-scroll"><img id="bz-img" alt="Aera Activewear FigJam research board, enlarged"></div>
+</div>
+<script>
+(function () {
+  const open = document.querySelector('.board-open'); if (!open) return;
+  const bz = document.getElementById('bz'), img = document.getElementById('bz-img'), sc = document.getElementById('bz-scroll');
+  const hint = document.getElementById('bz-hint'), close = document.getElementById('bz-close');
+  const setHint = () => { hint.textContent = bz.classList.contains('zoomed') ? 'Click to zoom out, scroll to move around' : 'Click the board to zoom in'; };
+  function show() { if (!img.src) img.src = 'images/case-studies/aera/aera-research-01-large.jpg'; bz.hidden = false; bz.classList.add('open'); bz.classList.remove('zoomed'); img.style.width = ''; setHint(); document.body.style.overflow = 'hidden'; close.focus(); }
+  function hide() { bz.classList.remove('open', 'zoomed'); img.style.width = ''; bz.hidden = true; document.body.style.overflow = ''; open.focus(); }
+  open.addEventListener('click', show);
+  close.addEventListener('click', hide);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && bz.classList.contains('open')) hide(); });
+  img.addEventListener('click', e => {
+    const r = img.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
+    bz.classList.toggle('zoomed'); setHint();
+    // Zoom to the image's real pixels (never stretched), at most 3 times the screen width
+    img.style.width = bz.classList.contains('zoomed') ? Math.min(img.naturalWidth / (window.devicePixelRatio || 1), sc.clientWidth * 3) + 'px' : '';
+    if (bz.classList.contains('zoomed')) { sc.scrollLeft = fx * img.offsetWidth - sc.clientWidth / 2; sc.scrollTop = fy * img.offsetHeight - sc.clientHeight / 2; }
+  });
+})();
+</script>
+<script>
+(function () {
+  const v = document.getElementById('heroVid'), b = document.getElementById('heroVidBtn'); if (!v || !b) return;
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let userPaused = calm; // people who ask for less motion press Play themselves
+  const set = () => { const on = !v.paused; b.textContent = on ? 'Pause' : 'Play'; b.setAttribute('aria-label', on ? 'Pause video' : 'Play video'); };
+  b.addEventListener('click', () => { if (v.paused) { userPaused = false; v.play(); } else { userPaused = true; v.pause(); } });
+  v.addEventListener('play', set); v.addEventListener('pause', set); set();
+  // Load and play only when the video is on screen, pause when it scrolls away
+  new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { if (!userPaused) v.play().catch(() => {}); }
+    else if (!v.paused) v.pause();
+  }), { threshold: 0.25 }).observe(v);
+})();
+</script>
 </body>
 </html>
