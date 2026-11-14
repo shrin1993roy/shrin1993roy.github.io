@@ -709,9 +709,6 @@ body {
 .hero-vid { position: relative; }
 .vid-toggle { position: absolute; left: max(10px, calc(16 * var(--s))); bottom: max(10px, calc(16 * var(--s))); background: #fff; color: #000; border: 0; padding: 3px 6px; font-family: inherit; font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; cursor: pointer; }
 .vid-toggle:hover, .vid-toggle:focus-visible { background: var(--neon); outline: none; }
-/* A video whose Play / Pause sits just outside, under the video on the left (Aera Challenge video); its caption moves down to make room */
-.vid-out .vid-toggle { top: calc(100% + max(8px, calc(10 * var(--s)))); bottom: auto; left: -6px; }
-.vid-out + .cap { margin-top: max(32px, calc(40 * var(--s))); }
 /* Flow viewer: one image at a time, a Next button inside the box, the flows listed underneath */
 .flow-stage { position: relative; margin-bottom: max(32px, calc(48 * var(--s))); }
 .flow-slide { display: none; }
