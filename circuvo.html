@@ -21,6 +21,9 @@
 <link rel="stylesheet" href="styles.css?v=7">
 <style>
 /* Circuvo only: the large number in The problem, at the title size */
+/* The live site link right under the hero video, right aligned, styled like the flow viewer's Next button (Shrin) */
+.hero-site-link { display: table; margin: max(12px, calc(16 * var(--s))) 0 0 auto; padding: 3px 6px; background: #fff; color: #000; text-decoration: none; font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; transition: background-color 0.15s ease; }
+.hero-site-link:hover, .hero-site-link:focus-visible { background: var(--neon); outline: none; }
 .big-num { font-size: max(20px, calc(28 * var(--s))); line-height: max(22px, calc(29 * var(--s))); font-weight: 450; letter-spacing: -0.8px; color: var(--ink); margin-bottom: max(8px, calc(10 * var(--s))); }
 .split-text .num-note { margin-bottom: max(20px, calc(28 * var(--s))); }
 .media.is-empty.r-board { aspect-ratio: 4/3; }
@@ -30,8 +33,6 @@
 .screens-grid { display: grid; grid-template-columns: repeat(4, 1fr); column-gap: max(4px, calc(8 * var(--s))); align-items: start; }
 /* Homepage capture in the hero media: the screenshot with the live hero video laid over it */
 .shot-wrap { position: relative; }
-/* Research: the FigJam board slightly bigger than the usual 75%, the line beside it narrower */
-@media (min-width: 821px) { .split.board-split { grid-template-columns: 82fr 18fr; } }
 /* Hero: the Circuvo video only, full width inside the page margin, at its own shape (1920 by 1012) */
 .media.framed { border: 1px solid var(--rule); box-sizing: border-box; }
 .hero-single { padding-left: max(20px, calc(32 * var(--s))); padding-right: max(20px, calc(32 * var(--s))); margin-bottom: max(32px, calc(48 * var(--s))); }
@@ -112,7 +113,7 @@
     </div>
     <div class="fact">
       <div class="fact-label">Outcome</div>
-      <div class="fact-value"><span class="o-long"><span class="hi">2nd prize</span> at Product BC Buildathon Demo Day, then taken forward as a live, responsive site at circuvo.app.</span><span class="o-short"><span class="hi">2nd prize</span>, now live at circuvo.app.</span></div>
+      <div class="fact-value"><span class="o-long"><span class="hi">2nd prize</span> at Product BC Buildathon Demo Day, then taken forward as a live, responsive site.</span><span class="o-short"><span class="hi">2nd prize</span>, now a live, responsive site.</span></div>
     </div>
   </div>
 
@@ -122,6 +123,7 @@
       <!-- The Circuvo hero video only (Shrin, 2026-11-13): high resolution desktop screens get circuvo-hero-4k.mp4 (the 4K original, Circuvo/Website/7219703-uhd_4096_2160_25fps.mp4, H.264 4096 by 2160, 21 MB); everyone else gets circuvo-hero-hd.mp4 (1080p H.264 made from it with avconvert PresetAppleM4V1080pHD, 12.8 MB). circuvo-hero-poster.jpg is the 4K video's own first frame at 2880 wide, shown sharp the moment the page loads until the video takes over.
            Shared video script (id heroVid / heroVidBtn): muted loop, plays while on screen, pauses off screen, starts paused with reduced motion. -->
       <div class="media hero-vid"><video id="heroVid" muted loop playsinline preload="none" poster="images/case-studies/circuvo/circuvo-hero-poster.jpg" aria-label="The Circuvo hero video: hands working on an old glass bottle"><source src="images/case-studies/circuvo/circuvo-hero-4k.mp4" type="video/mp4" media="(min-width: 1000px) and (min-resolution: 2dppx)"><source src="images/case-studies/circuvo/circuvo-hero-hd.mp4" type="video/mp4"></video><button type="button" class="vid-toggle" id="heroVidBtn" aria-label="Pause video">Pause</button></div>
+      <a href="https://www.circuvo.app/" target="_blank" rel="noopener" class="hero-site-link">Circuvo &#8599;</a>
     </div>
   </div>
 
@@ -162,10 +164,9 @@
 
     <div class="split">
       <figure>
-        <!-- FIND: a wide landscape photo (about 16:9) of discarded furniture, clothing and household goods, at a landfill or piled at the curb, most of it clearly not broken.
-             Fill with <img src="images/case-studies/circuvo/circuvo-problem-waste.jpg" alt="..."> and remove "is-empty". -->
-        <div class="media is-empty r-video" data-file="circuvo-problem-waste.jpg"></div>
-        <figcaption class="cap">Furniture, textiles and household goods sent to disposal, much of it still usable.</figcaption>
+        <!-- Problem photo (Shrin, 2026-11-13): bamboo chairs piled for disposal, Unsplash photo by Guang Yang (guang-yang-vT-cbdsF09Q-unsplash.jpg), 1800 wide web copy -->
+        <div class="media" data-file="circuvo-problem-waste.jpg"><img src="images/case-studies/circuvo/circuvo-problem-waste.jpg" width="1800" height="1200" alt="A heap of bamboo chairs piled up beside a metal skip, most of them still in one piece" loading="lazy"></div>
+        <figcaption class="cap">Chairs piled up for disposal, most of them still in one piece.</figcaption>
       </figure>
       <div class="split-text">
         <p class="big-num">27.5 million tonnes</p>
@@ -219,7 +220,7 @@
         <button type="button" class="board-open" data-large="images/case-studies/circuvo/circuvo-research-board-large.jpg" aria-label="Enlarge the FigJam board"><div class="media" data-file="circuvo-research-board.jpg" style="background:#fff;"><img src="images/case-studies/circuvo/circuvo-research-board.jpg" width="2800" height="1653" alt="Circuvo FigJam research board: deliverables, personas, the survey, interviews, competitors, problem statement and research" loading="lazy"></div></button>
       </figure>
       <div class="split-text">
-        <blockquote class="client-quote"><p class="block-text" style="color: var(--ink);">No one we surveyed uses a repair or upcycling service today.</p><p class="quote-src">Circuvo survey, 17 respondents. Donating is the default (65%).</p></blockquote>
+        <div class="client-quote"><p class="block-text" style="color: var(--ink);">Problem, personas, research and competitors, mapped on one board before any design.</p><a href="https://www.figma.com/board/peOmt8X8bmKqlcP1IfuaHo/Circuvo?node-id=0-1&amp;t=2TWWTulWrHk5LIOG-1" target="_blank" rel="noopener" class="proto-link" style="margin-top: max(16px, calc(20 * var(--s))); margin-bottom: 0;">View FigJam board ↗</a></div>
       </div>
     </div>
 
@@ -353,7 +354,6 @@
     </div>
 
     <p class="block-text opp-line">No single platform in Canada connects owners, local Makers and buyers around repair and upcycling.</p>
-    <!-- FigJam board link goes here once it can be shared: <a href="..." target="_blank" rel="noopener" class="proto-link">View FigJam board ↗</a> -->
     </div>
   </div>
 
