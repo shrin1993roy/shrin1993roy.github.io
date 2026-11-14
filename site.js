@@ -218,10 +218,10 @@ document.querySelectorAll('.flows').forEach(box => {
   const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('.hero-vid').forEach(box => {
     const v = box.querySelector('video'), b = box.querySelector('.vid-toggle'); if (!v || !b) return;
-    let userPaused = calm; // people who ask for less motion press Play themselves
+    let userPaused = calm || box.dataset.autoplay === 'off'; // people who ask for less motion press Play themselves; data-autoplay="off" never starts on its own
     const set = () => { const on = !v.paused; b.textContent = on ? 'Pause' : 'Play'; b.classList.toggle('is-playing', on); b.setAttribute('aria-label', on ? 'Pause video' : 'Play video'); };
     b.addEventListener('click', () => { if (v.paused) { userPaused = false; v.play(); } else { userPaused = true; v.pause(); } });
-    v.addEventListener('play', set); v.addEventListener('pause', set); set();
+    v.addEventListener('play', set); v.addEventListener('pause', set); v.addEventListener('ended', () => { userPaused = true; set(); }); set();
     // Load and play only when the video is on screen, pause when it scrolls away
     new IntersectionObserver(es => es.forEach(e => {
       if (e.isIntersecting) { if (!userPaused) v.play().catch(() => {}); }

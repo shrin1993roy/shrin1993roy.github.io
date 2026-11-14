@@ -709,6 +709,9 @@ body {
 .hero-vid { position: relative; }
 .vid-toggle { position: absolute; left: max(10px, calc(16 * var(--s))); bottom: max(10px, calc(16 * var(--s))); background: #fff; color: #000; border: 0; padding: 3px 6px; font-family: inherit; font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; cursor: pointer; }
 .vid-toggle:hover, .vid-toggle:focus-visible { background: var(--neon); outline: none; }
+/* A video whose Play / Pause sits just outside, under the video on the left (Aera Challenge video); its caption moves down to make room */
+.vid-out .vid-toggle { top: calc(100% + max(8px, calc(10 * var(--s)))); bottom: auto; left: -6px; }
+.vid-out + .cap { margin-top: max(32px, calc(40 * var(--s))); }
 /* Flow viewer: one image at a time, a Next button inside the box, the flows listed underneath */
 .flow-stage { position: relative; margin-bottom: max(32px, calc(48 * var(--s))); }
 .flow-slide { display: none; }
@@ -928,12 +931,14 @@ body.lb-open { overflow: hidden; }
   .go-up-mark { margin-left: 0; width: auto; align-self: flex-start; }
   .go-up-mark img, .go-up-mark .go-up-text { display: none !important; }
   .go-up-arrow { display: block; font-size: max(18px, calc(18 * var(--s))); line-height: 1; padding: 6px 10px 6px 0; color: var(--ink); text-decoration: none; }
-  /* Circuvo header video and the build videos (Circuvo Live Build, Aera Shopify Build): the Pause / Play button becomes a small || or play mark just under the video, on the left, with no highlight */
-  .hero-single .vid-toggle, .build-split .hero-vid .vid-toggle { top: calc(100% + max(12px, calc(16 * var(--s)))); bottom: auto; left: 0; padding: 3px 6px 3px 0; font-size: 0; line-height: 0; }
-  .hero-single .vid-toggle::before, .build-split .hero-vid .vid-toggle::before { content: "\275A\275A"; font-size: 9px; line-height: max(13px, calc(14 * var(--s))); letter-spacing: 1px; }
+  /* Circuvo header video and the build videos (Circuvo Live Build, Aera Shopify Build) and the Aera Challenge video: the Pause / Play button becomes a small || or play mark just under the video, on the left, with no highlight */
+  .hero-single .vid-toggle, .build-split .hero-vid .vid-toggle, .vid-out .vid-toggle { top: calc(100% + max(12px, calc(16 * var(--s)))); bottom: auto; left: 0; padding: 3px 6px 3px 0; font-size: 0; line-height: 0; }
+  .hero-single .vid-toggle::before, .build-split .hero-vid .vid-toggle::before, .vid-out .vid-toggle::before { content: "\275A\275A"; font-size: 9px; line-height: max(13px, calc(14 * var(--s))); letter-spacing: 1px; }
   .hero-single .vid-toggle, .hero-single .vid-toggle:hover, .hero-single .vid-toggle:focus-visible,
-  .build-split .hero-vid .vid-toggle, .build-split .hero-vid .vid-toggle:hover, .build-split .hero-vid .vid-toggle:focus-visible { background: none; }
-  .hero-single .vid-toggle:not(.is-playing)::before, .build-split .hero-vid .vid-toggle:not(.is-playing)::before { content: "\25B6\FE0E"; font-size: 10px; letter-spacing: 0; }
+  .build-split .hero-vid .vid-toggle, .build-split .hero-vid .vid-toggle:hover, .build-split .hero-vid .vid-toggle:focus-visible,
+  .vid-out .vid-toggle, .vid-out .vid-toggle:hover, .vid-out .vid-toggle:focus-visible { background: none; }
+  .hero-single .vid-toggle:not(.is-playing)::before, .build-split .hero-vid .vid-toggle:not(.is-playing)::before, .vid-out .vid-toggle:not(.is-playing)::before { content: "\25B6\FE0E"; font-size: 10px; letter-spacing: 0; }
   .build-split .hero-vid { overflow: visible; }
+  .vid-out + .cap { margin-top: max(44px, calc(46 * var(--s))); }
   .build-split figure { padding-bottom: max(28px, calc(32 * var(--s))); }
 }
