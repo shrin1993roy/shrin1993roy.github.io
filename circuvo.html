@@ -18,9 +18,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="images/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=7">
+<link rel="stylesheet" href="styles.css?v=8">
 <style>
 /* Circuvo only: the large number in The problem, at the title size */
+/* Live Build walkthrough: white behind the video, and the same 1px light grey frame as the design screens (Shrin) */
+.media.build-vid { background: #fff; border: 1px solid var(--rule); box-sizing: border-box; }
 /* The live site link right under the hero video, right aligned, styled like the flow viewer's Next button (Shrin) */
 .hero-site-link { display: table; margin: max(12px, calc(16 * var(--s))) 0 0 auto; padding: 3px 6px; background: #fff; color: #000; text-decoration: none; font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; transition: background-color 0.15s ease; }
 .hero-site-link:hover, .hero-site-link:focus-visible { background: var(--neon); outline: none; }
@@ -559,11 +561,11 @@
   <div class="section" id="build">
     <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="build-body">Live Build</button></div>
     <div class="sec-body" id="build-body">
+    <!-- Walkthrough of circuvo.app (Shrin, 2026-11-13): her screen recording sped up 1.5x and re-encoded at 1920 by 1102 with 6 px trimmed off every edge (the recording had 1 px capture lines on the right and bottom), H.264 6 Mbps, 24 s, 16 MB, no sound.
+         Muted loop that plays while on screen, Pause / Play, starts paused with reduced motion (shared video script); poster is its first frame. -->
     <div class="split r75 build-split">
       <figure>
-        <!-- FIND: a short screen recording of circuvo.app: the looping homepage, then posting an item, comparing quotes and a Maker's profile.
-             Fill with <video controls playsinline preload="metadata" src="images/case-studies/circuvo/circuvo-build-walkthrough.mp4"></video> and remove "is-empty" (no autoplay). -->
-        <div class="media is-empty r-video" data-file="circuvo-build-walkthrough.mp4"></div>
+        <div class="media r-video hero-vid build-vid"><video muted loop playsinline preload="none" poster="images/case-studies/circuvo/circuvo-build-poster.jpg?v=2" src="images/case-studies/circuvo/circuvo-build-walkthrough.mp4?v=2" aria-label="Walkthrough of circuvo.app: the homepage, a piece page and Add to cart, then the Marketplace"></video><button type="button" class="vid-toggle" aria-label="Pause video">Pause</button></div>
       </figure>
       <div class="split-text">
         <p class="block-text" style="color: var(--ink);">I moved the prototype into a Vite and React project with shadcn/ui and my own DESIGN.md, built through Claude Code and deployed on Vercel. It works on phone, tablet and desktop, with log in as Owner, Maker or both, and the quote, compare and accept flow.</p>
@@ -648,6 +650,6 @@ window.SCREENS = [
   {"name": "Our impact", "img": "images/case-studies/circuvo/circuvo-screen-impact.jpg", "text": "The same side menu layout covers Why we exist, What guides us, So far and Join us.\n\nSo far counts items given a second life, verified Makers and kilograms kept from landfill, clearly marked as sample data for the prototype.", "pri": "Show the purpose without overstating results."}
 ];
 </script>
-<script src="site.js?v=7"></script>
+<script src="site.js?v=8"></script>
 </body>
 </html>

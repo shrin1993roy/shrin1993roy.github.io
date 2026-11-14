@@ -210,17 +210,19 @@ document.querySelectorAll('.flows').forEach(box => {
   });
 })();
 
-// Video: plays muted on a loop, one small Pause / Play button
+// Videos: each plays muted on a loop with one small Pause / Play button (any number per page: every .hero-vid with a video and a .vid-toggle)
 (function () {
-  const v = document.getElementById('heroVid'), b = document.getElementById('heroVidBtn'); if (!v || !b) return;
   const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let userPaused = calm; // people who ask for less motion press Play themselves
-  const set = () => { const on = !v.paused; b.textContent = on ? 'Pause' : 'Play'; b.setAttribute('aria-label', on ? 'Pause video' : 'Play video'); };
-  b.addEventListener('click', () => { if (v.paused) { userPaused = false; v.play(); } else { userPaused = true; v.pause(); } });
-  v.addEventListener('play', set); v.addEventListener('pause', set); set();
-  // Load and play only when the video is on screen, pause when it scrolls away
-  new IntersectionObserver(es => es.forEach(e => {
-    if (e.isIntersecting) { if (!userPaused) v.play().catch(() => {}); }
-    else if (!v.paused) v.pause();
-  }), { threshold: 0.25 }).observe(v);
+  document.querySelectorAll('.hero-vid').forEach(box => {
+    const v = box.querySelector('video'), b = box.querySelector('.vid-toggle'); if (!v || !b) return;
+    let userPaused = calm; // people who ask for less motion press Play themselves
+    const set = () => { const on = !v.paused; b.textContent = on ? 'Pause' : 'Play'; b.setAttribute('aria-label', on ? 'Pause video' : 'Play video'); };
+    b.addEventListener('click', () => { if (v.paused) { userPaused = false; v.play(); } else { userPaused = true; v.pause(); } });
+    v.addEventListener('play', set); v.addEventListener('pause', set); set();
+    // Load and play only when the video is on screen, pause when it scrolls away
+    new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { if (!userPaused) v.play().catch(() => {}); }
+      else if (!v.paused) v.pause();
+    }), { threshold: 0.25 }).observe(v);
+  });
 })();
