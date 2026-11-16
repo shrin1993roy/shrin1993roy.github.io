@@ -100,6 +100,26 @@ svg { display: block; }
 .hgrid .ttl, .hgrid .place { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hgrid .vid { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--soft); margin-left: 8px; vertical-align: -3px; }
 
+/* ---------- Guide: a floating card with one tip at a time, so first time visitors know what to try (Shrin, 2026-11-15) ---------- */
+.guide { position: fixed; right: 24px; bottom: 96px; z-index: 45; width: 320px; background: var(--card); border-radius: 12px; box-shadow: 0 8px 28px rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.04); padding: 14px 16px 14px; font-size: 15px; line-height: 20px; }
+.guide[hidden] { display: none; }
+.guide-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.guide-step { font-size: 13px; color: var(--sub); font-weight: 600; }
+.guide-x { border: 0; background: var(--soft); width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 17px; line-height: 1; color: var(--sub); }
+.guide-x:hover { background: #d8dadf; }
+.guide p { margin: 0; }
+.guide-acts { display: flex; gap: 8px; margin-top: 12px; }
+.guide-go { border: 0; border-radius: 6px; background: var(--blue); color: #fff; font-weight: 600; padding: 7px 14px; }
+.guide-go:hover { background: #0759e0; }
+.guide-skip { border: 0; border-radius: 6px; background: var(--soft); font-weight: 600; padding: 7px 14px; }
+.guide-skip:hover { background: #d8dadf; }
+.guide-open { border: 0; background: none; color: var(--ink); font-weight: 600; font-size: 12px; padding: 0; }
+.guide-open[hidden] { display: none; }
+@keyframes gpulse { 0% { box-shadow: 0 0 0 0 rgba(8,102,255,.55); } 70% { box-shadow: 0 0 0 10px rgba(8,102,255,0); } 100% { box-shadow: 0 0 0 0 rgba(8,102,255,0); } }
+.g-pulse { animation: gpulse 1.6s ease-out infinite; border-radius: 8px; position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) { .g-pulse { animation: none; box-shadow: 0 0 0 3px rgba(8,102,255,.6); } }
+@media (max-width: 599px) { .guide { left: 12px; right: 12px; width: auto; bottom: 92px; } }
+
 /* ---------- Buy: search page ---------- */
 .buy { display: grid; grid-template-columns: 488px 1fr; min-height: calc(var(--vh, 100vh) - 78px); }
 .side { background: var(--card); box-shadow: 1px 0 2px rgba(0,0,0,.08); padding: 12px 14px 80px; position: sticky; top: 78px; height: calc(var(--vh, 100vh) - 78px); overflow: auto; }
@@ -581,7 +601,12 @@ textarea.inp { min-height: 148px; resize: vertical; }
   </div>
 </section>
 
-<div class="concept"><span class="sw"><button type="button" id="goHome" class="on">Marketplace</button><button type="button" id="goBuy">Buyer search</button><button type="button" id="goSell">Seller listing</button></span> Concept prototype by Shrin Roymoulik, not affiliated with Meta · <a href="../facebook-marketplace.html">Back to the case study</a></div>
+<div class="guide" id="guide" role="dialog" aria-live="polite" aria-label="How to explore this prototype">
+  <div class="guide-top"><span class="guide-step" id="gStep"></span><button type="button" class="guide-x" id="gClose" aria-label="Close the guide">&times;</button></div>
+  <p id="gText"></p>
+  <div class="guide-acts"><button type="button" class="guide-go" id="gGo"></button><button type="button" class="guide-skip" id="gSkip">Next tip</button></div>
+</div>
+<div class="concept"><span class="sw"><button type="button" id="goHome" class="on">Marketplace</button><button type="button" id="goBuy">Buyer search</button><button type="button" id="goSell">Seller listing</button></span> Concept prototype by Shrin Roymoulik, not affiliated with Meta · <a href="../facebook-marketplace.html">Back to the case study</a> <button type="button" class="guide-open" id="gOpen" hidden>· Show guide</button></div>
 
 <!-- Dialogs -->
 <div class="scrim" id="profileDlg" hidden role="dialog" aria-modal="true" aria-labelledby="profileTitle">
@@ -827,6 +852,7 @@ textarea.inp { min-height: 148px; resize: vertical; }
     history.replaceState(null, "", location.pathname);
     $("#goHome").classList.toggle("on", which === "home"); $("#goBuy").classList.toggle("on", which === "buy"); $("#goSell").classList.toggle("on", which === "sell");
     scrollTo(0, 0);
+    if (typeof renderGuide === "function" && document.getElementById("guide")) try { renderGuide(); } catch (e) {}
   }
   /* ---------- HOME: Today's picks (titles, prices and places as in Shrin's facebook.com screenshots) ---------- */
   const PICKS = [
@@ -861,7 +887,7 @@ textarea.inp { min-height: 148px; resize: vertical; }
      else toast("This prototype covers the Apparel category. Try Apparel."); }
   $("#hcats").addEventListener("click", e => { const c = e.target.closest("[data-cat]"); if (c) openCat(c.dataset.cat); });
   $("#hcats").addEventListener("keydown", e => { const c = e.target.closest("[data-cat]"); if (c && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openCat(c.dataset.cat); } });
-  $("#hSearch").addEventListener("submit", e => { e.preventDefault(); const v = $("#hq").value.trim(); if (v) $("#q").value = v; show("buy"); renderGrid(); });
+  $("#hSearch").addEventListener("submit", e => { e.preventDefault(); const v = $("#hq").value.trim(); if (v) $("#q").value = v; if (/blazer|jacket|coat|suit/i.test(v)) G.searched = true; show("buy"); renderGrid(); });
   $("#hCreate").addEventListener("click", () => show("sell"));
   $("#hCreateMulti").addEventListener("click", () => show("sell")); // both create buttons open the seller listing page (Shrin, 2026-11-15)
   document.querySelectorAll("[data-hnav]").forEach(b => b.addEventListener("click", () => { if (b.dataset.hnav !== "browse") toast(b.textContent.trim() + " isn't part of this prototype."); }));
@@ -978,8 +1004,48 @@ textarea.inp { min-height: 148px; resize: vertical; }
     items = [{ id, img: photos[0].src, price: s.price, title: v("#fTitle"), brand: v("#fBrand"), size: null, bust: isApparel() ? fitBust : null, len: parseFloat(v("#mLen")) || null, mat: v("#fMat"), cond: v("#fCond"), style: [], occ: [], feat: [], tags: ["Blazers"], colour: "", q: score(s) }].concat(items);
     newId = id; sel.tags.clear(); ADV.forEach(a => sel[a.key].clear()); $("#q").value = "";
     $("#sellForm").reset(); photos.length = 0; fitsPick = null; document.querySelectorAll("[data-fits]").forEach(x => x.classList.remove("on")); document.querySelectorAll(".switch").forEach(x => x.setAttribute("aria-checked", "true")); setMTab("exact"); renderThumbs(); update();
-    show("buy"); refresh(); toast("Published. Your listing is at the top of Apparel.");
+    G.published = true; show("buy"); refresh(); toast("Published. Your listing is at the top of Apparel.");
   });
+
+
+  /* ---------- Guide: one tip at a time for the page you are on; its button does the step for you ---------- */
+  const G = { searched: false, published: false, skipped: new Set(), closed: false };
+  try { G.closed = sessionStorage.getItem("fbmGuide") === "closed"; } catch (e) {}
+  const GSTEPS = {
+    apparel: { n: 1, text: "Start here: open <b>Apparel</b> under Categories to shop for clothing.", go: "Open Apparel", target: () => $('#hcats [data-cat="Apparel"]'), act: () => openCat("Apparel") },
+    search: { n: 2, text: "Search for <b>blazer</b>. Every listing tells you how it will fit, from the measurements saved in My Fit Profile.", go: "Search blazer", target: () => $("#q").closest(".searchbox"), act: () => { $("#q").value = "blazer"; renderGrid(); guideEvent("searched"); } },
+    fit: { n: 3, text: "Change your size in <b>Manage Measurements</b> and watch every fit note update. Style tags and Advanced Filters narrow it down.", go: "Change my size", target: () => $("#openProfile"), act: () => $("#openProfile").click() },
+    list: { n: 4, text: "Now the seller side: <b>Create new listing</b> and see how the form guides you.", go: "Create a listing", target: () => $("#createListing"), act: () => show("sell") },
+    sell: { n: 5, text: "Add 3 photos, then a title, price and category. Pick <b>Women's clothing</b> to see Mandatory Measurements. Watch the score, checklist and rating climb.", go: "Got it", target: () => $("#drop"), act: () => { G.skipped.add("sell"); renderGuide(); } },
+    done: { n: 5, text: "Published. Your listing is at the top of Apparel with a <b>NEW</b> tag and its own fit note.", go: "Start again", target: () => null, act: () => { G.searched = false; G.published = false; G.skipped.clear(); show("home"); } }
+  };
+  function guideKey() {
+    if (current === "home") return "apparel";
+    if (current === "sell") return G.skipped.has("sell") ? null : "sell";
+    if (G.published) return "done";
+    if (!G.searched) return G.skipped.has("search") ? (G.skipped.has("fit") ? "list" : "fit") : "search";
+    if (!G.skipped.has("fit")) return "fit";
+    return "list";
+  }
+  let gTarget = null;
+  function renderGuide() {
+    if (gTarget) gTarget.classList.remove("g-pulse"); gTarget = null;
+    const k = G.closed ? null : guideKey();
+    $("#guide").hidden = !k; $("#gOpen").hidden = !G.closed;
+    if (!k) return;
+    const st = GSTEPS[k];
+    $("#gStep").textContent = k === "done" ? "Done" : "Tip " + st.n + " of 5";
+    $("#gText").innerHTML = st.text; $("#gGo").textContent = st.go;
+    $("#gSkip").hidden = k === "done" || k === "sell" || k === "apparel";
+    gTarget = st.target(); if (gTarget) gTarget.classList.add("g-pulse");
+  }
+  function guideEvent(e) { if (e === "searched") G.searched = true; if (e === "published") G.published = true; renderGuide(); }
+  $("#gGo").addEventListener("click", () => { const k = guideKey(); if (k) GSTEPS[k].act(); renderGuide(); });
+  $("#gSkip").addEventListener("click", () => { const k = guideKey(); if (k) G.skipped.add(k); if (k === "search") G.skipped.add("search"); renderGuide(); });
+  $("#gClose").addEventListener("click", () => { G.closed = true; try { sessionStorage.setItem("fbmGuide", "closed"); } catch (e) {} renderGuide(); });
+  $("#gOpen").addEventListener("click", () => { G.closed = false; try { sessionStorage.removeItem("fbmGuide"); } catch (e) {} renderGuide(); });
+  $("#q").addEventListener("input", () => { if (/blazer|jacket|coat|suit/i.test($("#q").value)) guideEvent("searched"); });
+  $("#openProfile").addEventListener("click", () => { G.skipped.add("fit"); setTimeout(renderGuide, 0); });
 
   /* ---------- Desktop: lay out at the Figma frame width (1512 px) and scale to the window, so proportions match the Figma screens ---------- */
   function fitCanvas() {
