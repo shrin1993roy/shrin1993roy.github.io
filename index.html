@@ -8,14 +8,16 @@
 <!-- Link preview when the page is shared: images/share/preview.jpg, 1200 by 630 -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Shrin Roymoulik">
-<meta property="og:url" content="https://shrin1993roy.github.io/">
+<meta property="og:url" content="https://shrinroym.com/">
 <meta property="og:title" content="Shrin Roymoulik, Product Builder">
 <meta property="og:description" content="Product builder blurring the line between material and digital. Six plus years in fashion, now on screen.">
-<meta property="og:image" content="https://shrin1993roy.github.io/images/share/preview.jpg">
+<meta property="og:image" content="https://shrinroym.com/images/share/preview.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Shrin Roymoulik's fingerprint logo">
 <meta name="twitter:card" content="summary_large_image">
+<!-- The homepage video comes first: its first frame is fetched before anything else so it shows at once (Shrin, 2026-11-15) -->
+<link rel="preload" href="images/home/tile-circuvo-poster.jpg" as="image" fetchpriority="high">
 <link rel="icon" type="image/png" href="images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -519,7 +521,7 @@
       <a href="https://drive.google.com/file/d/1_RReoEcfpWw8kHrpOY6_ot2mFG-YOgYb/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
     </nav>
 
-    <p class="bio"><span class="name" tabindex="0">Shrin</span><img class="me me-photo" src="images/home/shrin-photo.png" alt="Shrin reading a printed publication at an exhibition"> Roymoulik<br>is a product builder blurring the line between material and digital. Six plus years in <span class="fashion" tabindex="0">fashion</span><video class="me me-video" src="images/home/fashion.mp4" muted loop playsinline preload="auto" aria-label="Fashion work in motion"></video>, now on screen.</p>
+    <p class="bio"><span class="name" tabindex="0">Shrin</span><img class="me me-photo" src="images/home/shrin-photo.jpg" decoding="async" fetchpriority="low" alt="Shrin reading a printed publication at an exhibition"> Roymoulik<br>is a product builder blurring the line between material and digital. Six plus years in <span class="fashion" tabindex="0">fashion</span><video class="me me-video" src="images/home/fashion.mp4" muted loop playsinline preload="none" aria-label="Fashion work in motion"></video>, now on screen.</p>
 
     <div class="links">
     <p class="small">
@@ -554,7 +556,7 @@
         </a>
         <figcaption>
           <a href="facebook-marketplace.html"><span class="t">Facebook Marketplace</span></a><br>
-          UX Research and Design <span class="ld" aria-hidden="true"></span> 12 weeks
+          UX Research and Design <span class="ld" aria-hidden="true"></span> 2025
         </figcaption>
       </figure>
 
@@ -600,7 +602,7 @@
         <a href="https://drive.google.com/file/d/1_RReoEcfpWw8kHrpOY6_ot2mFG-YOgYb/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
       </nav>
       <div class="info-bio">
-        <p>I <span class="soft">design</span> and <span class="soft">build</span> for humans, whether they’re <span class="rw" tabindex="0">wearing</span><img class="rimg" src="images/info/wearing.jpg" alt="A model wearing a fringed jacket designed by Shrin"> my work or tapping through it.</p>
+        <p>I <span class="soft">design</span> and <span class="soft">build</span> for humans, whether they’re <span class="rw" tabindex="0">wearing</span><img class="rimg" src="images/info/wearing.jpg" fetchpriority="low" alt="A model wearing a fringed jacket designed by Shrin"> my work or tapping through it.</p>
         <p>6+ years as an apparel designer taught me to own a product end to end, from first sketch to factory floor, with deep <span class="soft">empathy</span> for bodies, behaviours, and needs. Now I bring that same ownership to digital products: I research, design and build, taking ideas all the way to a live website.</p>
       </div>
       <div class="info-links">
@@ -618,7 +620,7 @@
       <h3><a href="https://shrin-roym.com/awards" target="_blank" rel="noopener">Awards</a></h3>
       <p>2nd Place, Product BC Buildathon 2026<br>
       <span class="soft"><a href="https://conference.productbc.ca/agenda#build-different" target="_blank" rel="noopener">Circuvo at UBC Conference</a></span></p>
-      <p><span class="hv"><span class="hv-t" tabindex="0">2nd Place, ID International Emerging Designer Awards 2020</span><img class="hv-img" src="images/info/id-awards-2020.webp" alt="Shrin’s collection at the iD International Emerging Designer Awards"></span><br>
+      <p><span class="hv"><span class="hv-t" tabindex="0">2nd Place, ID International Emerging Designer Awards 2020</span><img class="hv-img" src="images/info/id-awards-2020.webp" fetchpriority="low" alt="Shrin’s collection at the iD International Emerging Designer Awards"></span><br>
       <span class="soft"><a href="https://www.youtube.com/watch?v=VDdZ-RaYl2w&amp;t=2653s" target="_blank" rel="noopener">Video by iD Dunedin Fashion</a><br>
       <a href="https://thelastfashionbible.com/2020/08/10/winners-2020-id-international-emerging-designer-awards/" target="_blank" rel="noopener">Article in The Last Fashion Bible</a><br>
       <a href="https://www.fashionz.co.nz/2020-id-international-emerging-design-awards-winners-announced/" target="_blank" rel="noopener">Article in FNZ</a></span></p>
@@ -646,7 +648,7 @@
     <div class="info-slot" aria-hidden="true">[move image here]</div>
     <div class="info-photo" tabindex="0" role="img" aria-label="Portrait. Drag to move it, or use the arrow keys.">
       <!-- Portrait slideshow: replace each placeholder with an <img> using the file name shown -->
-      <div class="pslide on" data-file="images/info/portrait-1.jpg"><img src="images/info/portrait-1.jpg" style="object-position:15% 50%" alt="Shrin talking about her framed artwork on a red gallery wall"></div>
+      <div class="pslide on" data-file="images/info/portrait-1.jpg"><img src="images/info/portrait-1.jpg" fetchpriority="low" style="object-position:15% 50%" alt="Shrin talking about her framed artwork on a red gallery wall"></div>
       <div class="pslide" data-file="images/info/portrait-2.jpg"><img src="images/info/portrait-2.jpg" style="object-position:30% 50%" alt="Shrin showing her framed artwork at the gallery" loading="lazy"></div>
     </div>
 
@@ -728,6 +730,13 @@
   var nameEl = document.querySelector('.name');
   var fashionEl = document.querySelector('.fashion');
   var vid = document.querySelector('.me-video');
+  // The fashion hover video waits until the Circuvo tile video is playing (or 4 s pass), so it never slows the first video down (Shrin, 2026-11-15)
+  (function () {
+    var tileVid = document.querySelector('video[src*="tile-circuvo"]'), started = false;
+    function warm() { if (started) return; started = true; vid.preload = 'auto'; try { vid.load(); } catch (e) {} }
+    if (tileVid) tileVid.addEventListener('playing', function () { setTimeout(warm, 800); }, { once: true });
+    window.addEventListener('load', function () { setTimeout(warm, 4000); });
+  })();
   function playVid() { try { vid.currentTime = 0; var pr = vid.play(); if (pr) pr.catch(function () {}); } catch (e) {} }
   function stopVid() { vid.pause(); }
   nameEl.addEventListener('click', function () { bioEl.classList.remove('show-video'); stopVid(); bioEl.classList.toggle('show-photo'); });
