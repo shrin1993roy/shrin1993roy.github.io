@@ -386,7 +386,7 @@
   @media (min-width: 821px) {
     .love-cap {
       display: block; position: absolute; inset: 0; margin: 0; z-index: 2;
-      background: #ffffff; padding: calc(16 * var(--u)) calc(18 * var(--u));
+      background: var(--bg); color: var(--ink); padding: calc(16 * var(--u)) calc(18 * var(--u));
       font-size: calc(18 * var(--u)); font-weight: 450; line-height: calc(18 * var(--u)); letter-spacing: calc(-0.6 * var(--u));
       opacity: 0; visibility: hidden; transition: opacity 0.15s ease, visibility 0s 0.15s;
     }
@@ -447,10 +447,18 @@
     .col { display: contents; }
     .tile { flex: 0 0 auto; }
     .frame { height: calc(357 * var(--mu)); width: auto; }
-    .tile[style*="--o:1"] .frame { width: calc(336 * var(--mu)); height: calc(346 * var(--mu)); aspect-ratio: auto; }
-    .tile[style*="--o:2"] .frame { width: calc(336 * var(--mu)); height: calc(253 * var(--mu)); aspect-ratio: auto; }
-    .tile[style*="--o:3"] .frame { width: calc(336 * var(--mu)); height: calc(252 * var(--mu)); aspect-ratio: auto; }
-    .tile[style*="--o:4"] .frame { width: calc(336 * var(--mu)); height: calc(428 * var(--mu)); aspect-ratio: auto; }
+    /* Photos never taller than the room above the footer on this phone: screen height, minus where the track starts,
+       minus room for a three line caption and the footer (Shrin, 2026-11-16: Flowing Rhythm ran into the footer on her Samsung) */
+    .grid { --fit-h: calc(100svh - var(--track-top, calc(88 * var(--mu))) - 150 * var(--mu)); }
+    /* Phone order, artistically uneven: Circuvo, Facebook Marketplace, Flowing Rhythm, Aera (Shrin, 2026-11-16); desktop order is untouched */
+    #circuvo { order: 1; }
+    #facebook-marketplace { order: 2; }
+    .tile[style*="--o:4"] { order: 3; }
+    .tile[style*="--o:2"] { order: 4; }
+    .tile[style*="--o:1"] .frame { width: calc(336 * var(--mu)); height: min(calc(346 * var(--mu)), var(--fit-h)); aspect-ratio: auto; }
+    .tile[style*="--o:2"] .frame { width: calc(336 * var(--mu)); height: min(calc(253 * var(--mu)), var(--fit-h)); aspect-ratio: auto; }
+    .tile[style*="--o:3"] .frame { width: calc(336 * var(--mu)); height: min(calc(252 * var(--mu)), var(--fit-h)); aspect-ratio: auto; }
+    .tile[style*="--o:4"] .frame { width: calc(336 * var(--mu)); height: min(calc(428 * var(--mu)), var(--fit-h)); aspect-ratio: auto; }
     figcaption { width: 0; min-width: 100%; margin-top: calc(12 * var(--mu)); }
     /* Homepage phone type, matching the template (Mobile_Inter: 550, 13 / 14) */
     /* The template's phone canvas is 360 wide, so its 13 / 14 type is 375/360 larger on ours, with -0.3 tracking */
@@ -523,7 +531,7 @@
   /* Work tiles: title on the left, "Case study" / "Collection" label on the right of the same line
      (Shrin, 2026-11-16, after Alan's feedback that the photos did not read as case studies) */
   .trow { display: flex; justify-content: space-between; align-items: baseline; gap: 1em; }
-  .cs { color: #000000; font-size: calc(12 * var(--u)); font-weight: 480; letter-spacing: calc(-0.3 * var(--u)); text-transform: uppercase; white-space: nowrap; }
+  .cs { color: var(--ink); font-size: calc(12 * var(--u)); font-weight: 480; letter-spacing: calc(-0.3 * var(--u)); text-transform: uppercase; white-space: nowrap; }
   .tile:has(> a:hover) .cs { background: #E5FF00; color: #000; }
   @media (min-width: 821px) { .col { gap: 0.75vw; } }
   /* Phones: the label becomes a round arrow button beside the title, away from the photo edge and the next tile */
@@ -534,10 +542,10 @@
     figcaption { position: relative; padding-right: calc(46 * var(--mu)); box-sizing: border-box; }
     .cs-m {
       display: grid; place-items: center; position: absolute; top: calc(-2 * var(--mu)); right: 0;
-      width: calc(34 * var(--mu)); height: calc(34 * var(--mu)); border: 1px solid #000000; border-radius: 50%;
-      color: #000000; font-size: calc(15 * var(--mu)); line-height: 1; transition: background-color 0.15s ease;
+      width: calc(34 * var(--mu)); height: calc(34 * var(--mu)); border: 1px solid var(--ink); border-radius: 50%;
+      color: var(--ink); font-size: calc(15 * var(--mu)); line-height: 1; transition: background-color 0.15s ease;
     }
-    .cs-m:active, .tile:has(> a:hover) .cs-m, .cs-m:hover { background: #E5FF00; }
+    .cs-m:active, .tile:has(> a:hover) .cs-m, .cs-m:hover { background: #E5FF00; color: #000000; border-color: #000000; }
   }
 </style>
 </head>
