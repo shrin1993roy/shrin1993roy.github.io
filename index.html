@@ -115,7 +115,7 @@
   /* Work grid, two staggered columns */
   .grid {
     display: grid;
-    grid-template-columns: 40fr 60fr;
+    grid-template-columns: 60fr 40fr;
     column-gap: 0.7vw;
     padding: 2.75vw 0 1.6vw;
   }
@@ -406,8 +406,9 @@
     /* Phone layout drawn on a 375 wide canvas, scaled to the screen like Readymag */
     html, body { overflow-x: clip; }
     .page { --u: 1px; --mu: calc(100vw / 360); display: block; padding: 0; }
+    /* Pinned to the steady screen height (svh), so the footer does not slide while the browser toolbar shrinks on scroll */
     .side {
-      position: fixed; inset: 0; z-index: 10; height: auto;
+      position: fixed; top: 0; left: 0; right: 0; bottom: auto; z-index: 10; height: 100vh; height: 100svh;
       padding: calc(10 * var(--mu) + env(safe-area-inset-top, 0px)) calc(12 * var(--mu)) calc(12 * var(--mu) + env(safe-area-inset-bottom, 0px));
       display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto 1fr auto;
       pointer-events: none;
@@ -428,14 +429,14 @@
     .bio .me-video { width: calc(100vw - 24 * var(--mu)); }
     .scroll-hint {
       display: block; position: fixed; z-index: 11; left: 50%; transform: translateX(-50%);
-      bottom: calc(12 * var(--mu) + env(safe-area-inset-bottom, 0px));
+      bottom: auto; top: calc(100vh - 26 * var(--mu) - env(safe-area-inset-bottom, 0px)); top: calc(100svh - 26 * var(--mu) - env(safe-area-inset-bottom, 0px));
       color: var(--muted);
       animation: hintPulse 2.2s ease-in-out infinite; pointer-events: none;
     }
     .scroll-hint.gone { animation: none; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0s linear 0.4s; }
     .hscroll { display: block; position: relative; }
     .grid {
-      position: sticky; top: 0; height: 100vh; height: 100dvh;
+      position: sticky; top: 0; height: 100vh; height: 100svh;
       display: flex; flex-direction: row; align-items: flex-start; gap: calc(12 * var(--mu));
       padding: var(--track-top, calc(88 * var(--mu))) calc(12 * var(--mu)) 0; width: max-content; will-change: transform;
     }
@@ -444,12 +445,15 @@
     .frame { height: calc(357 * var(--mu)); width: auto; }
     .tile[style*="--o:1"] .frame { width: calc(336 * var(--mu)); height: calc(346 * var(--mu)); aspect-ratio: auto; }
     .tile[style*="--o:2"] .frame { width: calc(336 * var(--mu)); height: calc(253 * var(--mu)); aspect-ratio: auto; }
-    .tile[style*="--o:3"] .frame { width: calc(336 * var(--mu)); height: calc(343 * var(--mu)); aspect-ratio: auto; }
-    .tile[style*="--o:4"] .frame { width: calc(336 * var(--mu)); height: calc(224 * var(--mu)); aspect-ratio: auto; }
+    .tile[style*="--o:3"] .frame { width: calc(336 * var(--mu)); height: calc(252 * var(--mu)); aspect-ratio: auto; }
+    .tile[style*="--o:4"] .frame { width: calc(336 * var(--mu)); height: calc(428 * var(--mu)); aspect-ratio: auto; }
     figcaption { width: 0; min-width: 100%; margin-top: calc(12 * var(--mu)); }
     /* Homepage phone type, matching the template (Mobile_Inter: 550, 13 / 14) */
     /* The template's phone canvas is 360 wide, so its 13 / 14 type is 375/360 larger on ours, with -0.3 tracking */
     .bio, figcaption, figcaption .t { font-size: calc(13.54 * var(--mu)); font-weight: 550; line-height: calc(14.58 * var(--mu)); letter-spacing: calc(-0.31 * var(--mu)); }
+    /* Phone bio sentence at the INFO bio paragraph's phone weight (400); the name line keeps 550 (Shrin, 2026-11-16) */
+    .bio { font-weight: 400; }
+    .bio .nm { font-weight: 550; }
     .dots { bottom: calc(8 * var(--mu)); }
     .goup, .sign { display: none; }
     /* INFO on phones, drawn on the same 375 canvas as the homepage */
@@ -511,6 +515,26 @@
     .love-cap .t2 { color: var(--muted); }
   }
 
+
+  /* Work tiles: title on the left, "Case study" / "Collection" label on the right of the same line
+     (Shrin, 2026-11-16, after Alan's feedback that the photos did not read as case studies) */
+  .trow { display: flex; justify-content: space-between; align-items: baseline; gap: 1em; }
+  .cs { color: #000000; font-size: calc(12 * var(--u)); font-weight: 480; letter-spacing: calc(-0.3 * var(--u)); text-transform: uppercase; white-space: nowrap; }
+  .tile:has(> a:hover) .cs { background: #E5FF00; color: #000; }
+  @media (min-width: 821px) { .col { gap: 0.75vw; } }
+  /* Phones: the label becomes a round arrow button beside the title, away from the photo edge and the next tile */
+  .cs-m { display: none; }
+  @media (max-width: 820px) {
+    .trow .cs { display: none; }
+    /* Option E (Shrin, 2026-11-16): a round arrow button beside the title; the caption keeps room for it on the right */
+    figcaption { position: relative; padding-right: calc(46 * var(--mu)); box-sizing: border-box; }
+    .cs-m {
+      display: grid; place-items: center; position: absolute; top: calc(-2 * var(--mu)); right: 0;
+      width: calc(34 * var(--mu)); height: calc(34 * var(--mu)); border: 1px solid #000000; border-radius: 50%;
+      color: #000000; font-size: calc(15 * var(--mu)); line-height: 1; transition: background-color 0.15s ease;
+    }
+    .cs-m:active, .tile:has(> a:hover) .cs-m, .cs-m:hover { background: #E5FF00; }
+  }
 </style>
 </head>
 <body>
@@ -523,7 +547,7 @@
       <a href="https://drive.google.com/file/d/1lygn7vUDFMzx4JG56A4LxJSln4eozi_1/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
     </nav>
 
-    <p class="bio"><span class="name" tabindex="0">Shrin</span><img class="me me-photo" data-defer-src="images/home/shrin-photo.jpg" decoding="async" fetchpriority="low" alt="Shrin reading a printed publication at an exhibition"> Roymoulik<br>is a product builder blurring the line between material and digital. Six plus years in <span class="fashion" tabindex="0">fashion</span><video class="me me-video" src="images/home/fashion.mp4" muted loop playsinline preload="none" aria-label="Fashion work in motion"></video>, now on screen.</p>
+    <p class="bio"><span class="name" tabindex="0">Shrin</span><img class="me me-photo" data-defer-src="images/home/shrin-photo.jpg" decoding="async" fetchpriority="low" alt="Shrin reading a printed publication at an exhibition"> <span class="nm">Roymoulik</span><br>is a product builder blurring the line between material and digital. Six plus years in <span class="fashion" tabindex="0">fashion</span><video class="me me-video" src="images/home/fashion.mp4" muted loop playsinline preload="none" aria-label="Fashion work in motion"></video>, now on screen.</p>
 
     <div class="links">
     <p class="small">
@@ -542,49 +566,53 @@
   <main class="grid" id="work" aria-label="Selected work">
     <div class="col">
 
-      <figure class="tile" style="--o:2">
-        <a href="aera.html">
-          <div class="frame" style="--r:3/2; --tile:var(--tile-c)"><img src="images/home/tile-aera.jpg?v=7" alt="Aera Activewear redesign: two models in lilac and black sports bras with black leggings"></div>
-        </a>
-        <figcaption>
-          <a href="aera.html"><span class="t">Aera Activewear</span></a><br>
-          Brand and Product <span class="ld" aria-hidden="true"></span> 2026
-        </figcaption>
-      </figure>
-
-      <figure class="tile" id="facebook-marketplace" style="--o:3">
-        <a href="facebook-marketplace.html">
-          <div class="frame" style="--r:6/7; --tile:var(--tile-a)"><img src="images/home/tile-facebook-marketplace.jpg?v=4" alt="Facebook Marketplace UX research"></div>
-        </a>
-        <figcaption>
-          <a href="facebook-marketplace.html"><span class="t">Facebook Marketplace</span></a><br>
-          UX Research and Design <span class="ld" aria-hidden="true"></span> 2025
-        </figcaption>
-      </figure>
-
-    </div>
-    <div class="col">
-
       <figure class="tile" id="circuvo" style="--o:1">
         <a href="circuvo.html">
           <div class="frame" style="--r:10/7; --tile:var(--tile-b)"><!-- Homepage video (Shrin, 2026-11-15: must start with no lag): cut from the 4K original to exactly the visible 10:7 tile, 1400 by 980, first 10 s. HEVC first (2.0 MB, Safari and Chrome on Mac), H.264 for other browsers (3.3 MB); both sharper than the old 1280 file, which was cropped and stretched by the tile. -->
           <video id="tileVid" poster="images/home/tile-circuvo-poster-v2.jpg" muted loop autoplay playsinline preload="auto" aria-label="Circuvo, circular economy marketplace: a green glass bottle being shaped on a grinding wheel"><source src="images/home/tile-circuvo-hevc.mp4" type='video/mp4; codecs="hvc1"'><source src="images/home/tile-circuvo-h264.mp4" type="video/mp4"></video></div>
         </a>
         <figcaption>
-          <a href="circuvo.html"><span class="t">Circuvo</span></a><br>
+          <span class="trow"><a href="circuvo.html"><span class="t">Circuvo</span></a><a class="cs" href="circuvo.html">Case study →</a></span>
           Circular Economy Marketplace <span class="ld" aria-hidden="true"></span> 2026<br>
           <span class="g"><a href="https://conference.productbc.ca/agenda#build-different" target="_blank" rel="noopener">Product BC Buildathon 2026</a></span>
+          <a class="cs-m" href="circuvo.html" aria-label="Case study"><span aria-hidden="true">→</span></a>
+        </figcaption>
+      </figure>
+
+      <figure class="tile" id="facebook-marketplace" style="--o:3">
+        <a href="facebook-marketplace.html">
+          <div class="frame" style="--r:4/3; --tile:var(--tile-a)"><img src="images/home/tile-facebook-marketplace.jpg?v=4" style="transform:scale(1.3);transform-origin:40% 30%" alt="Facebook Marketplace UX research"></div>
+        </a>
+        <figcaption>
+          <span class="trow"><a href="facebook-marketplace.html"><span class="t">Facebook Marketplace</span></a><a class="cs" href="facebook-marketplace.html">Case study →</a></span>
+          Marketplace UX and <span style="white-space: nowrap">Buying Behaviour <span class="ld" aria-hidden="true"></span> 2025</span>
+          <a class="cs-m" href="facebook-marketplace.html" aria-label="Case study"><span aria-hidden="true">→</span></a>
+        </figcaption>
+      </figure>
+
+    </div>
+    <div class="col">
+
+      <figure class="tile" style="--o:2">
+        <a href="aera.html">
+          <div class="frame" style="--r:3/2; --tile:var(--tile-c)"><img src="images/home/tile-aera-sharp.jpg" alt="Aera Activewear redesign: two models in lilac and black sports bras with black leggings"></div>
+        </a>
+        <figcaption>
+          <span class="trow"><a href="aera.html"><span class="t">Aera Activewear</span></a><a class="cs" href="aera.html">Case study →</a></span>
+          Ecommerce UX and Shopify Build <span class="ld" aria-hidden="true"></span> 2026
+          <a class="cs-m" href="aera.html" aria-label="Case study"><span aria-hidden="true">→</span></a>
         </figcaption>
       </figure>
 
       <figure class="tile" style="--o:4">
         <a href="https://shrin-roym.com/flowing-rhythm-textures" target="_blank" rel="noopener">
-          <div class="frame" style="--r:3/2; --tile:var(--tile-d)"><picture><source media="(max-width: 600px)" srcset="images/home/tile-flowing-rhythm-phone.jpg"><img src="images/home/tile-flowing-rhythm.jpg?v=3" alt="Flowing Rhythm: two models in printed and textured denim jackets"></picture></div>
+          <div class="frame" style="--r:648/825; --tile:var(--tile-d)"><img src="images/home/tile-flowing-rhythm-portrait.jpg?v=2" style="object-position:50% 0%" alt="Flowing Rhythm: a model in a green denim jacket with a contour motif on the sleeve, looking down"></div>
         </a>
         <figcaption>
-          <a href="https://shrin-roym.com/flowing-rhythm-textures" target="_blank" rel="noopener"><span class="t">Flowing Rhythm</span></a><br>
+          <span class="trow"><a href="https://shrin-roym.com/flowing-rhythm-textures" target="_blank" rel="noopener"><span class="t">Flowing Rhythm</span></a><a class="cs" href="https://shrin-roym.com/flowing-rhythm-textures" target="_blank" rel="noopener">Collection ↗</a></span>
           Textile Research and Editorial <span class="ld" aria-hidden="true"></span> 2024<br>
-          <span class="g">WGSN Featured Designer</span>
+          <span class="g"><a href="https://shrin-roym.com/wgsn-features" target="_blank" rel="noopener">WGSN Featured Designer</a></span>
+          <a class="cs-m" href="https://shrin-roym.com/flowing-rhythm-textures" target="_blank" rel="noopener" aria-label="Collection"><span aria-hidden="true">↗</span></a>
         </figcaption>
       </figure>
 
@@ -773,7 +801,7 @@
   var mq = window.matchMedia('(max-width: 820px)');
   var hs = document.querySelector('.hscroll');
   var track = document.getElementById('work');
-  var dist = 0;
+  var dist = 0, lastW = 0, steadyH = 0;
   function hsScroll() {
     if (!mq.matches) return;
     var y = Math.min(Math.max(window.scrollY - hs.offsetTop, 0), dist);
@@ -784,11 +812,15 @@
     var bioBox = document.querySelector('.bio').getBoundingClientRect();
     track.style.setProperty('--track-top', Math.round(bioBox.bottom + 35 * window.innerWidth / 360) + 'px');
     dist = Math.max(0, track.scrollWidth - window.innerWidth);
-    hs.style.height = (window.innerHeight + dist) + 'px';
+    // Use one steady height: the browser toolbar shrinking on scroll changes innerHeight, which must not re-measure the track mid scroll
+    if (!steadyH || window.innerWidth !== lastW) steadyH = window.innerHeight;
+    lastW = window.innerWidth;
+    hs.style.height = (steadyH + dist) + 'px';
     hsScroll();
   }
   window.addEventListener('scroll', hsScroll, { passive: true });
-  window.addEventListener('resize', hsMeasure);
+  // Re-measure only when the width really changes (rotation, window resize), not when the toolbar hides or shows
+  window.addEventListener('resize', function () { if (window.innerWidth !== lastW) hsMeasure(); });
   window.addEventListener('load', hsMeasure);
   if (mq.addEventListener) mq.addEventListener('change', hsMeasure); else mq.addListener(hsMeasure);
   hsMeasure();
@@ -830,7 +862,7 @@
             frag.appendChild(s); words.push(s);
           });
           bio.replaceChild(frag, n);
-        } else if (n.classList && (n.classList.contains('name') || n.classList.contains('fashion'))) {
+        } else if (n.classList && (n.classList.contains('name') || n.classList.contains('fashion') || n.classList.contains('nm'))) {
           var w = document.createElement('span'); w.className = 'w';
           bio.replaceChild(w, n); w.appendChild(n); words.push(w);
         }
@@ -861,7 +893,7 @@
           frag.appendChild(s); words.push(s);
         });
         bio.replaceChild(frag, n);
-      } else if (n.classList && (n.classList.contains('name') || n.classList.contains('fashion'))) {
+      } else if (n.classList && (n.classList.contains('name') || n.classList.contains('fashion') || n.classList.contains('nm'))) {
         words.push(n);
       }
     });
