@@ -16,7 +16,9 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Shrin Roymoulik's fingerprint logo">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192.png?v=2">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=2">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..600&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="images/case-studies/circuvo/circuvo-home-hero-poster.jpg">
 <link rel="stylesheet" href="styles.css?v=21">
@@ -77,6 +79,11 @@
 .dd-text .find { max-width: 62%; }
 .dd-text .flow-pick, .dd-text .flow-pick.on, .dd-text .flow-pick:hover { color: #000; background: none; cursor: default; }
 @media (max-width: 820px) { .dd-text .find { max-width: none; } }
+/* Outcome: hovering (or tapping) "2nd prize" shows the UBC conference photo, the same one as in INFO (Shrin, 2026-11-15) */
+.hi-hover { position: relative; cursor: pointer; outline: none; }
+.hi-pop { position: absolute; left: 0; top: calc(100% + max(10px, calc(12 * var(--s)))); z-index: 30; width: 22vw; max-width: none; height: auto; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.15s ease, visibility 0s linear 0.15s; }
+.hi-hover:hover .hi-pop, .hi-hover:focus .hi-pop { opacity: 1; visibility: visible; transition: opacity 0.15s ease; }
+@media (max-width: 600px) { .hi-pop { width: 70vw; } }
 </style>
 </head>
 <body id="top">
@@ -124,7 +131,7 @@
     </div>
     <div class="fact">
       <div class="fact-label">Outcome</div>
-      <div class="fact-value"><span class="o-long"><span class="hi">2nd prize</span> at Product BC Buildathon Demo Day, then taken forward as a live, responsive site.</span><span class="o-short"><span class="hi">2nd prize</span>, now a live, responsive site.</span></div>
+      <div class="fact-value"><span class="o-long"><span class="hi hi-hover" tabindex="0">2nd prize<img class="hi-pop" data-pop-src="images/info/ubc-conference.jpg" width="941" height="1047" alt="Presenting Circuvo on stage at the UBC conference, the live site on the big screen"></span> at Product BC Buildathon Demo Day, then taken forward as a live, responsive site.</span><span class="o-short"><span class="hi hi-hover" tabindex="0">2nd prize<img class="hi-pop" data-pop-src="images/info/ubc-conference.jpg" width="941" height="1047" alt="Presenting Circuvo on stage at the UBC conference, the live site on the big screen"></span>, now a live, responsive site.</span></div>
     </div>
   </div>
 
@@ -666,5 +673,13 @@ window.SCREENS = [
 ];
 </script>
 <script src="site.js?v=21"></script>
+<script>
+// Load the 2nd prize photo only when someone reaches for it, so it never slows the hero video
+document.querySelectorAll('.hi-hover').forEach(function (h) {
+  function load() { var i = h.querySelector('img[data-pop-src]'); if (i) { i.src = i.getAttribute('data-pop-src'); i.removeAttribute('data-pop-src'); } }
+  h.addEventListener('mouseenter', load); h.addEventListener('focus', load); h.addEventListener('touchstart', load, { passive: true });
+});
+</script>
+
 </body>
 </html>

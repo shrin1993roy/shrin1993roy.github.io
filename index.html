@@ -17,8 +17,10 @@
 <meta property="og:image:alt" content="Shrin Roymoulik's fingerprint logo">
 <meta name="twitter:card" content="summary_large_image">
 <!-- The homepage video comes first: its first frame is fetched before anything else so it shows at once (Shrin, 2026-11-15) -->
-<link rel="preload" href="images/home/tile-circuvo-poster.jpg" as="image" fetchpriority="high">
-<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="preload" href="images/home/tile-circuvo-poster-v2.jpg" as="image" fetchpriority="high">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192.png?v=2">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..600&display=swap" rel="stylesheet">
@@ -521,7 +523,7 @@
       <a href="https://drive.google.com/file/d/1lygn7vUDFMzx4JG56A4LxJSln4eozi_1/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
     </nav>
 
-    <p class="bio"><span class="name" tabindex="0">Shrin</span><img class="me me-photo" src="images/home/shrin-photo.jpg" decoding="async" fetchpriority="low" alt="Shrin reading a printed publication at an exhibition"> Roymoulik<br>is a product builder blurring the line between material and digital. Six plus years in <span class="fashion" tabindex="0">fashion</span><video class="me me-video" src="images/home/fashion.mp4" muted loop playsinline preload="none" aria-label="Fashion work in motion"></video>, now on screen.</p>
+    <p class="bio"><span class="name" tabindex="0">Shrin</span><img class="me me-photo" data-defer-src="images/home/shrin-photo.jpg" decoding="async" fetchpriority="low" alt="Shrin reading a printed publication at an exhibition"> Roymoulik<br>is a product builder blurring the line between material and digital. Six plus years in <span class="fashion" tabindex="0">fashion</span><video class="me me-video" src="images/home/fashion.mp4" muted loop playsinline preload="none" aria-label="Fashion work in motion"></video>, now on screen.</p>
 
     <div class="links">
     <p class="small">
@@ -565,7 +567,8 @@
 
       <figure class="tile" id="circuvo" style="--o:1">
         <a href="circuvo.html">
-          <div class="frame" style="--r:10/7; --tile:var(--tile-b)"><video src="images/home/tile-circuvo.mp4?v=2" poster="images/home/tile-circuvo-poster.jpg" muted loop autoplay playsinline preload="auto" aria-label="Circuvo, circular economy marketplace: a green glass bottle being shaped on a grinding wheel"></video></div>
+          <div class="frame" style="--r:10/7; --tile:var(--tile-b)"><!-- Homepage video (Shrin, 2026-11-15: must start with no lag): cut from the 4K original to exactly the visible 10:7 tile, 1400 by 980, first 10 s. HEVC first (2.0 MB, Safari and Chrome on Mac), H.264 for other browsers (3.3 MB); both sharper than the old 1280 file, which was cropped and stretched by the tile. -->
+          <video id="tileVid" poster="images/home/tile-circuvo-poster-v2.jpg" muted loop autoplay playsinline preload="auto" aria-label="Circuvo, circular economy marketplace: a green glass bottle being shaped on a grinding wheel"><source src="images/home/tile-circuvo-hevc.mp4" type='video/mp4; codecs="hvc1"'><source src="images/home/tile-circuvo-h264.mp4" type="video/mp4"></video></div>
         </a>
         <figcaption>
           <a href="circuvo.html"><span class="t">Circuvo</span></a><br>
@@ -602,7 +605,7 @@
         <a href="https://drive.google.com/file/d/1lygn7vUDFMzx4JG56A4LxJSln4eozi_1/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
       </nav>
       <div class="info-bio">
-        <p>I <span class="soft">design</span> and <span class="soft">build</span> for humans, whether they’re <span class="rw" tabindex="0">wearing</span><img class="rimg" src="images/info/wearing.jpg" fetchpriority="low" alt="A model wearing a fringed jacket designed by Shrin"> my work or tapping through it.</p>
+        <p>I <span class="soft">design</span> and <span class="soft">build</span> for humans, whether they’re <span class="rw" tabindex="0">wearing</span><img class="rimg" data-defer-src="images/info/wearing.jpg" fetchpriority="low" alt="A model wearing a fringed jacket designed by Shrin"> my work or tapping through it.</p>
         <p>6+ years as an apparel designer taught me to own a product end to end, from first sketch to factory floor, with deep <span class="soft">empathy</span> for bodies, behaviours, and needs. Now I bring that same ownership to digital products: I research, design and build, taking ideas all the way to a live website.</p>
       </div>
       <div class="info-links">
@@ -619,8 +622,8 @@
       <p>National Institute of Fashion Technology, Mumbai (2011 to 2015)<br>BA Fashion Design</p>
       <h3><a href="https://shrin-roym.com/awards" target="_blank" rel="noopener">Awards</a></h3>
       <p>2nd Place, Product BC Buildathon 2026<br>
-      <span class="soft"><a href="https://conference.productbc.ca/agenda#build-different" target="_blank" rel="noopener">Circuvo at UBC Conference</a></span></p>
-      <p><span class="hv"><span class="hv-t" tabindex="0">2nd Place, ID International Emerging Designer Awards 2020</span><img class="hv-img" src="images/info/id-awards-2020.webp" fetchpriority="low" alt="Shrin’s collection at the iD International Emerging Designer Awards"></span><br>
+      <span class="soft"><span class="hv"><a href="https://conference.productbc.ca/agenda#build-different" target="_blank" rel="noopener">Circuvo at UBC Conference</a><img class="hv-img" data-defer-src="images/info/ubc-conference.jpg" width="941" height="1047" style="width: 26vw;" alt="Presenting Circuvo on stage at the UBC conference, the live site on the big screen"></span></span></p>
+      <p><span class="hv"><span class="hv-t" tabindex="0">2nd Place, ID International Emerging Designer Awards 2020</span><img class="hv-img" data-defer-src="images/info/id-awards-2020.webp" fetchpriority="low" alt="Shrin’s collection at the iD International Emerging Designer Awards"></span><br>
       <span class="soft"><a href="https://www.youtube.com/watch?v=VDdZ-RaYl2w&amp;t=2653s" target="_blank" rel="noopener">Video by iD Dunedin Fashion</a><br>
       <a href="https://thelastfashionbible.com/2020/08/10/winners-2020-id-international-emerging-designer-awards/" target="_blank" rel="noopener">Article in The Last Fashion Bible</a><br>
       <a href="https://www.fashionz.co.nz/2020-id-international-emerging-design-awards-winners-announced/" target="_blank" rel="noopener">Article in FNZ</a></span></p>
@@ -648,7 +651,7 @@
     <div class="info-slot" aria-hidden="true">[move image here]</div>
     <div class="info-photo" tabindex="0" role="img" aria-label="Portrait. Drag to move it, or use the arrow keys.">
       <!-- Portrait slideshow: replace each placeholder with an <img> using the file name shown -->
-      <div class="pslide on" data-file="images/info/portrait-1.jpg"><img src="images/info/portrait-1.jpg" fetchpriority="low" style="object-position:15% 50%" alt="Shrin talking about her framed artwork on a red gallery wall"></div>
+      <div class="pslide on" data-file="images/info/portrait-1.jpg"><img data-defer-src="images/info/portrait-1.jpg" fetchpriority="low" style="object-position:15% 50%" alt="Shrin talking about her framed artwork on a red gallery wall"></div>
       <div class="pslide" data-file="images/info/portrait-2.jpg"><img src="images/info/portrait-2.jpg" style="object-position:30% 50%" alt="Shrin showing her framed artwork at the gallery" loading="lazy"></div>
     </div>
 
@@ -732,9 +735,13 @@
   var vid = document.querySelector('.me-video');
   // The fashion hover video waits until the Circuvo tile video is playing (or 4 s pass), so it never slows the first video down (Shrin, 2026-11-15)
   (function () {
-    var tileVid = document.querySelector('video[src*="tile-circuvo"]'), started = false;
-    function warm() { if (started) return; started = true; vid.preload = 'auto'; try { vid.load(); } catch (e) {} }
-    if (tileVid) tileVid.addEventListener('playing', function () { setTimeout(warm, 800); }, { once: true });
+    var tileVid = document.getElementById('tileVid'), started = false;
+    // Hidden pictures (bio photo, INFO hover pictures, first INFO portrait) and the fashion video start loading only once the homepage video is playing
+    function warm() { if (started) return; started = true; document.querySelectorAll('img[data-defer-src]').forEach(function (i) { i.src = i.getAttribute('data-defer-src'); i.removeAttribute('data-defer-src'); }); vid.preload = 'auto'; try { vid.load(); } catch (e) {} }
+    if (/info/.test(location.hash)) warm();
+    document.querySelectorAll('.name, .fashion, .rw, .hv-t').forEach(function (e) { e.addEventListener('mouseenter', warm); e.addEventListener('focus', warm); });
+    window.addEventListener('hashchange', warm); document.addEventListener('pointerdown', warm, { once: true }); document.addEventListener('keydown', warm, { once: true });
+    if (tileVid) tileVid.addEventListener('playing', function () { setTimeout(warm, 600); }, { once: true });
     window.addEventListener('load', function () { setTimeout(warm, 4000); });
   })();
   function playVid() { try { vid.currentTime = 0; var pr = vid.play(); if (pr) pr.catch(function () {}); } catch (e) {} }
