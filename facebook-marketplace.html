@@ -37,6 +37,7 @@
 .hi-link:hover, .hi-link:focus-visible { text-decoration: underline; text-underline-offset: 2px; outline: none; }
 /* Empty slot shapes until Shrin's HD PNGs arrive */
 .media.is-empty.r-photo { aspect-ratio: 3/2; }
+.photo-pair { display: grid; grid-template-columns: 1fr 1fr; gap: max(8px, calc(16 * var(--s))); }
 .media.board-vid video { aspect-ratio: 1840 / 1080; object-fit: cover; }
 /* Phones: the small play / pause mark sits under the board video (shared .vid-out rule), so leave room for it */
 @media (max-width: 600px) { .board-split figure { margin-bottom: max(28px, calc(30 * var(--s))); } }
@@ -179,11 +180,15 @@
 
     <div class="split">
       <figure>
-        <!-- FIND: problem photo (Shrin will send an HD PNG). Save as images/case-studies/facebook-marketplace/fbm-problem.jpg, put <img> inside, remove "is-empty", and add a short caption under it. -->
-        <div class="media is-empty r-photo" data-file="fbm-problem.jpg"></div>
+        <!-- Problem photos (Shrin, 2026-11-15, Unsplash): two tall photos side by side, same 3:4 crop, filling the 65% column -->
+        <div class="photo-pair">
+          <div class="media" data-file="fbm-problem.jpg"><img src="images/case-studies/facebook-marketplace/fbm-problem.jpg" width="1077" height="1436" alt="A woman sitting buried to the waist in a huge heap of colourful secondhand clothes, only her legs sticking out at the front." loading="lazy"></div>
+          <div class="media" data-file="fbm-problem-2.jpg"><img src="images/case-studies/facebook-marketplace/fbm-problem-2.jpg" width="1077" height="1436" alt="A woman carrying an armful of knitwear, tulle and scarves piled so high that it hides her face." loading="lazy"></div>
+        </div>
+        <figcaption class="cap">So much clothing, so little to tell you what will fit.</figcaption>
       </figure>
       <div class="split-text">
-        <blockquote class="client-quote"><p class="block-text" style="color: var(--ink);">&#8220;How can Facebook Marketplace&#8217;s clothing search be redesigned to address algorithm inadequacy and size related purchase anxiety while improving fashion discovery for Canadian users?&#8221;</p><p class="quote-src">Research question</p></blockquote>
+        <blockquote class="client-quote"><p class="block-text" style="color: var(--ink);">&#8220;How can Facebook Marketplace&#8217;s clothing search be redesigned to address algorithm inadequacy and size related purchase anxiety while improving fashion discovery for Canadian users?&#8221;</p></blockquote>
       </div>
     </div>
 
@@ -292,7 +297,7 @@
         <div class="media hero-vid board-vid vid-out"><video muted loop playsinline preload="none" poster="images/case-studies/facebook-marketplace/fbm-thematic-poster.jpg" src="images/case-studies/facebook-marketplace/fbm-thematic.mp4" aria-label="Walkthrough of the Miro thematic analysis board: the research question, sticky notes from surveys, interviews and think aloud sessions, four theme groups, and the four final themes"></video><button type="button" class="vid-toggle" aria-label="Pause video">Pause</button></div>
       </figure>
       <div class="split-text">
-        <div class="client-quote"><p class="block-text" style="color: var(--ink);">&#8220;How can Facebook Marketplace&#8217;s clothing search be redesigned to address algorithm inadequacy and size related purchase anxiety while improving fashion discovery for Canadian users?&#8221;</p><p class="quote-src">Research question</p><a href="https://miro.com/app/live-embed/uXjVJtAW_IM=/?embedMode=view_only_without_ui&amp;moveToViewport=-7370%2C-6146%2C16417%2C9348&amp;embedId=842326250493" target="_blank" rel="noopener" class="proto-link" style="margin-top: max(16px, calc(20 * var(--s))); margin-bottom: 0;">View Miro board ↗</a></div>
+        <div class="client-quote"><p class="block-text" style="color: var(--ink);">&#8220;How can Facebook Marketplace&#8217;s clothing search be redesigned to address algorithm inadequacy and size related purchase anxiety while improving fashion discovery for Canadian users?&#8221;</p><a href="https://miro.com/app/live-embed/uXjVJtAW_IM=/?embedMode=view_only_without_ui&amp;moveToViewport=-7370%2C-6146%2C16417%2C9348&amp;embedId=842326250493" target="_blank" rel="noopener" class="proto-link" style="margin-top: max(16px, calc(20 * var(--s))); margin-bottom: 0;">View Miro board ↗</a></div>
       </div>
     </div>
 
@@ -508,7 +513,7 @@
         <a href="prototypes/facebook-marketplace-prototype.html" target="_blank" rel="noopener" class="proto-link">Explore the interactive prototype ↗</a>
       </div>
     </div>
-    <p class="status"><b>Note</b>An independent concept, not affiliated with or endorsed by Meta or Facebook. Persona photos from Unsplash.</p>
+    <p class="status"><b>Note</b>An independent concept, not affiliated with or endorsed by Meta or Facebook. Persona and problem photos from Unsplash.</p>
     </div>
   </div>
 
