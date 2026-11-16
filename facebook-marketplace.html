@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facebook Marketplace, Shrin Roymoulik</title>
+<meta name="description" content="Facebook Marketplace clothing discovery: a 12 week solo UX research project on search and sizing for secondhand clothing, with design recommendations for sellers and buyers. An independent concept.">
+<!-- Link preview when the page is shared: images/share/preview.jpg, 1200 by 630 -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shrin Roymoulik">
+<meta property="og:url" content="https://shrin1993roy.github.io/facebook-marketplace.html">
+<meta property="og:title" content="Facebook Marketplace, Shrin Roymoulik">
+<meta property="og:description" content="Facebook Marketplace clothing discovery: a 12 week solo UX research project on search and sizing for secondhand clothing, with design recommendations for sellers and buyers. An independent concept.">
+<meta property="og:image" content="https://shrin1993roy.github.io/images/share/preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Shrin Roymoulik's fingerprint logo">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20">
+<style>
+/* Facebook Marketplace only. Most rules match circuvo.html's page styles, so the three case studies read the same. */
+/* The Figma link right under the hero media, right aligned, styled like the flow viewer's Next button */
+.hero-site-link { display: table; margin: max(12px, calc(16 * var(--s))) 0 0 auto; padding: 3px 6px; background: #fff; color: #000; text-decoration: none; font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; transition: background-color 0.15s ease; }
+.hero-site-link:hover, .hero-site-link:focus-visible { background: var(--neon); outline: none; }
+.hero-single { padding-left: max(20px, calc(32 * var(--s))); padding-right: max(20px, calc(32 * var(--s))); margin-bottom: max(32px, calc(48 * var(--s))); }
+@media (max-width: 820px) { .hero-single { padding-left: max(12px, calc(12 * var(--s))); padding-right: max(12px, calc(12 * var(--s))); } }
+/* The large number in The problem and in Expected outcomes, at the title size */
+.big-num { font-size: max(20px, calc(28 * var(--s))); line-height: max(22px, calc(29 * var(--s))); font-weight: 450; letter-spacing: -0.8px; color: var(--ink); margin-bottom: max(8px, calc(10 * var(--s))); }
+.split-text .num-note { margin-bottom: max(20px, calc(28 * var(--s))); }
+@media (max-width: 820px) { .big-num { font-size: max(16px, calc(18 * var(--s))); line-height: max(18px, calc(19 * var(--s))); } }
+.outcomes .find-n { text-transform: uppercase; }
+.find .big-num { margin-top: max(10px, calc(14 * var(--s))); }
+/* Outcome's neon "60 to 70%" jumps to Expected outcomes (#outcomes); plain text, underlined on hover (same as Aera's Shopify store link) */
+.hi-link { color: inherit; text-decoration: none; }
+.hi-link:hover, .hi-link:focus-visible { text-decoration: underline; text-underline-offset: 2px; outline: none; }
+/* Empty slot shapes until Shrin's HD PNGs arrive */
+.media.is-empty.r-photo { aspect-ratio: 3/2; }
+.media.board-vid video { aspect-ratio: 1840 / 1080; object-fit: cover; }
+/* Phones: the small play / pause mark sits under the board video (shared .vid-out rule), so leave room for it */
+@media (max-width: 600px) { .board-split figure { margin-bottom: max(28px, calc(30 * var(--s))); } }
+/* Personas: a 4:5 portrait above each one, then the quote under the description */
+.persona-photo { display: block; width: max(140px, calc(220 * var(--s))); height: auto; aspect-ratio: 4 / 5; object-fit: cover; margin-bottom: max(16px, calc(20 * var(--s))); }
+.persona-q { margin-top: max(14px, calc(18 * var(--s))); }
+.persona-q .block-text { color: var(--ink); margin-bottom: 0; }
+/* Recommendations: Original / Recommended page viewer (uses the shared flow viewer, like Circuvo's Design decisions) */
+/* Shrin's page exports carry their own thin grey edge, so the viewer adds no frame. Each page shows whole at its own shape. */
+.dd-stage .dd-page { background: #fff; }
+.dd-stage .dd-page.is-empty { aspect-ratio: 2400 / 2303; background: #ece9e6; }
+.dd-nav { display: flex; justify-content: space-between; gap: 16px; margin-top: max(8px, calc(12 * var(--s))); }
+.dd-stage .flow-prev { background: #fff; color: #000; border: 0; font-family: inherit; font-weight: 480; text-transform: uppercase; cursor: pointer; padding: 2px 4px; font-size: max(9px, calc(10 * var(--s))); line-height: 1.3; letter-spacing: -0.2px; }
+.dd-stage .flow-prev:hover, .dd-stage .flow-prev:focus-visible { background: var(--neon); outline: none; }
+.dd-stage .flow-next { position: static; display: block; margin: 0 0 0 auto; padding: 2px 4px; font-size: max(9px, calc(10 * var(--s))); line-height: 1.3; letter-spacing: -0.2px; }
+.media.scroll-shot.dd-page { aspect-ratio: 3 / 2; }
+.media.scroll-shot.dd-page.seller-page { aspect-ratio: 2400 / 2303; }
+.media.scroll-shot.dd-page.buyer-page { aspect-ratio: 2400 / 2444; }
+/* Recommendations (Shrin, 2026-11-15): like Four themes, heading left and a 2 by 2 grid right. Each element sits in a 4:3 space, no outline, left aligned with its heading and starting at the top (Shrin). */
+.rec-finds .finds { align-items: stretch; }
+.rec-finds .find { display: flex; flex-direction: column; }
+.rec-finds .find.rec-full { grid-column: 1 / -1; }
+/* Elements show at their natural size so every HD PNG is at the same scale (PNGs at 36% of their pixel width, so text inside an image, about 11px, stays smaller than the item headings; the remaining old crops matched to that), left aligned under the heading. Each item reads number, heading, description, then the image (Shrin). */
+.rec-tile { flex: 1 0 auto; display: flex; align-items: flex-start; justify-content: flex-start; gap: max(16px, calc(24 * var(--s))); margin: max(24px, calc(40 * var(--s))) 0 0; }
+.rec-tile img { display: block; height: auto; max-width: 100%; }
+/* The two Mandatory Measurements tabs get more breathing room between them (Shrin) */
+.rec-tile.rec-pair { gap: max(40px, calc(80 * var(--s))); }
+.rec-tile.rec-pair img { max-width: calc(50% - max(20px, calc(40 * var(--s)))); }
+.dd-page img { display: block; width: 100%; height: auto; }
+.dd-text .find:not(:has(.flow-pick.on)) { display: none; }
+.dd-text .find { max-width: 62%; }
+/* View Figma file sits on the same line, right after each viewer caption (Shrin) */
+.dd-text .dd-figma { display: inline; margin: 0 0 0 0.3em; padding: 0; font: inherit; letter-spacing: inherit; text-transform: none; color: var(--ink); border: 0; text-decoration: underline; text-underline-offset: 2px; }
+.dd-text .dd-figma:hover, .dd-text .dd-figma:focus-visible { background: var(--neon); outline: none; }
+.dd-text .flow-pick, .dd-text .flow-pick.on, .dd-text .flow-pick:hover { color: #000; background: none; cursor: default; }
+@media (max-width: 820px) { .dd-text .find { max-width: none; } }
+/* The viewer caption sits close under its Next button; a clearly bigger gap separates it from the Recommendations block below */
+.dd-flows .dd-stage { margin-bottom: max(16px, calc(24 * var(--s))); }
+.rec-finds { margin-top: max(64px, calc(112 * var(--s))); margin-bottom: max(48px, calc(72 * var(--s))); }
+/* Tablet: slightly smaller nav text and gap so the eight links (with "Thematic Analysis" and "Recommendations") stay on one line at standard tablet width */
+@media (min-width: 601px) and (max-width: 820px) { .section-nav { column-gap: 8px; } .section-nav a { font-size: 12.5px; } }
+.proto-links .proto-link { margin-right: max(12px, calc(20 * var(--s))); }
+</style>
+</head>
+<body id="top">
+
+<!-- TOP BAR -->
+<header class="top-bar">
+  <nav class="top-bar-left">
+    <a href="index.html">Home</a>
+    <a href="index.html#info">Info</a>
+    <a href="https://shrin-roym.com/" target="_blank" rel="noopener">Apparel</a>
+    <a href="https://drive.google.com/file/d/1_RReoEcfpWw8kHrpOY6_ot2mFG-YOgYb/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+  </nav>
+</header>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left">
+      <h1 class="hero-title">Facebook Marketplace</h1>
+      <div class="hero-sub">
+        UX Research, Design <span class="ld"></span> 2025
+      </div>
+    </div>
+    <div class="hero-right">
+      <p class="hero-summary">
+        Facebook Marketplace is where many Canadians buy secondhand, but clothing is hard to find and harder to size. On my own, over 12 weeks, I researched why, then designed recommendations for how sellers list and how buyers search. An independent concept.
+      </p>
+    </div>
+  </div>
+
+  <!-- FACTS ROW -->
+  <div class="facts">
+    <div class="fact">
+      <div class="fact-label">Role</div>
+      <div class="fact-value">UX Researcher and Designer</div>
+    </div>
+    <div class="fact">
+      <div class="fact-label">Timeline</div>
+      <div class="fact-value">12 weeks</div>
+    </div>
+    <div class="fact">
+      <div class="fact-label">Tools</div>
+      <div class="fact-value">Figma, Tally, Miro, Google Docs, Claude</div>
+    </div>
+    <div class="fact">
+      <div class="fact-label">Outcome</div>
+      <div class="fact-value"><span class="o-long">Recommendations designed to cut search time by <a class="hi hi-link" href="#outcomes">60 to 70%</a> and double seller participation.</span><span class="o-short">Designed to cut search time by <a class="hi hi-link" href="#outcomes">60 to 70%</a>.</span></div>
+    </div>
+  </div>
+
+  <!-- HERO MEDIA -->
+  <div class="hero-media">
+    <div class="hero-single">
+      <!-- FIND: hero, left empty until the coded interactive prototype is built; then screens of it go here side by side, like Aera's Shopify screens (Shrin, 2026-11-15). A 3:2 crop of the recommended search page is saved as images/case-studies/facebook-marketplace/fbm-hero.jpg (2400 by 1600) but not shown.
+           To fill: put <img src="images/case-studies/facebook-marketplace/fbm-hero.jpg?v=2" width="2400" height="1600" alt="..."> inside and remove "is-empty". -->
+      <div class="media is-empty r-video" data-file="fbm-hero.jpg"></div>
+      <!-- Opens the coded prototype (Shrin, 2026-11-15), a relative link -->
+      <a href="prototypes/facebook-marketplace-prototype.html" target="_blank" rel="noopener" class="hero-site-link">Interactive prototype &#8599;</a>
+    </div>
+  </div>
+
+  <!-- SECTION NAV -->
+  <nav class="section-nav">
+    <a href="#problem">Problem</a>
+    <a href="#research">Research</a>
+    <a href="#analysis">Thematic Analysis</a>
+    <a href="#personas">Personas</a>
+    <a href="#seller">Seller Listings</a>
+    <a href="#buyer">Buyer Search</a>
+    <a href="#prototype">Prototype</a>
+    <a href="#reflection">Reflection</a>
+  </nav>
+
+  <!-- THE PROBLEM -->
+  <div class="section" id="problem">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="problem-body">The problem</button></div>
+    <div class="sec-body" id="problem-body">
+
+    <div class="duo">
+      <details class="xp">
+        <summary><h2 class="sub-head">The approach</h2></summary>
+        <div class="xp-body">
+          <p class="block-text">A mixed methods study, run on my own: a survey of 10 people for the numbers, 3 interviews for the reasons, and 2 observation sessions to see what people actually do.</p>
+          <p class="block-text">Most participants were in Vancouver, shopping for secondhand clothing on Marketplace.</p>
+        </div>
+      </details>
+      <details class="xp">
+        <summary><h2 class="sub-head">The gap</h2></summary>
+        <div class="xp-body">
+          <p class="block-text">Marketplace is treated as a place to browse, not to shop for clothing with intent. When fit matters, people go to a store instead.</p>
+          <p class="block-text">Search only matches keywords, so it misses fashion terms and intent. Finding something can mean 45 to 60 minutes of scrolling.</p>
+          <p class="block-text">Many listings have no size, clear photos or condition notes. 30% of people I surveyed named sizing as their biggest barrier, and 80% don&#8217;t sell clothing at all because listing feels too complex.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="split">
+      <figure>
+        <!-- FIND: problem photo (Shrin will send an HD PNG). Save as images/case-studies/facebook-marketplace/fbm-problem.jpg, put <img> inside, remove "is-empty", and add a short caption under it. -->
+        <div class="media is-empty r-photo" data-file="fbm-problem.jpg"></div>
+      </figure>
+      <div class="split-text">
+        <blockquote class="client-quote"><p class="block-text" style="color: var(--ink);">&#8220;How can Facebook Marketplace&#8217;s clothing search be redesigned to address algorithm inadequacy and size related purchase anxiety while improving fashion discovery for Canadian users?&#8221;</p><p class="quote-src">Research question</p></blockquote>
+      </div>
+    </div>
+
+    </div>
+  </div>
+
+  <!-- RESEARCH: Survey, Interviews, Observation sessions (the board moved to Thematic Analysis, Shrin 2026-11-15) -->
+  <div class="section" id="research">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="research-body">Research</button></div>
+    <div class="sec-body" id="research-body">
+
+    <!-- Survey -->
+    <div class="mirror sub-block" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Survey</button></h2>
+        <p class="block-text" style="margin-bottom:0;">I ran a survey on how people search for clothing on Marketplace, what worries them about size, which filters they want and why they don&#8217;t sell. 10 people answered, so I used it as a baseline to explore in interviews.</p>
+        <a href="https://tally.so/r/wgBbPP" target="_blank" rel="noopener" class="proto-link" style="margin-top: max(16px, calc(20 * var(--s))); margin-bottom: 0;">View survey ↗</a>
+      </div>
+      <div class="finds">
+        <div class="find">
+          <div class="find-n">01</div>
+          <h3 class="find-t">Sizing comes first</h3>
+          <p class="find-p">30% named sizing as their main concern when buying clothing on Marketplace.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">02</div>
+          <h3 class="find-t">Measure, don&#8217;t guess</h3>
+          <p class="find-p">50% want to filter listings by measurements.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">03</div>
+          <h3 class="find-t">Search lets people down</h3>
+          <p class="find-p">20% have given up on a search because the results were poor.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">04</div>
+          <h3 class="find-t">Selling feels too hard</h3>
+          <p class="find-p">80% don&#8217;t sell clothing because listing it feels too complex.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interviews -->
+    <div class="mirror sub-block" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Interviews</button></h2>
+        <p class="block-text" style="margin-bottom:0;">Three interviews of 25 to 30 minutes, with a project manager, a UX/UI designer and a UX student who also designs websites, on how they shop, decide and work around the platform.</p>
+      </div>
+      <div class="finds">
+        <div class="find">
+          <div class="find-n">01</div>
+          <h3 class="find-t">One photo isn&#8217;t enough</h3>
+          <p class="find-p">Single photos, no brand, no material and vague condition labels. One unclear photo is reason enough to scroll past.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">02</div>
+          <h3 class="find-t">Sizes aren&#8217;t standard</h3>
+          <p class="find-p">&#8220;Size small but fits like medium&#8221; tells a buyer nothing they can use.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">03</div>
+          <h3 class="find-t">Buyers do the work</h3>
+          <p class="find-p">One keeps their own measurements in a notes app, just for Marketplace: data sellers could give but don&#8217;t.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">04</div>
+          <h3 class="find-t">Touch still matters</h3>
+          <p class="find-p">Some would rather feel the fabric in person before they buy.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Observation sessions: two people searching for real clothing on today's Marketplace (not tests of the recommendations) -->
+    <div class="mirror sub-block" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Observation sessions</button></h2>
+        <p class="block-text" style="margin-bottom:0;">I watched 2 people search for real clothing on Marketplace, to see where they refine, skip or give up, rather than relying on what they say.</p>
+        <blockquote class="client-quote persona-q"><p class="block-text">&#8220;Without sizing, I can&#8217;t even consider an item regardless of how appealing it looks visually or how reasonable the price seems.&#8221;</p><p class="quote-src">Nicole, observation session</p></blockquote>
+      </div>
+      <div class="finds">
+        <div class="find">
+          <div class="find-n">01</div>
+          <h3 class="find-t">Nicole</h3>
+          <p class="find-p">Looking for an interview outfit on a $75 budget. Skipped listings without a size, then switched to brand names when style words failed.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">02</div>
+          <h3 class="find-t">Ayushi</h3>
+          <p class="find-p">Tried to judge whether a vintage size L leather jacket would give a slightly oversized look, and found no way to tell without trying it on.</p>
+        </div>
+      </div>
+    </div>
+
+    </div>
+  </div>
+
+  <!-- THEMATIC ANALYSIS (anchor #analysis; Shrin 2026-11-15): the Miro board video with the research question, Four themes, then the opportunity line -->
+  <div class="section" id="analysis">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="analysis-body">Thematic Analysis</button></div>
+    <div class="sec-body" id="analysis-body">
+
+    <div class="split r75 board-split" style="margin-top:0;">
+      <figure>
+        <!-- Miro board walkthrough (Shrin, 2026-11-15): "Working Portfolio/Thematic.mp4" (1840 by 1080, 20 s, silent, 29 MB), re-encoded with Swift AVAssetWriter at 5 Mbps,
+             moov first (12.8 MB). Poster is its first frame. Shared video script: muted loop while on screen, Pause / Play, starts paused with reduced motion. -->
+        <div class="media hero-vid board-vid vid-out"><video muted loop playsinline preload="none" poster="images/case-studies/facebook-marketplace/fbm-thematic-poster.jpg" src="images/case-studies/facebook-marketplace/fbm-thematic.mp4" aria-label="Walkthrough of the Miro thematic analysis board: the research question, sticky notes from surveys, interviews and think aloud sessions, four theme groups, and the four final themes"></video><button type="button" class="vid-toggle" aria-label="Pause video">Pause</button></div>
+      </figure>
+      <div class="split-text">
+        <div class="client-quote"><p class="block-text" style="color: var(--ink);">&#8220;How can Facebook Marketplace&#8217;s clothing search be redesigned to address algorithm inadequacy and size related purchase anxiety while improving fashion discovery for Canadian users?&#8221;</p><p class="quote-src">Research question</p><a href="https://miro.com/app/live-embed/uXjVJtAW_IM=/?embedMode=view_only_without_ui&amp;moveToViewport=-7370%2C-6146%2C16417%2C9348&amp;embedId=842326250493" target="_blank" rel="noopener" class="proto-link" style="margin-top: max(16px, calc(20 * var(--s))); margin-bottom: 0;">View Miro board ↗</a></div>
+      </div>
+    </div>
+
+
+    <!-- Four themes: the final themes from the Miro board, with what each maps to (from the board's "How it maps to the codes?" notes). They replaced From notes to themes and Insights (Shrin, 2026-11-15). -->
+    <div class="mirror sub-block" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Four themes</button></h2>
+        <p class="block-text" style="margin-bottom:0;">I coded what people said and did across the survey, interviews and think aloud sessions, then grouped the codes into four themes. They decide what the recommendations fix, and what they can&#8217;t.</p>
+      </div>
+      <div class="finds">
+        <div class="find">
+          <div class="find-n">01</div>
+          <h3 class="find-t">Size Verification Barriers</h3>
+          <p class="find-p">Missing or inconsistent size information, no standard and no try on. Buyers make up for it with brand knowledge and their own measurements, and 50% want to filter by measurements.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">02</div>
+          <h3 class="find-t">Search Algorithm Inadequacy</h3>
+          <p class="find-p">Search misreads generic and fashion terms, returns the wrong categories and offers no personal filters. People search again and again, and 20% give up.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">03</div>
+          <h3 class="find-t">Listing Information Gaps</h3>
+          <p class="find-p">Incomplete photos, missing descriptors, vague condition labels and vague seller replies. 80% don&#8217;t list clothing at all because it feels too complex.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">04</div>
+          <h3 class="find-t">Physical Shopping Preference</h3>
+          <p class="find-p">Some need to touch and try on before buying, and no return option adds risk. Better data can&#8217;t fully replace that.</p>
+        </div>
+      </div>
+    </div>
+    <p class="block-text opp-line">Information seekers will buy when the data is there. That is where design can help most.</p>
+    </div>
+  </div>
+
+  <!-- PERSONAS (in place of User Flows): two kinds of shopper -->
+  <div class="section" id="personas">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="personas-body">Personas</button></div>
+    <div class="sec-body" id="personas-body">
+    <div class="mirror sub-block" style="margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Two kinds of shopper</button></h2>
+        <p class="block-text" style="margin-bottom:0;">Interviews and sessions showed two kinds of shopper, with very different chances of buying clothing online.</p>
+      </div>
+      <div class="finds">
+        <div class="find">
+          <!-- Persona photo (Shrin, 2026-11-15): Unsplash, Ilona Panych (ilona-panych-Un-aQWeFWQw-unsplash.jpg; replaced the Marco Chilese photo), cropped 4:5, 1000 by 1250, face size and eye height matched to Marcus -->
+          <img class="persona-photo" src="images/case-studies/facebook-marketplace/fbm-persona-information-seeker.jpg?v=4" width="1000" height="1250" alt="Sandra George, information seeker persona: a woman with long wavy hair in a dark top" loading="lazy">
+          <div class="find-n">01</div>
+          <h3 class="find-t">Information seekers</h3>
+          <p class="find-p">Deliberate shoppers who track measurements, question sellers and trust brands they know. What stops them is missing data, so they are the biggest opportunity.</p>
+          <blockquote class="client-quote persona-q"><p class="block-text">&#8220;If sellers provided measurements and multiple photos, I would confidently purchase fitted items online.&#8221;</p><p class="quote-src">Sandra George, persona</p></blockquote>
+        </div>
+        <div class="find">
+          <!-- Persona photo (Shrin, 2026-11-15): Unsplash, Nicolas Houdayer (nicolas-houdayer-Afx8CERBi6I-unsplash.jpg), cropped 4:5, 1000 by 1249 -->
+          <img class="persona-photo" src="images/case-studies/facebook-marketplace/fbm-persona-experience-seeker.jpg" width="1000" height="1249" alt="Marcus Butler, experience seeker persona: a bearded man in round glasses" loading="lazy">
+          <div class="find-n">02</div>
+          <h3 class="find-t">Experience seekers</h3>
+          <p class="find-p">They need to touch the fabric, see the drape and try it on. For fitted clothing, no amount of data replaces that.</p>
+          <blockquote class="client-quote persona-q"><p class="block-text">&#8220;I need to touch the material and see the garment in three dimensions before committing to a purchase.&#8221;</p><p class="quote-src">Marcus Butler, persona</p></blockquote>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- SELLER LISTINGS (anchor #seller; the Recommendations section split in two, Shrin 2026-11-15): intro, the seller page viewer, then its Recommendations -->
+  <div class="section" id="seller">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="seller-body">Seller Listings</button></div>
+    <div class="sec-body" id="seller-body">
+    <div class="block">
+      <p class="block-text" style="max-width: none;">My recommendations target the two places where things break: sellers creating a listing, and buyers searching for clothing. They focus on information seekers, and accept that experience seekers need more than a screen can give.</p>
+    </div>
+
+    <!-- Seller listing page: Original and Recommended in a page viewer (Previous / Next under it, like Circuvo's Design decisions) -->
+    <div class="mirror sub-block" style="margin-top: max(32px, calc(48 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Before and after</button></h2>
+        <p class="block-text" style="margin-bottom:0;">80% avoid selling clothing, and incomplete listings break search and sizing for everyone. Required details, with guidance as sellers go, fix both.</p>
+      </div>
+      <div class="flows dd-flows">
+        <figure class="flow-stage dd-stage">
+          <!-- Seller pages (Shrin, 2026-11-15), from "Product Builder/Facebook marketplace/", each saved 2400 wide on white, JPEG 85. The box takes the original page's shape; the taller recommended pages scroll inside it.
+               Original Seller Listings Page.png (6056 by 5812); Recommended ... Measurements.png (6064 by 10112); Recommended ... Fit Like.png (6064 by 9708). -->
+          <div class="media scroll-shot flow-slide dd-page seller-page is-on" tabindex="0" data-file="fbm-seller-original.jpg"><img src="images/case-studies/facebook-marketplace/fbm-seller-original.jpg" width="2400" height="2303" alt="Today's Marketplace Item for sale page: photo and video upload, then title, price, category, condition and description, with a preview on the right" loading="lazy"></div>
+          <div class="media scroll-shot flow-slide dd-page seller-page" tabindex="0" data-file="fbm-seller-measurements.jpg"><img src="images/case-studies/facebook-marketplace/fbm-seller-measurements.jpg" width="2400" height="4002" alt="Recommended Item for sale page with Exact measurements selected: photo standards, required category, bust, waist, hips and length fields, required brand, material and condition, and a listing quality score" loading="lazy"></div>
+          <div class="media scroll-shot flow-slide dd-page seller-page" tabindex="0" data-file="fbm-seller-fits-like.jpg"><img src="images/case-studies/facebook-marketplace/fbm-seller-fits-like.jpg" width="2400" height="3842" alt="Recommended Item for sale page with Fits like selected: fit tags Runs Small, True to Size, Runs Large, Runs Very Large and Runs Very Small, with additional fit notes" loading="lazy"></div>
+          <div class="dd-nav"><button type="button" class="flow-prev">&#8592; Previous: Fits like</button><button type="button" class="flow-next">Next: Exact measurements &#8594;</button></div>
+        </figure>
+        <div class="dd-text">
+          <div class="find">
+            <div class="find-n">01 / 03</div>
+            <h3 class="find-t"><button type="button" class="flow-pick on" aria-pressed="true">Original</button></h3>
+            <p class="find-p">Today&#8217;s listing page: few prompts, and most fields optional. <a href="https://www.figma.com/design/cYnynUWdRIiLV2o3Oxtst5/Facebook-Marketplace--Recommendations-?node-id=0-1&amp;t=MBLbt6etR3m5Zcbl-1" target="_blank" rel="noopener" class="proto-link dd-figma">View Figma file ↗</a></p>
+          </div>
+          <div class="find">
+            <div class="find-n">02 / 03</div>
+            <h3 class="find-t"><button type="button" class="flow-pick" aria-pressed="false">Exact measurements</button></h3>
+            <p class="find-p">The recommended page with exact measurements: bust, waist, hips and length. Scroll to see it all. <a href="https://www.figma.com/design/cYnynUWdRIiLV2o3Oxtst5/Facebook-Marketplace--Recommendations-?node-id=0-1&amp;t=MBLbt6etR3m5Zcbl-1" target="_blank" rel="noopener" class="proto-link dd-figma">View Figma file ↗</a></p>
+          </div>
+          <div class="find">
+            <div class="find-n">03 / 03</div>
+            <h3 class="find-t"><button type="button" class="flow-pick" aria-pressed="false">Fits like</button></h3>
+            <p class="find-p">The same page with the Fits like tab: a fit tag and notes, for sellers without a tape measure. <a href="https://www.figma.com/design/cYnynUWdRIiLV2o3Oxtst5/Facebook-Marketplace--Recommendations-?node-id=0-1&amp;t=MBLbt6etR3m5Zcbl-1" target="_blank" rel="noopener" class="proto-link dd-figma">View Figma file ↗</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Seller recommendations (Shrin, 2026-11-15): laid out like Four themes, heading and intro on the left, a 2 by 2 grid on the right; each element centred in a white 4:3 tile with a thin frame. -->
+    <div class="mirror sub-block rec-finds">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Recommendations</button></h2>
+        <p class="block-text" style="margin-bottom:0;">Four changes to the listing page, each from the research.</p>
+      </div>
+      <div class="finds">
+        <div class="find"><div class="find-n">01</div><h3 class="find-t">Photo standards</h3><p class="find-p">At least three photos: front, back, and the tag or a close up detail.</p><div class="rec-tile"><img style="width: min(100%, calc(318 * var(--s)))" src="images/case-studies/facebook-marketplace/fbm-el-photos.png" width="882" height="852" alt="Add photos box asking for at least 3 photos showing the front, back and any tags or details, above the Add video box" loading="lazy"></div></div>
+        <div class="find"><div class="find-n">02</div><h3 class="find-t">Required details</h3><p class="find-p">Brand, material and condition, chosen from set options before publishing.</p><div class="rec-tile"><img style="width: min(100%, calc(318 * var(--s)))" src="images/case-studies/facebook-marketplace/fbm-el-details.png" width="882" height="548" alt="Required Brand, Material and Condition fields" loading="lazy"></div></div>
+        <div class="find rec-full"><div class="find-n">03</div><h3 class="find-t">Quality score</h3><p class="find-p">Shows how complete a listing is, with prompts to improve it, and how listing quality affects the seller&#8217;s rating.</p><div class="rec-tile"><img style="width: min(100%, calc(660 * var(--s)))" src="images/case-studies/facebook-marketplace/fbm-el-score.png?v=3" width="1834" height="1164" alt="Listing Quality Score at 50% complete with three prompts, beside Listing Quality Education: rating impact from below 3 stars to above 4.5 stars, and tips to improve" loading="lazy"></div></div>
+        <div class="find rec-full"><div class="find-n">04</div><h3 class="find-t">Mandatory Measurements</h3><p class="find-p">Required for apparel, in two tabs: exact measurements (bust, waist, hips, length), or a fit tag such as Runs Small or True to Size, with notes.</p><div class="rec-tile rec-pair"><img style="width: min(100%, calc(318 * var(--s)))" src="images/case-studies/facebook-marketplace/fbm-el-sizing-measurements.png" width="882" height="1007" alt="Mandatory Measurements for Apparel with the Exact Measurements tab: bust, waist, hips and length in inches" loading="lazy"><img style="width: min(100%, calc(318 * var(--s)))" src="images/case-studies/facebook-marketplace/fbm-el-sizing-fits-like.png" width="882" height="813" alt="Mandatory Measurements for Apparel with the Fits Like tab: Runs Small, True to Size, Runs Large, Runs Very Large, Runs Very Small, and Additional Fit Notes" loading="lazy"></div></div>
+      </div>
+    </div>
+
+    </div>
+  </div>
+
+  <!-- BUYER SEARCH (anchor #buyer): the search page viewer, its Recommendations, then the design direction line and Expected outcomes, which close both sections -->
+  <div class="section" id="buyer">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="buyer-body">Buyer Search</button></div>
+    <div class="sec-body" id="buyer-body">
+
+    <!-- Buyer search page: Original and Recommended -->
+    <div class="mirror sub-block">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Before and after</button></h2>
+        <p class="block-text" style="margin-bottom:0;">Searches take 45 to 60 minutes and 20% give up. Search that understands fashion terms and each buyer&#8217;s fit turns scrolling into finding.</p>
+      </div>
+      <div class="flows dd-flows">
+        <figure class="flow-stage dd-stage">
+          <!-- FIND: buyer search pages (Shrin will send HD PNGs). Save as images/case-studies/facebook-marketplace/fbm-buyer-original.jpg and fbm-buyer-recommended.jpg, filled the same way as the seller pages. -->
+          <!-- Original: "Original Product Search Page.png" (6048 by 6160), 2400 wide. Recommended: "Recommended Product Search Page.png" (6048 by 7500), full length, 2400 by 2976. Same scale as the original; the box takes the original's shape and the longer page scrolls inside it. -->
+          <div class="media scroll-shot flow-slide dd-page buyer-page is-on" tabindex="0" data-file="fbm-buyer-original.jpg"><img src="images/case-studies/facebook-marketplace/fbm-buyer-original.jpg" width="2400" height="2444" alt="Today's Marketplace search results for blazer: general filters on the left and a grid of listings with price, title and location" loading="lazy"></div>
+          <div class="media scroll-shot flow-slide dd-page buyer-page" tabindex="0" data-file="fbm-buyer-recommended.jpg"><img src="images/case-studies/facebook-marketplace/fbm-buyer-recommended.jpg?v=2" width="2400" height="2976" alt="Recommended search page for blazer: My Fit Profile summary, style tags under the search bar, advanced filters, and a fit prediction under each listing" loading="lazy"></div>
+          <div class="dd-nav"><button type="button" class="flow-prev">&#8592; Previous: Recommended</button><button type="button" class="flow-next">Next: Recommended &#8594;</button></div>
+        </figure>
+        <div class="dd-text">
+          <div class="find">
+            <div class="find-n">01 / 02</div>
+            <h3 class="find-t"><button type="button" class="flow-pick on" aria-pressed="true">Original</button></h3>
+            <p class="find-p">Today&#8217;s search: keyword results and general filters. <a href="https://www.figma.com/design/cYnynUWdRIiLV2o3Oxtst5/Facebook-Marketplace--Recommendations-?node-id=0-1&amp;t=MBLbt6etR3m5Zcbl-1" target="_blank" rel="noopener" class="proto-link dd-figma">View Figma file ↗</a></p>
+          </div>
+          <div class="find">
+            <div class="find-n">02 / 02</div>
+            <h3 class="find-t"><button type="button" class="flow-pick" aria-pressed="false">Recommended</button></h3>
+            <p class="find-p">My Fit Profile, fit predictions, style tags and advanced filters. <a href="https://www.figma.com/design/cYnynUWdRIiLV2o3Oxtst5/Facebook-Marketplace--Recommendations-?node-id=0-1&amp;t=MBLbt6etR3m5Zcbl-1" target="_blank" rel="noopener" class="proto-link dd-figma">View Figma file ↗</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Buyer recommendations: same 2 by 2 layout. Names from Shrin's Figma annotations; 03 combines Search Bar Repositioning and Style-Based Quick Filters under her original case study's name, Smart Search Enhancements. -->
+    <div class="mirror sub-block rec-finds">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Recommendations</button></h2>
+        <p class="block-text" style="margin-bottom:0;">Four changes to search, each from the research.</p>
+      </div>
+      <div class="finds">
+        <div class="find"><div class="find-n">01</div><h3 class="find-t">My Fit Profile Summary</h3><p class="find-p">Saves a buyer&#8217;s measurements once, so fit guidance follows every search.</p><div class="rec-tile"><img style="width: min(100%, calc(318 * var(--s)))" src="images/case-studies/facebook-marketplace/fbm-el-buyer-profile.png" width="884" height="372" alt="Marketplace, Apparel: My Fit Profile Summary with Manage Measurements, your size M, predicted fit relaxed" loading="lazy"></div></div>
+        <div class="find"><div class="find-n">02</div><h3 class="find-t">Advanced Filters</h3><p class="find-p">Style, occasion, predicted fit, material, features, size and brand.</p><div class="rec-tile"><img style="width: min(100%, calc(343 * var(--s)))" src="images/case-studies/facebook-marketplace/fbm-el-buyer-filters.png?v=2" width="952" height="340" alt="Advanced Filters: Style Archetype, Contextual Occasion, My Predicted Fit, Material, Features, Size and Brand" loading="lazy"></div></div>
+        <div class="find rec-full"><div class="find-n">03</div><h3 class="find-t">Smart Search Enhancements</h3><p class="find-p">Search moves to the top and knows related fashion terms, with style tags under it to refine in one tap.</p><div class="rec-tile"><img style="width: min(100%, calc(701 * var(--s)))" src="images/case-studies/facebook-marketplace/fbm-el-buyer-search.png" width="1946" height="426" alt="Search for blazer, with style tags under the bar: Minimalist, Vintage, Smart Casual, Formal, Blazers, Daytime, Casual Fit, Lapel Collar, Panel Cut, Polyester" loading="lazy"></div></div>
+        <div class="find rec-full"><div class="find-n">04</div><h3 class="find-t">Personalized Fit Predictions</h3><p class="find-p">A note under each listing, such as too fitted, true to size or relaxed, from the buyer&#8217;s saved measurements, or a plain note when there is no size to predict.</p><div class="rec-tile"><img style="width: min(100%, calc(694 * var(--s)))" src="images/case-studies/facebook-marketplace/fbm-el-buyer-cards.png?v=3" width="1927" height="618" alt="Four blazer listings, each with a fit note: Black Blazer, Size 6, This will be too fitted; Black Babaton Blazer, This will fit true to size; Zara Oversized Blazer, This will be a relaxed fit; Vintage Blazer, No size available to predict" loading="lazy"></div></div>
+      </div>
+    </div>
+
+    <p class="block-text design-dir">The recommendations keep Facebook&#8217;s own interface, so they fit into Marketplace as it is.</p>
+
+    <!-- Expected outcomes: Shrin's own heading and line from her original case study. Projections, not measured results. -->
+    <div class="mirror sub-block" id="outcomes" style="margin-top: max(48px, calc(72 * var(--s))); margin-bottom: max(48px, calc(72 * var(--s)));">
+      <div class="mirror-text">
+        <h2 class="sub-head"><button type="button" class="sub-toggle" aria-expanded="true">Expected outcomes</button></h2>
+        <p class="block-text" style="margin-bottom:0;">Based on research findings and design hypothesis, implementing these recommendations could achieve:</p>
+      </div>
+      <div class="finds row3 outcomes">
+        <div class="find">
+          <div class="find-n">Search efficiency improved</div>
+          <p class="big-num">60 to 70%</p>
+          <p class="find-p">Search time from 45 to 60 minutes down to 15 to 20, through search that understands fashion terms and personal fit predictions.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">Sizing confidence restored</div>
+          <p class="big-num">30 to 40%</p>
+          <p class="find-p">More information seekers buying, through required sizing and fit predictions.</p>
+        </div>
+        <div class="find">
+          <div class="find-n">Seller participation doubled</div>
+          <p class="big-num">20% &#8594; 40 to 50%</p>
+          <p class="find-p">More people selling clothing, through guided listing and a quality score.</p>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- PROTOTYPE -->
+  <div class="section" id="prototype">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="prototype-body">Prototype</button></div>
+    <div class="sec-body" id="prototype-body">
+    <div class="block">
+      <p class="block-text">I built the recommendations as two clickable prototypes in Figma: one for a seller creating a listing, and one for a buyer searching for clothing.</p>
+      <p class="block-text">Both keep Facebook&#8217;s own layout and components, so each change can be judged against the page people already know.</p>
+      <p class="block-text">Both flows also run as a working web prototype: search with your own measurements and watch every fit note change, or create a listing and see its quality score rise.</p>
+      <div class="proto-links">
+        <a href="prototypes/facebook-marketplace-prototype.html" target="_blank" rel="noopener" class="proto-link">Explore the interactive prototype ↗</a>
+        <a href="https://www.figma.com/proto/cYnynUWdRIiLV2o3Oxtst5/Facebook-Marketplace--Recommendations-?page-id=0%3A1&amp;node-id=8-768&amp;viewport=-250%2C-377%2C0.19&amp;t=8K83EoyT0pNpfC1N-1&amp;scaling=scale-down&amp;content-scaling=fixed&amp;starting-point-node-id=8%3A768" target="_blank" rel="noopener" class="proto-link">Seller listing prototype ↗</a>
+        <a href="https://www.figma.com/proto/cYnynUWdRIiLV2o3Oxtst5/Facebook-Marketplace--Recommendations-?page-id=0%3A1&amp;node-id=221-2&amp;viewport=-556%2C-4137%2C0.53&amp;t=hXpnFxdb6GPhzL4k-1&amp;scaling=scale-down&amp;content-scaling=fixed&amp;starting-point-node-id=8%3A768" target="_blank" rel="noopener" class="proto-link">Buyer search prototype ↗</a>
+        <a href="https://www.figma.com/design/cYnynUWdRIiLV2o3Oxtst5/Facebook-Marketplace--Recommendations-?node-id=0-1&amp;t=MBLbt6etR3m5Zcbl-1" target="_blank" rel="noopener" class="proto-link">View Figma file ↗</a>
+      </div>
+    </div>
+    <p class="status"><b>Note</b>An independent concept, not affiliated with or endorsed by Meta or Facebook. Persona photos from Unsplash.</p>
+    </div>
+  </div>
+
+  <!-- REFLECTION (anchor #reflection). Closes the case study. -->
+  <div class="section" id="reflection">
+    <div class="block-label"><button type="button" class="sec-toggle" aria-expanded="true" aria-controls="reflection-body">Reflection</button></div>
+    <div class="sec-body" id="reflection-body">
+    <div class="block">
+      <p class="block-text">Mixed methods gave me more than any one method could: the survey showed what, the interviews showed why, and the sessions showed what people do but don&#8217;t say.</p>
+      <p class="block-text">I learned to separate what design can solve (missing information) from what it can&#8217;t (touch). Incomplete listings caused both the search and the sizing problems, so fixing them helps twice.</p>
+      <p class="block-text">What surprised me: buyers lean on brands they know as a trust signal, and 80% avoid selling at all, which moved seller tools to the front. Next, I&#8217;d test the prototypes with more people, beyond 15 participants mostly in Vancouver.</p>
+    </div>
+    </div>
+  </div>
+
+  <!-- NEXT PROJECT: back to Aera, so the three case studies form a loop -->
+  <div class="next-project">
+    <a href="aera.html" class="next-link"><span class="np-label">Next project</span><span class="np-title">Aera Activewear &#8594;</span></a>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <a class="go-up-mark" href="#top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">
+      <img src="images/fingerprint.png" alt="">
+      <div class="go-up-text">Go up</div>
+      <span class="go-up-arrow" aria-hidden="true">&#8593;</span>
+    </a>
+  </div>
+
+</div><!-- /page -->
+
+
+<!-- Miro board viewer (used once the board image is filled and wrapped in .board-open) -->
+<div class="bz" id="bz" role="dialog" aria-modal="true" aria-label="Miro board" hidden>
+  <div class="bz-bar"><span id="bz-hint">Click the board to zoom in</span><button type="button" class="bz-close" id="bz-close">Close ×</button></div>
+  <div class="bz-scroll" id="bz-scroll"><img id="bz-img" alt="Facebook Marketplace thematic analysis board, enlarged"></div>
+</div>
+
+<!-- PHONE BOTTOM NAV -->
+<nav class="phone-nav">
+  <div style="display:flex;gap:max(16px,calc(20 * var(--s)));">
+    <a href="index.html">Home</a>
+    <a href="index.html#info">Info</a>
+  </div>
+  <div style="display:flex;gap:max(16px,calc(20 * var(--s)));">
+    <a href="https://shrin-roym.com/" target="_blank" rel="noopener">Apparel</a>
+    <a href="https://drive.google.com/file/d/1_RReoEcfpWw8kHrpOY6_ot2mFG-YOgYb/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+  </div>
+</nav>
+
+<script src="site.js?v=20"></script>
+</body>
+</html>
