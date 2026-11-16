@@ -905,6 +905,16 @@ body.lb-open { overflow: hidden; }
   .section-nav a { font-size: max(13px, calc(7 * var(--s))); line-height: 1.15; }
 }
 
+/* Desktop and tablet (Shrin, 2026-11-15, to match the Facebook Marketplace hero): every video's Pause / Play button sits just under the video on the left, reading || PAUSE or ▶ PLAY, on the same line as the link under it where there is one (Circuvo ↗). Phones keep their own small mark (below). */
+@media (min-width: 601px) {
+  .hero-single .media.hero-vid .vid-toggle, .build-split .hero-vid .vid-toggle, .vid-out .vid-toggle { top: calc(100% + max(12px, calc(16 * var(--s)))); bottom: auto; left: 0; display: inline-flex; align-items: center; gap: 6px; }
+  .hero-single .media.hero-vid .vid-toggle::before, .build-split .hero-vid .vid-toggle::before, .vid-out .vid-toggle::before { content: "\275A\275A"; font-size: 8px; letter-spacing: 1px; line-height: 1; }
+  .hero-single .media.hero-vid .vid-toggle:not(.is-playing)::before, .build-split .hero-vid .vid-toggle:not(.is-playing)::before, .vid-out .vid-toggle:not(.is-playing)::before { content: "\25B6\FE0E"; font-size: 9px; letter-spacing: 0; }
+  .build-split .hero-vid, .vid-out { overflow: visible; }
+  .vid-out + .cap { margin-top: max(44px, calc(52 * var(--s))); }
+  .build-split figure, .board-split figure { padding-bottom: max(32px, calc(40 * var(--s))); }
+}
+
 /* ── PHONE ONLY (600px and below; tablets keep the layout above) ── */
 @media (max-width: 600px) {
   /* Section nav scrolls sideways on its own; a soft fade on the right shows there is more */
