@@ -59,6 +59,47 @@ svg { display: block; }
 .sw button { border: 0; background: none; border-radius: 12px; padding: 4px 10px; font-size: 12px; font-weight: 600; color: var(--sub); }
 .sw button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.15); }
 
+/* ---------- Home: Marketplace, Browse all, the page the prototype opens on (Shrin, 2026-11-15, from her facebook.com screenshots; sizes are the screenshot's pixels times 0.75) ---------- */
+.home { display: grid; grid-template-columns: 360px 1fr; min-height: calc(var(--vh, 100vh) - 78px); }
+.hside { background: var(--card); box-shadow: 1px 0 2px rgba(0,0,0,.08); padding: 14px 8px 80px; position: sticky; top: 78px; height: calc(var(--vh, 100vh) - 78px); overflow: auto; }
+.hhead { display: flex; justify-content: space-between; align-items: center; padding: 0 8px; }
+.hhead h1 { font-size: 24px; font-weight: 700; margin: 0; letter-spacing: -.2px; }
+.hgear { border: 0; background: none; padding: 0; display: grid; place-items: center; }
+.hsearch { display: flex; align-items: center; gap: 8px; margin: 6px 8px 10px; height: 36px; border-radius: 18px; background: var(--chip); padding: 0 12px; color: var(--sub); }
+.hsearch input { flex: 1; min-width: 0; border: 0; background: none; outline: none; height: 100%; font-size: 15px; color: var(--ink); }
+.hsearch input::placeholder { color: var(--sub); }
+.hsearch:focus-within { box-shadow: 0 0 0 2px var(--blue); }
+.hnav { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; background: none; padding: 4px 8px; min-height: 52px; border-radius: 8px; font-size: 15px; font-weight: 500; text-align: left; }
+.hnav:hover { background: var(--hover); }
+.hnav.on { background: var(--chip); }
+.hnav .fi { width: 42px; height: auto; flex: none; margin: -3px; }
+.hnav .hchev { margin-left: auto; margin-right: 6px; width: 10px; }
+.hbtns { display: grid; gap: 8px; margin: 10px 8px 0; }
+.hbtn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 36px; border: 0; border-radius: 6px; font-size: 15px; font-weight: 600; background: var(--soft); color: var(--ink); }
+.hbtn.blue { background: #ebf5ff; color: #0064d1; }
+.hside hr { border: 0; border-top: 1px solid var(--line); margin: 14px 8px; }
+.hside h2 { font-size: 17px; font-weight: 700; margin: 0 8px 8px; }
+.hside .loc { margin: 0 8px; }
+.hside .cat { margin: 0; padding: 4.5px 8px; cursor: pointer; }
+.hside .cat:hover { background: var(--hover); }
+.hmain { padding: 20px 32px 80px 32px; min-width: 0; }
+.nfy { background: var(--card); border-radius: var(--radius); box-shadow: 0 1px 2px rgba(0,0,0,.2); padding: 12px 16px 16px; }
+.nfy-head { display: flex; justify-content: space-between; align-items: baseline; }
+.nfy-head h2 { font-size: 17px; font-weight: 600; margin: 0 0 10px; }
+.nfy-head a { font-size: 15px; }
+.nfy-list { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.nfy-item { display: flex; align-items: center; gap: 12px; border: 0; background: none; padding: 0; text-align: left; font-size: 15px; }
+.nfy-item img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; flex: none; }
+.nfy-item small { display: flex; align-items: center; gap: 6px; color: #0064d1; font-size: 13px; margin-top: 4px; }
+.nfy-item small::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #0064d1; }
+.picks-head { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 14px; }
+.picks-head h2 { font-size: 20px; font-weight: 700; margin: 0; }
+.picks-head a { display: flex; align-items: center; gap: 4px; font-size: 15px; color: #0064d1; }
+.hgrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 9px; }
+.hgrid .card { min-width: 0; }
+.hgrid .ttl, .hgrid .place { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hgrid .vid { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--soft); margin-left: 8px; vertical-align: -3px; }
+
 /* ---------- Buy: search page ---------- */
 .buy { display: grid; grid-template-columns: 488px 1fr; min-height: calc(var(--vh, 100vh) - 78px); }
 .side { background: var(--card); box-shadow: 1px 0 2px rgba(0,0,0,.08); padding: 12px 14px 80px; position: sticky; top: 78px; height: calc(var(--vh, 100vh) - 78px); overflow: auto; }
@@ -136,6 +177,7 @@ svg { display: block; }
 .ttl { font-size: 15px; font-weight: 400; line-height: 20px; margin-top: 3px; }
 .fit { font-size: 15px; color: var(--sub); line-height: 20px; margin-top: 3px; }
 .place { font-size: 13px; color: var(--sub); line-height: 17px; margin-top: 4px; }
+.was { font-weight: 400; color: var(--sub); margin-left: 4px; }
 .new { display: inline-block; background: var(--green); color: #fff; font-size: 11px; font-weight: 700; border-radius: 4px; padding: 1px 6px; margin-left: 6px; vertical-align: 2px; }
 .empty { background: var(--card); border-radius: var(--radius); padding: 30px; text-align: center; color: var(--sub); }
 .fab { position: fixed; right: 22px; bottom: 22px; display: flex; gap: 10px; z-index: 20; }
@@ -304,7 +346,11 @@ textarea.inp { min-height: 148px; resize: vertical; }
   .top-fig > div, .top-fig .navline { display: none; }
   .navicons { display: none; }
   .top { grid-template-columns: 1fr 1fr; }
-  .buy, .sell { grid-template-columns: 1fr; height: auto; }
+  .buy, .sell, .home { grid-template-columns: 1fr; height: auto; }
+  .hside { position: static; height: auto; box-shadow: none; padding-bottom: 8px; border-bottom: 1px solid var(--soft); }
+  .hside .hcats, .hside .hcats-h, .hside .hcats-hr { display: none; }
+  .hmain { padding: 12px 12px 80px; }
+  .nfy-list { grid-template-columns: 1fr; }
   .side, .form { position: static; height: auto; box-shadow: none; border-bottom: 1px solid var(--soft); }
   .form-scroll { overflow: visible; }
   .sell-right { height: auto; }
@@ -319,11 +365,47 @@ textarea.inp { min-height: 148px; resize: vertical; }
   .top-r .circ:not(.keep) { display: none; }
   .main { padding: 12px 12px 80px; }
   .grid { grid-template-columns: repeat(2, 1fr); }
+  .hgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .row2 { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
+
+<!-- ============ HOME: Marketplace, Browse all (the page the prototype opens on) ============ -->
+<section class="view" id="view-home">
+  <div class="home">
+    <aside class="hside">
+      <div class="hhead"><h1>Marketplace</h1><button class="hgear" type="button" data-soon aria-label="Marketplace settings"><img class="fi" src="fbm/ic/h-gear.png" width="42" height="41.3" alt=""></button></div>
+      <form class="hsearch" id="hSearch" role="search"><span aria-hidden="true"><img class="fi" src="fbm/ic/i-search.png" width="15.4" height="17.5" alt=""></span><input id="hq" type="search" placeholder="Search Marketplace" aria-label="Search Marketplace" autocomplete="off"></form>
+      <button type="button" class="hnav on" data-hnav="browse" aria-current="page"><img class="fi" src="fbm/ic/h-browse.png" width="42" height="42" alt="">Browse all</button>
+      <button type="button" class="hnav" data-hnav="notif"><img class="fi" src="fbm/ic/h-notif.png" width="42" height="42" alt="">Notifications</button>
+      <button type="button" class="hnav" data-hnav="inbox"><img class="fi" src="fbm/ic/h-inbox.png" width="42" height="42" alt="">Inbox</button>
+      <button type="button" class="hnav" data-hnav="status"><img class="fi" src="fbm/ic/h-status.png" width="42" height="42" alt="">Marketplace status</button>
+      <button type="button" class="hnav" data-hnav="buying"><img class="fi" src="fbm/ic/h-buying.png" width="42" height="42" alt="">Buying<img class="fi hchev" src="fbm/ic/h-chev.png" width="15.8" height="23.3" alt=""></button>
+      <button type="button" class="hnav" data-hnav="selling"><img class="fi" src="fbm/ic/h-selling.png" width="42" height="42" alt="">Selling<img class="fi hchev" src="fbm/ic/h-chev.png" width="15.8" height="23.3" alt=""></button>
+      <div class="hbtns"><button class="hbtn blue" type="button" id="hCreate"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Create new listing</button><button class="hbtn" type="button" id="hCreateMulti">Create multiple listings</button></div>
+      <hr>
+      <h2>Location</h2>
+      <p class="loc">Burnaby, British Columbia · Within 18 km</p>
+      <hr class="hcats-hr">
+      <h2 class="hcats-h">Categories</h2>
+      <div class="hcats" id="hcats"></div>
+    </aside>
+    <main class="hmain">
+      <div class="nfy">
+        <div class="nfy-head"><h2>New for you</h2><a href="#" data-soon>See all (3)</a></div>
+        <div class="nfy-list">
+          <button type="button" class="nfy-item" data-soon><img src="fbm/home/n-garden.jpg?v=2" alt=""><span>Browse more Garden listings in your area.<small>5d</small></span></button>
+          <button type="button" class="nfy-item" data-soon><img src="fbm/home/n-household.jpg?v=2" alt=""><span>Browse more Household listings in your area.<small>1d</small></span></button>
+        </div>
+      </div>
+      <div class="picks-head"><h2>Today's picks</h2><a href="#" data-soon><img class="fi" src="fbm/ic/h-pin.png" width="19.5" height="21" alt="">Burnaby · 18 km</a></div>
+      <div class="hgrid" id="hgrid"></div>
+    </main>
+  </div>
+  <div class="fab"><button type="button" tabindex="-1" aria-hidden="true" data-ic="edit"></button></div>
+</section>
 
 <!-- ============ BUY: Recommended Product Search Page ============ -->
 <section class="view" id="view-buy">
@@ -367,7 +449,7 @@ textarea.inp { min-height: 148px; resize: vertical; }
     <main class="main">
       <div class="searchcard">
         <h2>Search</h2>
-        <label class="searchbox"><span aria-hidden="true"><img class="fi" src="fbm/ic/i-search.png" width="18.5" height="21.0" alt=""></span><span class="sr">Search clothing</span><input id="q" type="search" value="blazer" autocomplete="off" placeholder="Search Marketplace"></label>
+        <label class="searchbox"><span aria-hidden="true"><img class="fi" src="fbm/ic/i-search.png" width="18.5" height="21.0" alt=""></span><span class="sr">Search clothing</span><input id="q" type="search" autocomplete="off" placeholder="Search Marketplace"></label>
         <p class="hint" id="qHint"></p>
         <div class="tags" id="tagChips"></div>
       </div>
@@ -499,7 +581,7 @@ textarea.inp { min-height: 148px; resize: vertical; }
   </div>
 </section>
 
-<div class="concept"><span class="sw"><button type="button" id="goBuy" class="on">Buyer search</button><button type="button" id="goSell">Seller listing</button></span> Concept prototype by Shrin Roymoulik, not affiliated with Meta · <a href="../facebook-marketplace.html">Back to the case study</a></div>
+<div class="concept"><span class="sw"><button type="button" id="goHome" class="on">Marketplace</button><button type="button" id="goBuy">Buyer search</button><button type="button" id="goSell">Seller listing</button></span> Concept prototype by Shrin Roymoulik, not affiliated with Meta · <a href="../facebook-marketplace.html">Back to the case study</a></div>
 
 <!-- Dialogs -->
 <div class="scrim" id="profileDlg" hidden role="dialog" aria-modal="true" aria-labelledby="profileTitle">
@@ -591,6 +673,27 @@ textarea.inp { min-height: 148px; resize: vertical; }
     { id: 15, img: P(15), price: 25, title: "Orange Blazer", brand: "Other", size: "M", bust: 37.5, len: 28, mat: "Polyester", cond: "Good", style: ["Statement"], occ: ["Weekend", "Evening"], feat: ["Pockets", "Single button"], tags: ["Smart Casual", "Blazers", "Casual Fit", "Lapel Collar", "Polyester"], colour: "orange", q: 79 }
   ];
 
+
+  /* More apparel from Shrin's facebook.com screenshots (2026-11-15), so the Apparel page opens on a mix before anyone searches blazers.
+     Titles, prices, was prices and places are as in the screenshots; sizes, measurements, materials and tags were assigned so the fit notes and filters work. */
+  const A = n => "fbm/a-" + String(n).padStart(2, "0") + ".jpg";
+  items = items.concat([
+    { id: 101, kind: "other", img: A(1), price: 30, title: "Dark grey fleece/wool skirt, size M", place: "Vancouver, BC", brand: "Other", size: "M", bust: null, len: null, mat: "Wool", cond: "Good", style: ["Classic"], occ: ["Work"], feat: [], tags: ["Daytime"], colour: "grey", q: 74 },
+    { id: 102, kind: "other", img: A(2), price: 25, was: 30, title: "Polka dot blouse", place: "Burnaby, BC", brand: "Other", size: "M", bust: 37, len: 25, mat: "Cotton", cond: "Good", style: ["Vintage"], occ: ["Weekend", "Work"], feat: [], tags: ["Vintage", "Casual Fit"], colour: "black", q: 66 },
+    { id: 103, kind: "other", img: A(3), price: 40, title: "Emerald velvet holiday dress xs eeuc", place: "Vancouver, BC", brand: "Other", size: "XS", bust: 32, len: 46, mat: "Velvet", cond: "Excellent", style: ["Statement"], occ: ["Evening"], feat: [], tags: ["Formal"], colour: "green", q: 82 },
+    { id: 104, kind: "other", img: A(4), price: 10, title: "Connected Apparel Velvet Dress", place: "New Westminster, BC", brand: "Other", size: "M", bust: 38, len: 40, mat: "Velvet", cond: "Good", style: ["Classic"], occ: ["Evening"], feat: [], tags: ["Formal"], colour: "grey", q: 70 },
+    { id: 105, kind: "other", img: A(5), price: 5, title: "American Apparel Jean skirt", place: "Vancouver, BC", brand: "American Apparel", size: "S", bust: null, len: null, mat: "Cotton", cond: "Good", style: ["Vintage"], occ: ["Weekend"], feat: ["Pockets"], tags: ["Casual Fit", "Daytime"], colour: "blue", q: 58 },
+    { id: 106, kind: "other", img: A(6), price: 5, title: "Vintage Black American Apparel tube dress", place: "Vancouver, BC", brand: "American Apparel", size: "S", bust: 33, len: 34, mat: "Cotton", cond: "Good", style: ["Vintage", "Minimalist"], occ: ["Evening"], feat: [], tags: ["Vintage", "Minimalist"], colour: "black", q: 61 },
+    { id: 107, kind: "other", img: A(7), price: 30, title: "American Apparel Dress", place: "Vancouver, BC", brand: "American Apparel", size: "S", bust: 35, len: 30, mat: "Polyester", cond: "Good", style: ["Statement"], occ: ["Weekend"], feat: [], tags: ["Daytime", "Polyester"], colour: "brown", q: 68 },
+    { id: 108, kind: "other", img: A(8), price: 30, title: "American Apparel Tennis Skirt", place: "Vancouver, BC", brand: "American Apparel", size: "M", bust: null, len: null, mat: "Polyester", cond: "Excellent", style: ["Minimalist"], occ: ["Weekend"], feat: [], tags: ["Minimalist", "Polyester"], colour: "navy", q: 63 },
+    { id: 109, kind: "other", img: A(9), price: 10, title: "American Apparel XS", place: "Burnaby, BC", brand: "American Apparel", size: "XS", bust: 33, len: 23, mat: "Wool", cond: "Good", style: ["Classic"], occ: ["Weekend"], feat: [], tags: ["Casual Fit"], colour: "green", q: 55 },
+    { id: 110, kind: "other", img: A(10), price: 10, was: 25, title: "American Apparel deep v neck skater dress", place: "Vancouver, BC", brand: "American Apparel", size: "S", bust: 34, len: 33, mat: "Velvet", cond: "Good", style: ["Statement"], occ: ["Evening"], feat: [], tags: ["Formal"], colour: "black", q: 72 },
+    { id: 111, kind: "other", img: A(11), price: 55, title: "American Apparel Skirt", place: "Vancouver, BC", brand: "American Apparel", size: "S", bust: null, len: null, mat: "Polyester", cond: "Excellent", style: ["Vintage"], occ: ["Weekend"], feat: [], tags: ["Vintage", "Panel Cut", "Polyester"], colour: "plaid", q: 77 },
+    { id: 112, kind: "other", img: A(12), price: 20, title: "Banned apparel, Baphomet cardigan", place: "New Westminster, BC", brand: "Other", size: "M", bust: 36, len: 24, mat: "Cotton", cond: "Good", style: ["Statement"], occ: ["Weekend"], feat: [], tags: ["Casual Fit"], colour: "black", q: 60 }
+  ]);
+  // Order on an empty search: the new pieces mixed in with the blazers
+  const MIX = [101, 1, 103, 4, 105, 102, 3, 107, 110, 5, 104, 12, 111, 9, 106, 7, 108, 2, 112, 10, 109, 6, 11, 8, 13, 14, 15];
+
   /* ---------- Fit profile and predictions ---------- */
   const profile = { size: "M", bust: 36, waist: 29, pref: "Relaxed" };
   function fitOf(item) {
@@ -618,6 +721,7 @@ textarea.inp { min-height: 148px; resize: vertical; }
     SYN.slice().sort((a, b) => b.length - a.length).forEach(w => { if (rest.includes(w)) rest = rest.replace(w, " "); });
     const words = rest.split(/\s+/).filter(Boolean).filter(w => !["for", "a", "the", "and", "women", "womens", "ladies"].includes(w));
     const hay = (item.title + " " + item.brand + " " + item.mat + " " + item.colour + " " + item.tags.join(" ") + " " + item.style.join(" ") + " " + item.occ.join(" ")).toLowerCase();
+    if (q !== rest && item.kind === "other") return false; // a blazer search (or jacket, coat, suit) only shows blazers
     if (!words.length) return q !== rest;
     return words.every(w => hay.includes(w));
   }
@@ -637,7 +741,7 @@ textarea.inp { min-height: 148px; resize: vertical; }
     { key: "mat", label: "Material", icon: "ruler", opts: ["Polyester", "Wool", "Cotton", "Linen", "Velvet"], test: (i, v) => i.mat === v },
     { key: "feat", label: "Features", icon: "shirt", opts: ["Pockets", "Lined", "Single button", "Double button", "Belted"], test: (i, v) => i.feat.includes(v) },
     { key: "size", label: "Size", icon: "shirt", opts: ["XS", "S", "M", "L", "XL"], test: (i, v) => i.size === v },
-    { key: "brand", label: "Brand", icon: "tag", opts: ["Aritzia", "Babaton", "Banana Republic", "Dynamite", "Zara", "Other"], test: (i, v) => i.brand === v }
+    { key: "brand", label: "Brand", icon: "tag", opts: ["American Apparel", "Aritzia", "Babaton", "Banana Republic", "Dynamite", "Zara", "Other"], test: (i, v) => i.brand === v }
   ];
   const sel = { tags: new Set() }; ADV.forEach(a => sel[a.key] = new Set());
   let newId = null;
@@ -653,13 +757,14 @@ textarea.inp { min-height: 148px; resize: vertical; }
     const q = $("#q").value, mn = parseFloat($("#pMin").value), mx = parseFloat($("#pMax").value);
     return items.filter(i => matchesQuery(i, q) && !(mn > 0 && i.price < mn) && !(mx > 0 && i.price > mx)
       && [...sel.tags].every(t => i.tags.includes(t))
-      && ADV.every(a => !sel[a.key].size || [...sel[a.key]].some(v => a.test(i, v))));
+      && ADV.every(a => !sel[a.key].size || [...sel[a.key]].some(v => a.test(i, v))))
+      .sort((x, y) => q.trim() ? 0 : MIX.indexOf(x.id) - MIX.indexOf(y.id)); // empty search: mixed order (a newly published listing, not in MIX, stays first)
   }
   function renderGrid() {
     const list = visible();
     $("#qHint").innerHTML = hint($("#q").value);
     if (!list.length) { $("#grid").innerHTML = '<div class="empty" style="grid-column:1/-1">No listings match. Try <b>blazer</b>, <b>black</b> or <b>vintage</b>, or clear a filter.</div>'; return; }
-    $("#grid").innerHTML = list.map(i => '<button type="button" class="card" data-id="' + i.id + '"><img src="' + esc(i.img) + '" alt="' + esc(i.title) + '" loading="lazy"><div class="price">CA$' + i.price + (i.id === newId ? '<span class="new">NEW</span>' : "") + '</div><div class="ttl">' + esc(i.title) + '</div><div class="fit">' + esc(fitOf(i).text) + '</div><div class="place">Vancouver, BC</div></button>').join("");
+    $("#grid").innerHTML = list.map(i => '<button type="button" class="card" data-id="' + i.id + '"><img src="' + esc(i.img) + '" alt="' + esc(i.title) + '" loading="lazy"><div class="price">CA$' + i.price + (i.was ? ' <s class="was">CA$' + i.was + '</s>' : "") + (i.id === newId ? '<span class="new">NEW</span>' : "") + '</div><div class="ttl">' + esc(i.title) + '</div><div class="fit">' + esc(fitOf(i).text) + '</div><div class="place">' + esc(i.place || "Vancouver, BC") + '</div></button>').join("");
   }
   function refresh() { renderTags(); renderAdv(); renderGrid(); }
 
@@ -713,17 +818,63 @@ textarea.inp { min-height: 148px; resize: vertical; }
   let tt; function toast(m) { const t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(() => t.hidden = true, 2600); }
 
   /* ---------- Switching pages, as on Facebook: Create new listing opens the form, X closes it ---------- */
+  let current = "home", before = "home";
   function show(which) {
-    const buy = which === "buy";
-    $("#view-buy").hidden = !buy; $("#view-sell").hidden = buy; closePop();
+    if (which === "sell" && current !== "sell") before = current;
+    current = which;
+    ["home", "buy", "sell"].forEach(v => { $("#view-" + v).hidden = v !== which; });
+    closePop();
     history.replaceState(null, "", location.pathname);
-    $("#goBuy").classList.toggle("on", buy); $("#goSell").classList.toggle("on", !buy);
+    $("#goHome").classList.toggle("on", which === "home"); $("#goBuy").classList.toggle("on", which === "buy"); $("#goSell").classList.toggle("on", which === "sell");
     scrollTo(0, 0);
   }
+  /* ---------- HOME: Today's picks (titles, prices and places as in Shrin's facebook.com screenshots) ---------- */
+  const PICKS = [
+    ["CA$5", "Cork Board", "Vancouver, BC"],
+    ["CA$20", "Bamboo Multi-Tier Plant Stand", "Vancouver, BC"],
+    ["FREE", "Sourdough starter. Free. Bubbly and active", "North Vancouver District, BC"],
+    ["CA$5", "Round Metal Tray Side Table with Wicker Mat", "New Westminster, BC"],
+    ["CA$2,000", "1 Bed 1 Bath Apartment", "Vancouver, BC"],
+    ["CA$15", "Bodum French Press (Large Size)", "Vancouver, BC"],
+    ["CA$35", "Vintage-Inspired Cat & Vinyl Wall Art", "Vancouver, BC"],
+    ["CA$40", "Vintage Danier Brown Leather Button Jacket", "New Westminster, BC"],
+    ["CA$6", "Large collection of Healthy indoor plants", "Coquitlam, BC", "video"],
+    ["CA$600", "88\" Olive-Green Basketweave Couch", "Vancouver, BC"],
+    ["CA$10", "Galison puzzle, 1000 pieces.", "Vancouver, BC"],
+    ["CA$10", "Momo dumpling", "New Westminster, BC"],
+    ["CA$10", "Bodum Eileen French Press Coffee Maker", "Vancouver, BC"],
+    ["CA$30", "Ikea white nightstand", "New Westminster, BC"],
+    ["CA$40", "Multi-Tier Plant Stand / Display Shelf", "Vancouver, BC"]
+  ];
+  const VID = '<span class="vid" aria-label="Has video"><svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="#050505" d="M2 4.5A1.5 1.5 0 0 1 3.5 3h6A1.5 1.5 0 0 1 11 4.5v7A1.5 1.5 0 0 1 9.5 13h-6A1.5 1.5 0 0 1 2 11.5zM12 6.3l2.2-1.4a.5.5 0 0 1 .8.4v5.4a.5.5 0 0 1-.8.4L12 9.7z"/></svg></span>';
+  $("#hgrid").innerHTML = PICKS.map((p, k) => '<button type="button" class="card" data-pick="' + k + '"><img src="fbm/home/h-' + String(k + 1).padStart(2, "0") + '.jpg?v=2" alt="' + esc(p[1]) + '" loading="lazy"><div class="price">' + esc(p[0]) + (p[3] ? VID : "") + '</div><div class="ttl">' + esc(p[1]) + '</div><div class="place">' + esc(p[2]) + '</div></button>').join("");
+  $("#hgrid").addEventListener("click", e => {
+    const c = e.target.closest("[data-pick]"); if (!c) return;
+    const p = PICKS[+c.dataset.pick];
+    $("#itemTitle").textContent = p[1];
+    $("#itemBody").innerHTML = '<div class="detail"><img src="fbm/home/h-' + String(+c.dataset.pick + 1).padStart(2, "0") + '.jpg?v=2" alt="' + esc(p[1]) + '"><div><h3>' + esc(p[0]) + '</h3><div>' + esc(p[1]) + '</div><p class="why">' + esc(p[2]) + '</p><button class="btn blue" type="button" data-msg>Message seller</button></div></div>';
+    openDlg("#itemDlg");
+  });
+  // On Home nothing is selected yet, so Apparel gets the plain grey icon from Shrin's facebook.com screenshot (the blue one is only for the Apparel page)
+  $("#hcats").innerHTML = CATP.map(c => '<div class="cat" role="button" tabindex="0" data-cat="' + esc(c[0]) + '">' + (c[1] === "apparel" ? '<img class="fi" src="fbm/ic/h-cat-apparel.png" width="42" height="42" alt="">' : img("cat-" + c[1])) + esc(c[0]) + "</div>").join("");
+  function openCat(name) { if (name === "Apparel") { $("#q").value = ""; renderGrid(); show("buy"); } // Apparel opens with an empty search showing every listing (Shrin, 2026-11-15)
+     else toast("This prototype covers the Apparel category. Try Apparel."); }
+  $("#hcats").addEventListener("click", e => { const c = e.target.closest("[data-cat]"); if (c) openCat(c.dataset.cat); });
+  $("#hcats").addEventListener("keydown", e => { const c = e.target.closest("[data-cat]"); if (c && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); openCat(c.dataset.cat); } });
+  $("#hSearch").addEventListener("submit", e => { e.preventDefault(); const v = $("#hq").value.trim(); if (v) $("#q").value = v; show("buy"); renderGrid(); });
+  $("#hCreate").addEventListener("click", () => show("sell"));
+  $("#hCreateMulti").addEventListener("click", () => show("sell")); // both create buttons open the seller listing page (Shrin, 2026-11-15)
+  document.querySelectorAll("[data-hnav]").forEach(b => b.addEventListener("click", () => { if (b.dataset.hnav !== "browse") toast(b.textContent.trim() + " isn't part of this prototype."); }));
+  document.querySelectorAll("#view-home [data-soon]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); toast("This isn't part of this prototype."); }));
+
   $("#toSell").addEventListener("click", () => show("sell"));
   $("#createListing").addEventListener("click", () => show("sell"));
   $("#notifyMe").addEventListener("click", () => toast("You'll be notified when new " + ($("#q").value.trim() || "apparel") + " listings in your size are posted."));
-  $("#closeSell").addEventListener("click", () => show("buy"));
+  $("#closeSell").addEventListener("click", () => show(before)); // the X goes back to the page the form was opened from
+  $("#view-home").prepend($("#view-buy header").cloneNode(true)); // same header on Home
+  document.querySelectorAll(".top-fig").forEach(h => { const logo = h.querySelector('img[src$="logo.png"]'); if (logo) { logo.style.cursor = "pointer"; logo.addEventListener("click", () => show("home")); } });
+  $("#view-buy .crumb").innerHTML = '<a href="#" id="crumbHome" style="color:inherit">Marketplace</a> › Apparel';
+  $("#crumbHome").addEventListener("click", e => { e.preventDefault(); show("home"); });
 
   /* ---------- SELL ---------- */
   const photos = [];
@@ -840,9 +991,10 @@ textarea.inp { min-height: 148px; resize: vertical; }
 
   /* ---------- Start ---------- */
   paintIcons(); profileLine(); refresh(); update();
+  $("#goHome").addEventListener("click", () => show("home"));
   $("#goBuy").addEventListener("click", () => show("buy"));
   $("#goSell").addEventListener("click", () => show("sell"));
-  show(location.hash === "#sell" ? "sell" : "buy"); // the buyer page unless the link asks for #sell (the hash is cleared after, so it is not remembered)
+  show(location.hash === "#sell" ? "sell" : location.hash === "#search" ? "buy" : "home"); // opens on Marketplace home; #search opens the Apparel search page and #sell the listing form (the hash is cleared after, so it is not remembered)
 })();
 </script>
 </body>
