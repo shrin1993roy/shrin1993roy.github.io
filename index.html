@@ -366,6 +366,31 @@
   .love-item { margin: 0; }
   .love-cap { display: none; }
   .love { position: relative; aspect-ratio: 3 / 4; background: var(--tile, var(--tile-a)); }
+  .love img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* Zoomed out tile: the whole photo, with a soft blur of itself filling above and below */
+  .love.zoom { overflow: hidden; }
+  .love.zoom::before { content: ""; position: absolute; inset: -30px; background: var(--bg) center / cover; filter: blur(18px); }
+  .love.zoom img { object-fit: contain; transform: scale(var(--z, 1.18)); }
+  /* Fitted tile: the whole drawing on white, with room around it */
+  .love.fit { background: #ffffff; }
+  .love.fit img { object-fit: contain; transform: scale(0.82); }
+  .love-link { color: inherit; text-decoration: underline; transition: background-color 0.15s ease; }
+  .love-link:hover, .love-link:focus-visible { background: #E5FF00; color: #000000; }
+  /* Desktop and tablet: hovering a tile swaps the photo for its write up */
+  .love-item { position: relative; outline: none; }
+  .love-item:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+  @media (min-width: 821px) {
+    .love-cap {
+      display: block; position: absolute; inset: 0; margin: 0; z-index: 2;
+      background: #ffffff; padding: calc(16 * var(--u)) calc(18 * var(--u));
+      font-size: calc(18 * var(--u)); font-weight: 450; line-height: calc(18 * var(--u)); letter-spacing: calc(-0.6 * var(--u));
+      opacity: 0; visibility: hidden; transition: opacity 0.15s ease, visibility 0s 0.15s;
+    }
+    .love-item:focus-visible .love-cap, .love-item:focus-within .love-cap { opacity: 1; visibility: visible; transition: opacity 0.15s ease; }
+  }
+  @media (min-width: 821px) and (hover: hover) {
+    .love-item:hover .love-cap { opacity: 1; visibility: visible; transition: opacity 0.15s ease; }
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .slides .slide { transition: none; }
@@ -621,10 +646,8 @@
     <div class="info-slot" aria-hidden="true">[move image here]</div>
     <div class="info-photo" tabindex="0" role="img" aria-label="Portrait. Drag to move it, or use the arrow keys.">
       <!-- Portrait slideshow: replace each placeholder with an <img> using the file name shown -->
-      <div class="pslide on" data-file="images/info/portrait-1.jpg" style="background:var(--tile-c)"><div class="ph">portrait-1.jpg</div></div>
-      <div class="pslide" data-file="images/info/portrait-2.jpg" style="background:var(--tile-b)"><div class="ph">portrait-2.jpg</div></div>
-      <div class="pslide" data-file="images/info/portrait-3.jpg" style="background:var(--tile-d)"><div class="ph">portrait-3.jpg</div></div>
-      <div class="pslide" data-file="images/info/portrait-4.jpg" style="background:var(--tile-a)"><div class="ph">portrait-4.jpg</div></div>
+      <div class="pslide on" data-file="images/info/portrait-1.jpg"><img src="images/info/portrait-1.jpg" style="object-position:15% 50%" alt="Shrin talking about her framed artwork on a red gallery wall"></div>
+      <div class="pslide" data-file="images/info/portrait-2.jpg"><img src="images/info/portrait-2.jpg" style="object-position:30% 50%" alt="Shrin showing her framed artwork at the gallery" loading="lazy"></div>
     </div>
 
     <p class="info-note">I bridge physical and digital, bringing a tactile understanding of form and fit into intuitive interfaces. My belief? Design should be functional, beautiful, and so considerate of its users that it just works. Making things by hand taught me that. Cutting a pattern, draping fabric or fitting a sample puts me in a kind of flow where the next step reveals itself, and I feel the same thing when I build an interface: the best screens, like the best garments, feel simple until you look closely at how they are made. This site is my proof. I designed it, wrote it and built it myself, from the first sketch to the live page you are reading now.</p>
@@ -637,45 +660,45 @@
   <div class="marquee extra" aria-hidden="true"><div class="marquee-track" style="animation-delay:-28s"><span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span> <span>Scroll down to see some things she loves</span></div></div>
 
   <div class="loves">
-    <figure class="love-item">
-      <div class="love" style="--tile:var(--tile-a)"><div class="ph">Something she loves</div></div>
-      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    <figure class="love-item" tabindex="0">
+      <div class="love"><img src="images/info/love-01.jpg?v=2" alt="Shrin in a cowboy hat, black and white" loading="lazy"></div>
+      <figcaption class="love-cap"><span class="t2">Cowboy hat, wild curls.</span><br>One of us is in charge, and it isn’t the hat.</figcaption>
     </figure>
-    <figure class="love-item">
-      <div class="love" style="--tile:var(--tile-b)"><div class="ph">Something she loves</div></div>
-      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    <figure class="love-item" tabindex="0">
+      <div class="love"><img src="images/info/love-02.jpg?v=2" alt="Mushrooms on a mossy log" loading="lazy"></div>
+      <figcaption class="love-cap"><span class="t2">Honestly, such fun guys.</span><br>I’d say more, but there isn’t mush room in this box.</figcaption>
     </figure>
-    <figure class="love-item">
-      <div class="love" style="--tile:var(--tile-c)"><div class="ph">Something she loves</div></div>
-      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    <figure class="love-item" tabindex="0">
+      <div class="love"><img src="images/info/love-03.jpg" alt="Shrin's painting of layered, flowing faces" loading="lazy"></div>
+      <figcaption class="love-cap"><span class="t2">All of me, in one frame.</span><br>Every colour is a different version of me. They mostly get along.</figcaption>
     </figure>
-    <figure class="love-item">
-      <div class="love" style="--tile:var(--tile-d)"><div class="ph">Something she loves</div></div>
-      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    <figure class="love-item" tabindex="0">
+      <div class="love"><img src="images/info/love-05.jpg?v=3" alt="Flowing Rhythm, Shrin's black and white line drawing" loading="lazy"></div>
+      <figcaption class="love-cap"><span class="t2">Flowing Rhythm.</span><br>The very first drawing of my logo. Hours of tiny lines, and cheaper than therapy. <a class="love-link" href="https://www.instagram.com/p/CEVYKVkHdPG/" target="_blank" rel="noopener">See the post ↗</a></figcaption>
     </figure>
-    <figure class="love-item">
-      <div class="love" style="--tile:var(--tile-a)"><div class="ph">Something she loves</div></div>
-      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    <figure class="love-item" tabindex="0">
+      <div class="love" style="overflow:hidden"><img src="images/info/love-04.jpg?v=4" style="transform:scale(1.12);transform-origin:57% 45%" alt="An old photo of Shrin as a child, held in a hand" loading="lazy"></div>
+      <figcaption class="love-cap"><span class="t2">Small me.</span><br>She’s still in there, watching. Mostly judging my font choices.</figcaption>
     </figure>
-    <figure class="love-item">
-      <div class="love" style="--tile:var(--tile-b)"><div class="ph">Something she loves</div></div>
-      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    <figure class="love-item" tabindex="0">
+      <div class="love"><img src="images/info/love-06.jpg" alt="Autumn trees in red, orange and green" loading="lazy"></div>
+      <figcaption class="love-cap"><span class="t2">Autumn.</span><br>Favourite colours, favourite season, favourite everything.</figcaption>
     </figure>
-    <figure class="love-item">
-      <div class="love" style="--tile:var(--tile-c)"><div class="ph">Something she loves</div></div>
-      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    <figure class="love-item" tabindex="0">
+      <div class="love"><img src="images/info/love-07.jpg" alt="Shrin reading a Banksy quote on a gallery wall, black and white" loading="lazy"></div>
+      <figcaption class="love-cap"><span class="t2">Main character, meet Banksy.</span><br>He wrote that most people never use their initiative because no one told them to. Nobody told me either.</figcaption>
     </figure>
-    <figure class="love-item">
-      <div class="love" style="--tile:var(--tile-d)"><div class="ph">Something she loves</div></div>
-      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    <figure class="love-item" tabindex="0">
+      <div class="love"><img src="images/info/love-08.jpg" alt="A forest trail covered in tree roots" loading="lazy"></div>
+      <figcaption class="love-cap"><span class="t2">Hiking.</span><br>Roots everywhere, no clear path, still going. Basically my life, with better views.</figcaption>
     </figure>
-    <figure class="love-item">
-      <div class="love" style="--tile:var(--tile-a)"><div class="ph">Something she loves</div></div>
-      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    <figure class="love-item" tabindex="0">
+      <div class="love" style="overflow:hidden"><img src="images/info/love-09.jpg?v=2" style="transform:scale(1.3);transform-origin:52% 35%" alt="A model in a rust coloured coat from Shrin’s collection" loading="lazy"></div>
+      <figcaption class="love-cap"><span class="t2">My winning moment.</span><br>2nd place at the iD International Emerging Designer Awards 2020. I rewatch it more than I’d like to admit. <a class="love-link" href="https://www.youtube.com/watch?v=VDdZ-RaYl2w&amp;t=2653s" target="_blank" rel="noopener">Watch the moment ↗</a></figcaption>
     </figure>
-    <figure class="love-item">
-      <div class="love" style="--tile:var(--tile-b)"><div class="ph">Something she loves</div></div>
-      <figcaption class="love-cap"><span class="t2">Something she loves.</span><br>A line about why it matters to you.</figcaption>
+    <figure class="love-item" tabindex="0">
+      <div class="love"><img src="images/info/love-10.jpg" alt="Shrin laughing with a friend at a gallery, black and white" loading="lazy"></div>
+      <figcaption class="love-cap"><span class="t2">My first sale.</span><br>I sold my first design to a friend. They swear it wasn’t a pity buy, and I’ve chosen to believe them.</figcaption>
     </figure>
   </div>
 </section>
