@@ -69,7 +69,8 @@
 .dd-text .find:not(:has(.flow-pick.on)) { display: none; }
 .dd-text .find { max-width: 62%; }
 /* View Figma file sits on the same line, right after each viewer caption (Shrin) */
-.dd-text .dd-figma { display: inline; margin: 0 0 0 0.3em; padding: 0; font: inherit; letter-spacing: inherit; text-transform: none; color: var(--ink); border: 0; text-decoration: underline; text-underline-offset: 2px; }
+/* Caps and grey like the other labels (Shrin, 2026-11-15) */
+.dd-text .dd-figma { display: inline; margin: 0 0 0 0.3em; padding: 0; font-size: max(11px, calc(13 * var(--s))); font-weight: 480; letter-spacing: -0.3px; text-transform: uppercase; color: var(--grey, #8c8c8c); border: 0; text-decoration: underline; text-underline-offset: 2px; }
 .dd-text .dd-figma:hover, .dd-text .dd-figma:focus-visible { background: var(--neon); outline: none; }
 .dd-text .flow-pick, .dd-text .flow-pick.on, .dd-text .flow-pick:hover { color: #000; background: none; cursor: default; }
 @media (max-width: 820px) { .dd-text .find { max-width: none; } }
@@ -505,9 +506,6 @@
       <p class="block-text">Both flows also run as a working web prototype: search with your own measurements and watch every fit note change, or create a listing and see its quality score rise.</p>
       <div class="proto-links">
         <a href="prototypes/facebook-marketplace-prototype.html" target="_blank" rel="noopener" class="proto-link">Explore the interactive prototype ↗</a>
-        <a href="https://www.figma.com/proto/cYnynUWdRIiLV2o3Oxtst5/Facebook-Marketplace--Recommendations-?page-id=0%3A1&amp;node-id=8-768&amp;viewport=-250%2C-377%2C0.19&amp;t=8K83EoyT0pNpfC1N-1&amp;scaling=scale-down&amp;content-scaling=fixed&amp;starting-point-node-id=8%3A768" target="_blank" rel="noopener" class="proto-link">Seller listing prototype ↗</a>
-        <a href="https://www.figma.com/proto/cYnynUWdRIiLV2o3Oxtst5/Facebook-Marketplace--Recommendations-?page-id=0%3A1&amp;node-id=221-2&amp;viewport=-556%2C-4137%2C0.53&amp;t=hXpnFxdb6GPhzL4k-1&amp;scaling=scale-down&amp;content-scaling=fixed&amp;starting-point-node-id=8%3A768" target="_blank" rel="noopener" class="proto-link">Buyer search prototype ↗</a>
-        <a href="https://www.figma.com/design/cYnynUWdRIiLV2o3Oxtst5/Facebook-Marketplace--Recommendations-?node-id=0-1&amp;t=MBLbt6etR3m5Zcbl-1" target="_blank" rel="noopener" class="proto-link">View Figma file ↗</a>
       </div>
     </div>
     <p class="status"><b>Note</b>An independent concept, not affiliated with or endorsed by Meta or Facebook. Persona photos from Unsplash.</p>
