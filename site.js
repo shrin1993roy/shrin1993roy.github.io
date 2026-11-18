@@ -107,15 +107,17 @@ document.querySelectorAll('.copy-pw').forEach(btn => {
   vbox.innerHTML = '<video muted loop playsinline preload="none" aria-hidden="true"></video><img class="lb-vid-top" alt=""><button type="button" class="vid-toggle lb-vid-btn">Pause</button>';
   pic.parentElement.appendChild(vbox);
   const vid = vbox.querySelector('video'), vtop = vbox.querySelector('.lb-vid-top'), vbtn = vbox.querySelector('.lb-vid-btn');
+  // No Pause / Play in the screen viewer (Shrin, 2026-11-18): the clip just loops; the button stays detached
+  vbtn.remove();
   let vidPaused = calm;
-  const vset = () => { const on = !vid.paused; vbtn.textContent = on ? 'Pause' : 'Play'; vbtn.setAttribute('aria-label', on ? 'Pause video' : 'Play video'); };
+  const vset = () => { const on = !vid.paused; vbtn.textContent = on ? 'Pause' : 'Play'; vbtn.classList.toggle('is-playing', on); vbtn.setAttribute('aria-label', on ? 'Pause video' : 'Play video'); };
   vid.addEventListener('play', vset); vid.addEventListener('pause', vset);
   vbtn.addEventListener('click', () => { if (vid.paused) { vidPaused = false; vid.play().catch(() => {}); } else { vidPaused = true; vid.pause(); } });
   function videoFor(d) {
-    if (!d.video) { vbox.hidden = true; if (!vid.paused) vid.pause(); return; }
+    if (!d.video) { vbox.hidden = true; vbtn.hidden = true; if (!vid.paused) vid.pause(); return; }
     vbox.style.top = d.video.top; vbox.style.height = d.video.height;
     if (vid.getAttribute('src') !== d.video.src) { vid.setAttribute('src', d.video.src); vtop.src = d.video.top_image || ''; }
-    vbox.hidden = false; vset();
+    vbox.hidden = false; vbtn.hidden = false; vset();
     if (!vidPaused) vid.play().catch(() => {});
   }
   let cur = 0, opener = null;
@@ -129,8 +131,9 @@ document.querySelectorAll('.copy-pw').forEach(btn => {
     pri.hidden = !d.pri; priT.textContent = d.pri;
     count.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(SCREENS.length).padStart(2, '0');
     prev.disabled = i === 0; next.disabled = i === SCREENS.length - 1;
-    prev.textContent = i === 0 ? '← Previous' : '← ' + SCREENS[i - 1].name;
-    next.textContent = i === SCREENS.length - 1 ? 'Next →' : SCREENS[i + 1].name + ' →';
+    var arw = function (ch) { var s = document.createElement('span'); s.className = 'arw'; s.textContent = ch; return s; };
+    prev.replaceChildren(arw('←'), i === 0 ? ' Previous' : ' ' + SCREENS[i - 1].name);
+    next.replaceChildren(i === SCREENS.length - 1 ? 'Next ' : SCREENS[i + 1].name + ' ', arw('→'));
     scroller.scrollTop = 0; lb.scrollTop = 0;
     videoFor(d);
   }

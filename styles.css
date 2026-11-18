@@ -794,7 +794,12 @@ body {
 .lb-vid video, .lb-vid .lb-vid-top { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .lb-vid video { object-fit: cover; object-position: 50% 50%; }
 .lb-vid .lb-vid-top { pointer-events: none; }
-.lb-vid .lb-vid-btn { left: auto; right: max(8px, calc(12 * var(--s))); bottom: max(8px, calc(12 * var(--s))); }
+.lb-side .lb-vid-btn { position: static; padding: 3px 6px 3px 0; margin-top: max(16px, calc(24 * var(--s))); }
+.lb-side .lb-vid-btn[hidden] { display: none; }
+/* Same || PAUSE / ▶ PLAY mark as every other video button */
+.lb-vid-btn { display: inline-flex; align-items: center; gap: 6px; }
+.lb-vid-btn::before { content: "\275A\275A"; font-size: 8px; letter-spacing: 1px; line-height: 1; }
+.lb-vid-btn:not(.is-playing)::before { content: "\25B6\FE0E"; font-size: 9px; letter-spacing: 0; }
 .lb-page.is-missing img { display: none; }
 .lb-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: max(28px, calc(40 * var(--s))); }
 .lb-count, .lb-pri-h { font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); font-weight: 480; letter-spacing: -0.6px; color: var(--grey); }
@@ -972,3 +977,6 @@ html body :is(.cap, .hero-sub, .quote-src, .find-n, .fact-value, .o-long, .hi, .
 
 /* External links (Apparel, Resume): open in a new tab, marked with ↗ like other external links */
 .ext::after { content: "\00a0\2197"; }
+
+/* Arrows (↗ → ←): Inter draws them thin, so they read small beside caps; 1.15x balances them */
+.arw, .ext::after, .info-mid a[target="_blank"]::after { font-size: 1.15em; line-height: 0; }
