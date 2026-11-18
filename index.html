@@ -578,6 +578,15 @@
   }
   /* External links (Apparel, Resume): new tab, marked with ↗ */
   .ext::after { content: "\00a0\2197"; }
+  /* INFO on phones: arrows only on the AWARDS / PRESS / EXHIBITIONS headings */
+  @media (hover: none), (pointer: coarse) {
+    .info-mid h3 a::after { content: "\00a0\2197"; }
+  }
+  /* INFO links: computers only, the arrow appears on hover (space is kept, so nothing shifts); phones show none */
+  @media (hover: hover) and (pointer: fine) {
+    .info-mid a[target="_blank"]::after { content: "\00a0\2197"; opacity: 0; transition: opacity 0.15s ease; }
+    .info-mid a[target="_blank"]:hover::after, .info-mid a[target="_blank"]:focus-visible::after { opacity: 1; }
+  }
 </style>
 </head>
 <body>
