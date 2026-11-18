@@ -151,7 +151,6 @@
   /* Long rule between the work type and the year, like the template */
   .ld { display: inline-block; width: 1.9em; border-top: 1px solid currentColor; vertical-align: 0.32em; margin: 0 -0.08em; }
   .g { color: var(--muted); }
-  .ext { font-size: 0.85em; }
 
   /* Simple carousel */
   .slides .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.4s ease; }
@@ -186,8 +185,6 @@
     20%, 70% { background-color: #E5FF00; color: #000000; }
     100% { background-color: transparent; }
   }
-  .bio.hinting .name { animation: hintHi 1.2s ease-in-out 0s 1; }
-  .bio.hinting .fashion { animation: hintHi 1.2s ease-in-out 1s 1; }
   /* Same neon highlight as the links, on hover or while open */
   .name:focus-visible, .fashion:focus-visible,
   .bio.show-photo .name, .bio.show-video .fashion { background: #E5FF00; color: #000000; }
@@ -359,11 +356,9 @@
   @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
   @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
   .marquee.extra { display: none; }
-  /* INFO: highlight sweep on the hover words while scrolling */
-  @media (prefers-reduced-motion: no-preference) {
+  /* INFO: highlight sweep on the hover words while scrolling, phones only (computers highlight on hover) */
+  @media (hover: none) and (prefers-reduced-motion: no-preference), (pointer: coarse) and (prefers-reduced-motion: no-preference) {
     .info.hinting .rw { animation: hintHi 1.2s ease-in-out 0s 1; }
-  }
-  @media (prefers-reduced-motion: no-preference) {
     .info.hinting .hv-t { animation: hintHi 1.2s ease-in-out 1s 1; }
   }
   @keyframes marqueeRev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
@@ -552,11 +547,30 @@
   @media (min-width: 821px) {
     html body figcaption { font-size: calc(13 * var(--u)); font-weight: 450; }
     html body figcaption .t { font-size: calc(18 * var(--u)); line-height: calc(19 * var(--u)); font-weight: 500; letter-spacing: calc(-0.6 * var(--u)); }
-    html body .cs { font-size: calc(13 * var(--u)); font-weight: 450; }
+    html body .cs { font-size: calc(11 * var(--u)); font-weight: 500; letter-spacing: calc(-0.4 * var(--u)); }
     html body :is(.info-mid, .info-skills, .info-note) { font-size: calc(13 * var(--u)); font-weight: 450; line-height: calc(15 * var(--u)); }
     html body :is(.info-mid h3, .info-skills h3) { font-weight: 500; }
     html body :is(.nav, .small) { font-weight: 500; }
+    /* INFO hierarchy: heading (caps 500) > item (black 450) > detail (grey 450); more air above each heading */
+    html body .info-mid h3 { margin: calc(30 * var(--u)) 0 calc(6 * var(--u)); }
+    html body .info-mid .two { margin-top: calc(30 * var(--u)); }
+    html body .info-mid .two .xp { margin-top: 0; }
+    html body .info-mid .two h3, html body .info-mid .xp h3 { margin-top: 0; }
   }
+  /* INFO on wide or short desktop windows (wider than 16:10): tighter spacing, and sizes also capped by window height,
+     so the bottom paragraph and the marquee both fit on landing */
+  @media (min-width: 821px) {
+    html body .info { --u: max(0.75px, min(100vw / 1400, 100vh / 720)); }
+  }
+  @media (min-width: 821px) and (min-aspect-ratio: 16/10), (min-width: 821px) and (max-height: 760px) {
+    html body .info-mid { padding-top: calc(24 * var(--u)); }
+    html body .info-mid h3 { margin: calc(16 * var(--u)) 0 calc(3 * var(--u)); }
+    html body .info-mid .two { margin-top: calc(16 * var(--u)); }
+    html body .info-mid p + p { margin-top: calc(6 * var(--u)); }
+    html body .info-note { margin-top: calc(14 * var(--u)); }
+  }
+  /* External links (Apparel, Resume): new tab, marked with ↗ */
+  .ext::after { content: "\00a0\2197"; }
 </style>
 </head>
 <body>
@@ -565,8 +579,8 @@
   <aside class="side">
     <nav class="nav" aria-label="Main">
       <button type="button" id="infoBtn" aria-expanded="false" aria-controls="info">Info</button>
-      <a href="https://shrin-roym.com/" target="_blank" rel="noopener">Apparel</a>
-      <a href="https://drive.google.com/file/d/1lygn7vUDFMzx4JG56A4LxJSln4eozi_1/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+      <a class="ext" href="https://shrin-roym.com/" target="_blank" rel="noopener" aria-label="Apparel (opens in a new tab)">Apparel</a>
+      <a class="ext" href="https://drive.google.com/file/d/1lygn7vUDFMzx4JG56A4LxJSln4eozi_1/view?usp=sharing" target="_blank" rel="noopener" aria-label="Resume (opens in a new tab)">Resume</a>
     </nav>
 
     <p class="bio"><span class="name" tabindex="0">Shrin</span><img class="me me-photo" data-defer-src="images/home/shrin-photo.jpg" decoding="async" fetchpriority="low" alt="Shrin reading a printed publication at an exhibition"> <span class="nm">Roymoulik</span><br>is a product builder blurring the line between material and digital. Six plus years in <span class="fashion" tabindex="0">fashion</span><video class="me me-video" src="images/home/fashion.mp4" muted loop playsinline preload="none" aria-label="Fashion work in motion"></video>, now on screen.</p>
@@ -651,8 +665,8 @@
       <nav class="nav" aria-label="Info page">
         <button type="button" id="closeInfo">Home</button>
         <span class="here">Info</span>
-        <a href="https://shrin-roym.com/" target="_blank" rel="noopener">Apparel</a>
-        <a href="https://drive.google.com/file/d/1lygn7vUDFMzx4JG56A4LxJSln4eozi_1/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+        <a class="ext" href="https://shrin-roym.com/" target="_blank" rel="noopener" aria-label="Apparel (opens in a new tab)">Apparel</a>
+        <a class="ext" href="https://drive.google.com/file/d/1lygn7vUDFMzx4JG56A4LxJSln4eozi_1/view?usp=sharing" target="_blank" rel="noopener" aria-label="Resume (opens in a new tab)">Resume</a>
       </nav>
       <div class="info-bio">
         <p>I <span class="soft">design</span> and <span class="soft">build</span> for humans, whether they’re <span class="rw" tabindex="0">wearing</span><img class="rimg" data-defer-src="images/info/wearing.jpg" fetchpriority="low" alt="A model wearing a fringed jacket designed by Shrin"> my work or tapping through it.</p>
@@ -665,14 +679,14 @@
     </div>
 
     <div class="info-mid">
-      <p>Currently based in Vancouver, Canada</p>
+      <p class="soft">Currently based in Vancouver, Canada</p>
       <h3>Education</h3>
-      <p>Emily Carr University of Art and Design (2025)<br>Certificate in UX/UI Design</p>
-      <p>RMIT University (2018 to 2020)<br>MA Fashion Design</p>
-      <p>National Institute of Fashion Technology, Mumbai (2011 to 2015)<br>BA Fashion Design</p>
+      <p>Emily Carr University of Art and Design (2025)<br><span class="soft">Certificate in UX/UI Design</span></p>
+      <p>RMIT University (2018 to 2020)<br><span class="soft">MA Fashion Design</span></p>
+      <p>National Institute of Fashion Technology, Mumbai (2011 to 2015)<br><span class="soft">BA Fashion Design</span></p>
       <h3><a href="https://shrin-roym.com/awards" target="_blank" rel="noopener">Awards</a></h3>
-      <p>2nd Place, Product BC Buildathon 2026<br>
-      <span class="soft"><span class="hv"><a href="https://conference.productbc.ca/agenda#build-different" target="_blank" rel="noopener">Circuvo at UBC Conference</a><img class="hv-img" data-defer-src="images/info/ubc-conference.jpg" width="941" height="1047" style="width: 26vw;" alt="Presenting Circuvo on stage at the UBC conference, the live site on the big screen"></span></span></p>
+      <p><span class="hv"><span class="hv-t" tabindex="0">2nd Place, Product BC Buildathon 2026</span><img class="hv-img" data-defer-src="images/info/ubc-conference.jpg" width="941" height="1047" style="width: 26vw;" alt="Presenting Circuvo on stage at the UBC conference, the live site on the big screen"></span><br>
+      <span class="soft"><a href="https://conference.productbc.ca/agenda#build-different" target="_blank" rel="noopener">Circuvo at UBC Conference</a></span></p>
       <p><span class="hv"><span class="hv-t" tabindex="0">2nd Place, ID International Emerging Designer Awards 2020</span><img class="hv-img" data-defer-src="images/info/id-awards-2020.webp" fetchpriority="low" alt="Shrin’s collection at the iD International Emerging Designer Awards"></span><br>
       <span class="soft"><a href="https://www.youtube.com/watch?v=VDdZ-RaYl2w&amp;t=2653s" target="_blank" rel="noopener">Video by iD Dunedin Fashion</a><br>
       <a href="https://thelastfashionbible.com/2020/08/10/winners-2020-id-international-emerging-designer-awards/" target="_blank" rel="noopener">Article in The Last Fashion Bible</a><br>

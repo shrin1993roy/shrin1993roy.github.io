@@ -969,3 +969,6 @@ html body :is(.pw, .phone-nav a, .section-nav a, .proto-link, .hero-site-link, .
 html body :is(.cap, .hero-sub, .quote-src, .find-n, .fact-value, .o-long, .hi, .status, .screen-hint, .tester-d, .tally span) {
   font-weight: 450;
 }
+
+/* External links (Apparel, Resume): open in a new tab, marked with ↗ like other external links */
+.ext::after { content: "\00a0\2197"; }
