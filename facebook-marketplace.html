@@ -20,7 +20,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192.png?v=3">
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=2">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=21">
+<link rel="stylesheet" href="styles.css?v=41">
 <style>
 /* Facebook Marketplace only. Most rules match circuvo.html's page styles, so the three case studies read the same. */
 /* The Figma link right under the hero media, right aligned, styled like the flow viewer's Next button */
@@ -32,7 +32,7 @@
 @media (max-width: 600px) {
   .hero-single .hero-vid { width: 100%; }
 }
-.hero-single .hero-row .vid-toggle { position: static; top: auto; display: inline-flex; align-items: center; gap: 6px; font-size: max(11px, calc(13 * var(--s))); line-height: max(13px, calc(14 * var(--s))); padding: 3px 6px; }
+.hero-single .hero-row .vid-toggle { position: static; top: auto; display: inline-flex; align-items: center; gap: 6px; font-size: max(10px, calc(11 * var(--s))); line-height: max(12px, calc(13 * var(--s))); padding: 3px 6px; }
 /* The mark sits beside the word: || PAUSE, ▶ PLAY (Shrin, 2026-11-15), on every screen size */
 .hero-single .hero-row .vid-toggle::before { content: "\275A\275A"; font-size: 8px; letter-spacing: 1px; line-height: 1; }
 .hero-single .hero-row .vid-toggle:not(.is-playing)::before { content: "\25B6\FE0E"; font-size: 9px; letter-spacing: 0; }
@@ -77,9 +77,9 @@
 .dd-stage .dd-page { background: #fff; }
 .dd-stage .dd-page.is-empty { aspect-ratio: 2400 / 2303; background: #ece9e6; }
 .dd-nav { display: flex; justify-content: space-between; gap: 16px; margin-top: max(8px, calc(12 * var(--s))); }
-.dd-stage .flow-prev { background: #fff; color: #000; border: 0; font-family: inherit; font-weight: 480; text-transform: uppercase; cursor: pointer; padding: 2px 4px; font-size: max(9px, calc(10 * var(--s))); line-height: 1.3; letter-spacing: -0.2px; }
+.dd-stage .flow-prev { background: #fff; color: #000; border: 0; font-family: inherit; font-weight: 480; text-transform: uppercase; cursor: pointer; padding: 2px 4px; font-size: max(10px, calc(11 * var(--s))); line-height: max(12px, calc(13 * var(--s))); letter-spacing: -0.4px; }
 .dd-stage .flow-prev:hover, .dd-stage .flow-prev:focus-visible { background: var(--neon); outline: none; }
-.dd-stage .flow-next { position: static; display: block; margin: 0 0 0 auto; padding: 2px 4px; font-size: max(9px, calc(10 * var(--s))); line-height: 1.3; letter-spacing: -0.2px; }
+.dd-stage .flow-next { position: static; display: block; margin: 0 0 0 auto; padding: 2px 4px; font-size: max(10px, calc(11 * var(--s))); line-height: max(12px, calc(13 * var(--s))); letter-spacing: -0.4px; }
 .media.scroll-shot.dd-page { aspect-ratio: 3 / 2; }
 .media.scroll-shot.dd-page.seller-page { aspect-ratio: 2400 / 2303; }
 .media.scroll-shot.dd-page.buyer-page { aspect-ratio: 2400 / 2444; }
@@ -98,7 +98,7 @@
 .dd-text .find { max-width: 62%; }
 /* View Figma file sits on the same line, right after each viewer caption (Shrin) */
 /* Caps and grey like the other labels (Shrin, 2026-11-15) */
-.dd-text .dd-figma { display: inline; margin: 0 0 0 0.3em; padding: 0; font-size: max(11px, calc(13 * var(--s))); font-weight: 480; letter-spacing: -0.3px; text-transform: uppercase; color: var(--grey, #8c8c8c); border: 0; text-decoration: underline; text-underline-offset: 2px; }
+.dd-text .dd-figma { display: inline; margin: 0 0 0 0.3em; padding: 0; font-size: max(11px, calc(13 * var(--s))); font-weight: 480; letter-spacing: -0.6px; text-transform: uppercase; color: var(--grey, #8c8c8c); border: 0; text-decoration: underline; text-underline-offset: 2px; }
 .dd-text .dd-figma:hover, .dd-text .dd-figma:focus-visible { background: var(--neon); outline: none; }
 .dd-text .flow-pick, .dd-text .flow-pick.on, .dd-text .flow-pick:hover { color: #000; background: none; cursor: default; }
 @media (max-width: 820px) { .dd-text .find { max-width: none; } }
